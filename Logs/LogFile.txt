@@ -1,0 +1,1181 @@
+
+==Ryn's Anime Last Stand Macrov1.0==
+  Start Time: [19h.36m.11s]
+
+==Ryn's Anime Last Stand Macrov1.0==
+  Start Time: [19h.36m.42s]
+
+==Ryn's Anime Last Stand Macrov1.0==
+  Start Time: [19h.37m.18s]
+
+==Ryn's Anime Last Stand Macrov1.0==
+  Start Time: [19h.44m.48s]
+
+==Ryn's Anime Last Stand Macrov1.0==
+  Start Time: [20h.10m.12s]
+Selected Planet Greenie - Act 1 00:07
+Don't forget to enable Click to Move! (I forget sometimes too!) 00:07
+Moving to position for Planet Greenie 00:09
+
+==Ryn's Anime Last Stand Macrov1.0==
+  Start Time: [20h.10m.30s]
+
+==Ryn's Anime Last Stand Macrov1.0==
+  Start Time: [20h.11m.23s]
+Selected Planet Greenie - Act 1 00:05
+Don't forget to enable Click to Move! (I forget sometimes too!) 00:05
+Moving to position for Planet Greenie 00:06
+
+==Ryn's Anime Last Stand Macrov1.0==
+  Start Time: [20h.11m.45s]
+
+==Ryn's Anime Last Stand Macrov1.0==
+  Start Time: [20h.15m.36s]
+Selected Planet Greenie - Act 1 00:04
+Don't forget to enable Click to Move! (I forget sometimes too!) 00:04
+Moving to position for Planet Greenie 00:07
+
+==Ryn's Anime Last Stand Macrov1.0==
+  Start Time: [20h.15m.58s]
+
+==Ryn's Anime Last Stand Macrov1.0==
+  Start Time: [20h.17m.21s]
+Please select a gamemode before starting the macro! 00:01
+Selected Planet Greenie - Act 1 00:06
+Don't forget to enable Click to Move! (I forget sometimes too!) 00:06
+Moving to position for Planet Greenie 00:07
+
+==Ryn's Anime Last Stand Macrov1.0==
+  Start Time: [20h.17m.54s]
+
+==Ryn's Anime Last Stand Macrov1.0==
+  Start Time: [20h.19m.08s]
+Selected Planet Greenie - Act 1 00:02
+Don't forget to enable Click to Move! (I forget sometimes too!) 00:02
+Moving to position for Planet Greenie 00:04
+Starting Planet Greenie - Act 1 00:13
+Determining Movement Necessity on Map... 00:21
+
+==Ryn's Anime Last Stand Macrov1.0==
+  Start Time: [20h.19m.32s]
+
+==Ryn's Anime Last Stand Macrov1.0==
+  Start Time: [20h.24m.06s]
+Selected Planet Greenie - Act 1 00:04
+Don't forget to enable Click to Move! (I forget sometimes too!) 00:04
+Moving to position for Planet Greenie 00:05
+
+==Ryn's Anime Last Stand Macrov1.0==
+  Start Time: [20h.24m.22s]
+Selected Planet Greenie - Act 1 00:05
+Don't forget to enable Click to Move! (I forget sometimes too!) 00:05
+Moving to position for Planet Greenie 00:15
+Starting Planet Greenie - Act 1 00:34
+Determining Movement Necessity on Map... 00:41
+
+==Ryn's Anime Last Stand Macrov1.0==
+  Start Time: [20h.25m.07s]
+
+==Ryn's Anime Last Stand Macrov1.0==
+  Start Time: [20h.25m.55s]
+Selected Planet Greenie - Act 1 00:03
+Don't forget to enable Click to Move! (I forget sometimes too!) 00:04
+Moving to position for Planet Greenie 00:05
+Starting Planet Greenie - Act 1 00:15
+
+==Ryn's Anime Last Stand Macrov1.0==
+  Start Time: [20h.26m.18s]
+
+==Ryn's Anime Last Stand Macrov1.0==
+  Start Time: [20h.27m.51s]
+Please select a gamemode before starting the macro! 00:00
+Selected Planet Greenie - Act 1 00:12
+Don't forget to enable Click to Move! (I forget sometimes too!) 00:13
+Moving to position for Planet Greenie 00:15
+Starting Planet Greenie - Act 1 00:24
+Determining Movement Necessity on Map... 00:30
+
+==Ryn's Anime Last Stand Macrov1.0==
+  Start Time: [20h.28m.55s]
+
+==Ryn's Anime Last Stand Macrov1.0==
+  Start Time: [20h.32m.12s]
+Selected Planet Greenie - Act 1 00:03
+Don't forget to enable Click to Move! (I forget sometimes too!) 00:03
+Moving to position for Planet Greenie 00:05
+Starting Planet Greenie - Act 1 00:14
+Determining Movement Necessity on Map... 00:19
+
+==Ryn's Anime Last Stand Macrov1.0==
+  Start Time: [20h.33m.28s]
+
+==Ryn's Anime Last Stand Macrov1.0==
+  Start Time: [20h.36m.14s]
+Selected Planet Greenie - Act 1 00:07
+Don't forget to enable Click to Move! (I forget sometimes too!) 00:07
+Moving to position for Planet Greenie 00:08
+
+==Ryn's Anime Last Stand Macrov1.0==
+  Start Time: [20h.36m.31s]
+Selected Planet Greenie - Act 1 01:02
+Don't forget to enable Click to Move! (I forget sometimes too!) 01:02
+Moving to position for Planet Greenie 01:03
+Starting Planet Greenie - Act 1 01:13
+Determining Movement Necessity on Map... 01:18
+
+==Ryn's Anime Last Stand Macrov1.0==
+  Start Time: [20h.38m.38s]
+
+==Ryn's Anime Last Stand Macrov1.0==
+  Start Time: [20h.39m.24s]
+Selected Planet Greenie - Act 1 00:12
+Don't forget to enable Click to Move! (I forget sometimes too!) 00:12
+Moving to position for Planet Greenie 00:21
+Starting Planet Greenie - Act 1 00:31
+Determining Movement Necessity on Map... 00:36
+
+==Ryn's Anime Last Stand Macrov1.0==
+  Start Time: [20h.40m.23s]
+
+==Ryn's Anime Last Stand Macrov1.0==
+  Start Time: [20h.41m.47s]
+Selected Planet Greenie - Act 1 00:03
+Don't forget to enable Click to Move! (I forget sometimes too!) 00:03
+Moving to position for Planet Greenie 00:18
+Starting Planet Greenie - Act 1 00:27
+Determining Movement Necessity on Map... 00:33
+Images\Game\UnitManager.png 00:33
+
+==Ryn's Anime Last Stand Macrov1.0==
+  Start Time: [20h.43m.06s]
+Please select a gamemode before starting the macro! 00:17
+Selected Planet Greenie - Act 1 00:24
+Don't forget to enable Click to Move! (I forget sometimes too!) 00:24
+Moving to position for Planet Greenie 00:26
+Starting Planet Greenie - Act 1 00:45
+Determining Movement Necessity on Map... 00:50
+Images\Game\unit_manager.png 00:50
+Images\Game\unit_manager.png 00:52
+Images\Game\unit_manager.png 00:53
+Images\Game\unit_manager.png 00:54
+Images\Game\unit_manager.png 00:55
+Images\Game\unit_manager.png 00:56
+Images\Game\unit_manager.png 00:57
+Images\Game\unit_manager.png 00:58
+Images\Game\unit_manager.png 00:59
+Images\Game\unit_manager.png 01:00
+Images\Game\unit_manager.png 01:01
+Images\Game\unit_manager.png 01:02
+Images\Game\unit_manager.png 01:03
+Images\Game\unit_manager.png 01:04
+Images\Game\unit_manager.png 01:06
+Images\Game\unit_manager.png 01:07
+Images\Game\unit_manager.png 01:08
+Images\Game\unit_manager.png 01:09
+Images\Game\unit_manager.png 01:10
+Images\Game\unit_manager.png 01:11
+Images\Game\unit_manager.png 01:12
+Images\Game\unit_manager.png 01:13
+Images\Game\unit_manager.png 01:14
+Images\Game\unit_manager.png 01:15
+Images\Game\unit_manager.png 01:16
+Images\Game\unit_manager.png 01:18
+Images\Game\unit_manager.png 01:19
+Images\Game\unit_manager.png 01:20
+Images\Game\unit_manager.png 01:21
+Images\Game\unit_manager.png 01:22
+Images\Game\unit_manager.png 01:23
+Images\Game\unit_manager.png 01:24
+Images\Game\unit_manager.png 01:25
+Images\Game\unit_manager.png 01:26
+Images\Game\unit_manager.png 01:27
+Images\Game\unit_manager.png 01:28
+Images\Game\unit_manager.png 01:29
+Images\Game\unit_manager.png 01:31
+Images\Game\unit_manager.png 01:32
+Images\Game\unit_manager.png 01:33
+Images\Game\unit_manager.png 01:34
+Images\Game\unit_manager.png 01:35
+Images\Game\unit_manager.png 01:36
+Images\Game\unit_manager.png 01:37
+Images\Game\unit_manager.png 01:38
+Images\Game\unit_manager.png 01:39
+Images\Game\unit_manager.png 01:40
+Images\Game\unit_manager.png 01:41
+Images\Game\unit_manager.png 01:42
+Images\Game\unit_manager.png 01:44
+Images\Game\unit_manager.png 01:45
+Images\Game\unit_manager.png 01:46
+Images\Game\unit_manager.png 01:47
+Images\Game\unit_manager.png 01:48
+Images\Game\unit_manager.png 01:49
+Images\Game\unit_manager.png 01:50
+Images\Game\unit_manager.png 01:51
+Images\Game\unit_manager.png 01:52
+
+==Ryn's Anime Last Stand Macrov1.0==
+  Start Time: [20h.45m.01s]
+
+==Ryn's Anime Last Stand Macrov1.0==
+  Start Time: [20h.47m.49s]
+Selected Planet Greenie - Act 1 00:04
+Don't forget to enable Click to Move! (I forget sometimes too!) 00:04
+Moving to position for Planet Greenie 00:47
+
+==Ryn's Anime Last Stand Macrov1.0==
+  Start Time: [20h.48m.44s]
+Selected Planet Greenie - Act 1 00:09
+Don't forget to enable Click to Move! (I forget sometimes too!) 00:09
+Moving to position for Planet Greenie 00:13
+
+==Ryn's Anime Last Stand Macrov1.0==
+  Start Time: [20h.49m.03s]
+Selected Planet Greenie - Act 1 00:12
+Don't forget to enable Click to Move! (I forget sometimes too!) 00:12
+Moving to position for Planet Greenie 00:18
+Starting Planet Greenie - Act 1 00:27
+Determining Movement Necessity on Map... 00:33
+Images\Game\unit_manager.png 00:33
+Images\Game\unit_manager.png 00:34
+Images\Game\unit_manager.png 00:35
+Images\Game\unit_manager.png 00:36
+Images\Game\unit_manager.png 00:37
+Images\Game\unit_manager.png 00:38
+Images\Game\unit_manager.png 00:39
+Images\Game\unit_manager.png 00:41
+Images\Game\unit_manager.png 00:42
+Images\Game\unit_manager.png 00:43
+Images\Game\unit_manager.png 00:44
+Images\Game\unit_manager.png 00:45
+Images\Game\unit_manager.png 00:46
+Images\Game\unit_manager.png 00:47
+Images\Game\unit_manager.png 00:48
+Images\Game\unit_manager.png 00:49
+Images\Game\unit_manager.png 00:50
+Images\Game\unit_manager.png 00:51
+Images\Game\unit_manager.png 00:53
+Images\Game\unit_manager.png 00:54
+Images\Game\unit_manager.png 00:55
+Images\Game\unit_manager.png 00:56
+Images\Game\unit_manager.png 00:57
+Images\Game\unit_manager.png 00:58
+Images\Game\unit_manager.png 00:59
+Images\Game\unit_manager.png 01:00
+Images\Game\unit_manager.png 01:01
+Images\Game\unit_manager.png 01:02
+Images\Game\unit_manager.png 01:04
+Images\Game\unit_manager.png 01:05
+Images\Game\unit_manager.png 01:06
+Images\Game\unit_manager.png 01:07
+Images\Game\unit_manager.png 01:08
+Images\Game\unit_manager.png 01:09
+Images\Game\unit_manager.png 01:10
+Images\Game\unit_manager.png 01:11
+Images\Game\unit_manager.png 01:12
+Images\Game\unit_manager.png 01:13
+Images\Game\unit_manager.png 01:15
+Images\Game\unit_manager.png 01:16
+
+==Ryn's Anime Last Stand Macrov1.0==
+  Start Time: [20h.50m.21s]
+
+==Ryn's Anime Last Stand Macrov1.0==
+  Start Time: [20h.50m.47s]
+
+==Ryn's Anime Last Stand Macrov1.0==
+  Start Time: [20h.54m.15s]
+
+==Ryn's Anime Last Stand Macrov1.0==
+  Start Time: [10h.56m.33s]
+Found Roblox window 00:15
+Selected Planet Greenie - Act 1 00:47
+Don't forget to enable Click to Move! (I forget sometimes too!) 00:47
+Moving to position for Planet Greenie 00:49
+
+==Ryn's Anime Last Stand Macrov1.0==
+  Start Time: [10h.57m.43s]
+Selected Planet Greenie - Act 1 00:07
+Don't forget to enable Click to Move! (I forget sometimes too!) 00:07
+Moving to position for Planet Greenie 00:11
+Starting Planet Greenie - Act 1 00:30
+Determining Movement Necessity on Map... 00:35
+Images\Game\unit_manager.png 00:35
+Images\Game\unit_manager.png 00:36
+Images\Game\unit_manager.png 00:38
+Images\Game\unit_manager.png 00:39
+Images\Game\unit_manager.png 00:40
+Images\Game\unit_manager.png 00:41
+Images\Game\unit_manager.png 00:42
+Images\Game\unit_manager.png 00:43
+Images\Game\unit_manager.png 00:44
+Images\Game\unit_manager.png 00:45
+Images\Game\unit_manager.png 00:46
+Images\Game\unit_manager.png 00:47
+Images\Game\unit_manager.png 00:48
+Images\Game\unit_manager.png 00:50
+Images\Game\unit_manager.png 00:51
+Images\Game\unit_manager.png 00:52
+Images\Game\unit_manager.png 00:53
+Images\Game\unit_manager.png 00:54
+Images\Game\unit_manager.png 00:55
+Images\Game\unit_manager.png 00:56
+Images\Game\unit_manager.png 00:57
+Images\Game\unit_manager.png 00:58
+Images\Game\unit_manager.png 01:00
+Images\Game\unit_manager.png 01:01
+Images\Game\unit_manager.png 01:02
+Images\Game\unit_manager.png 01:03
+Images\Game\unit_manager.png 01:04
+Images\Game\unit_manager.png 01:05
+Images\Game\unit_manager.png 01:06
+
+==Ryn's Anime Last Stand Macrov1.0==
+  Start Time: [10h.58m.52s]
+
+==Ryn's Anime Last Stand Macrov1.0==
+  Start Time: [11h.02m.14s]
+Selected Planet Greenie - Act 1 00:07
+Don't forget to enable Click to Move! (I forget sometimes too!) 00:07
+Moving to position for Planet Greenie 00:11
+Starting Planet Greenie - Act 1 00:20
+Determining Movement Necessity on Map... 00:25
+No Map Found or Movement Unnecessary 00:25
+|<>*72$76.zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzw00000000003z00000000000Dw00000000000zU00000000003y00000000000Ds00000000000zU00000000003y00000000000Ds00000000000zk00000000003zU0000000000Dz00000000000zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzU 00:26
+
+==Ryn's Anime Last Stand Macrov1.0==
+  Start Time: [11h.04m.07s]
+Please select a gamemode before starting the macro! 00:23
+Selected Planet Greenie - Act 1 00:28
+Don't forget to enable Click to Move! (I forget sometimes too!) 00:28
+Configuration settings saved successfully 00:29
+Moving to position for Planet Greenie 00:31
+Starting Planet Greenie - Act 1 00:41
+Determining Movement Necessity on Map... 00:46
+No Map Found or Movement Unnecessary 01:01
+Successfully Loaded In 01:02
+Could not find Teleport button 01:09
+Game started 01:11
+Placing Unit 1 (0/1) 01:11
+
+==Ryn's Anime Last Stand Macrov1.0==
+  Start Time: [11h.05m.26s]
+Configuration settings loaded successfully 00:00
+
+==Ryn's Anime Last Stand Macrov1.0==
+  Start Time: [11h.06m.36s]
+Configuration settings loaded successfully 00:00
+
+==Ryn's Anime Last Stand Macrov1.0==
+  Start Time: [11h.08m.20s]
+Configuration settings loaded successfully 00:00
+
+==Ryn's Anime Last Stand Macrov1.0==
+  Start Time: [11h.08m.52s]
+Configuration settings loaded successfully 00:00
+Selected Planet Greenie - Act 1 00:03
+Don't forget to enable Click to Move! (I forget sometimes too!) 00:03
+Moving to position for Planet Greenie 00:05
+Starting Planet Greenie - Act 1 00:24
+Determining Movement Necessity on Map... 00:29
+No Map Found or Movement Unnecessary 00:46
+Successfully Loaded In 00:47
+Closing Chat 00:49
+Game started 00:55
+Placing Unit 1 (0/1) 00:55
+
+==Ryn's Anime Last Stand Macrov1.0==
+  Start Time: [11h.10m.37s]
+Configuration settings loaded successfully 00:00
+
+==Ryn's Anime Last Stand Macrov1.0==
+  Start Time: [11h.18m.30s]
+Configuration settings loaded successfully 00:00
+Selected Planet Greenie - Act 1 00:06
+Don't forget to enable Click to Move! (I forget sometimes too!) 00:06
+Auto Challenge enabled - starting with challenge 00:07
+Moving to Challenge mode 00:07
+
+==Ryn's Anime Last Stand Macrov1.0==
+  Start Time: [11h.18m.41s]
+Configuration settings loaded successfully 00:00
+
+==Ryn's Anime Last Stand Macrov1.0==
+  Start Time: [11h.19m.43s]
+Configuration settings loaded successfully 00:00
+Selected Planet Greenie - Act 1 00:07
+Don't forget to enable Click to Move! (I forget sometimes too!) 00:07
+Starting Planet Greenie - Act 1 00:09
+Determining Movement Necessity on Map... 00:10
+
+==Ryn's Anime Last Stand Macrov1.0==
+  Start Time: [11h.19m.56s]
+Configuration settings loaded successfully 00:00
+Selected Planet Greenie - Act 1 00:22
+Don't forget to enable Click to Move! (I forget sometimes too!) 00:22
+Starting Planet Greenie - Act 1 00:24
+Determining Movement Necessity on Map... 00:25
+No Map Found or Movement Unnecessary 00:35
+Successfully Loaded In 00:37
+Game started 00:44
+Placing Unit 1 (0/1) 00:44
+
+==Ryn's Anime Last Stand Macrov1.0==
+  Start Time: [11h.22m.46s]
+Configuration settings loaded successfully 00:00
+
+==Ryn's Anime Last Stand Macrov1.0==
+  Start Time: [11h.25m.08s]
+Configuration settings loaded successfully 00:00
+Selected Planet Greenie - Act 1 00:12
+Don't forget to enable Click to Move! (I forget sometimes too!) 00:12
+Configuration settings saved successfully 00:13
+Starting Planet Greenie - Act 1 00:19
+Determining Movement Necessity on Map... 00:20
+No Map Found or Movement Unnecessary 00:37
+Successfully Loaded In 00:38
+Game started 00:45
+Placing Unit 1 (0/1) 00:45
+Checking win/loss status 02:48
+Checking win/loss status 02:50
+Checking win/loss status 02:52
+Checking win/loss status 02:54
+Checking win/loss status 02:55
+Checking win/loss status 02:57
+Checking win/loss status 02:59
+Checking win/loss status 03:01
+
+==Ryn's Anime Last Stand Macrov1.0==
+  Start Time: [11h.28m.11s]
+Configuration settings loaded successfully 00:00
+
+==Ryn's Anime Last Stand Macrov1.0==
+  Start Time: [11h.40m.25s]
+Configuration settings loaded successfully 00:00
+Selected Planet Greenie - Act 1 01:23
+Don't forget to enable Click to Move! (I forget sometimes too!) 01:23
+Configuration settings saved successfully 01:28
+Starting Planet Greenie - Act 1 01:41
+Determining Movement Necessity on Map... 01:42
+No Map Found or Movement Unnecessary 02:00
+Successfully Loaded In 02:01
+Game started 02:09
+Placing Unit 1 (0/1) 02:09
+
+==Ryn's Anime Last Stand Macrov1.0==
+  Start Time: [11h.42m.48s]
+Configuration settings loaded successfully 00:00
+
+==Ryn's Anime Last Stand Macrov1.0==
+  Start Time: [11h.47m.03s]
+Configuration settings loaded successfully 00:00
+Selected Planet Greenie - Act 1 00:09
+Don't forget to enable Click to Move! (I forget sometimes too!) 00:09
+Configuration settings saved successfully 00:17
+Starting Planet Greenie - Act 1 00:23
+Determining Movement Necessity on Map... 00:24
+No Map Found or Movement Unnecessary 00:41
+Successfully Loaded In 00:42
+Game started 00:50
+Placing Unit 1 (0/1) 00:50
+
+==Ryn's Anime Last Stand Macrov1.0==
+  Start Time: [11h.48m.19s]
+Configuration settings loaded successfully 00:00
+
+==Ryn's Anime Last Stand Macrov1.0==
+  Start Time: [11h.51m.48s]
+Configuration settings loaded successfully 00:00
+Selected Planet Greenie - Act 1 00:14
+Don't forget to enable Click to Move! (I forget sometimes too!) 00:14
+Configuration settings saved successfully 00:16
+Starting Planet Greenie - Act 1 00:25
+Determining Movement Necessity on Map... 00:26
+No Map Found or Movement Unnecessary 00:42
+Successfully Loaded In 00:43
+Game started 00:51
+Placing Unit 1 (0/1) 00:51
+Unit Placed Successfully 01:04
+Placed Unit 1 (1/1) 01:04
+All units placed to requested amounts 01:05
+Initiating Unit Upgrades... 01:05
+
+==Ryn's Anime Last Stand Macrov1.0==
+  Start Time: [11h.53m.15s]
+Configuration settings loaded successfully 00:00
+
+==Ryn's Anime Last Stand Macrov1.0==
+  Start Time: [11h.58m.21s]
+Configuration settings loaded successfully 00:00
+Selected Planet Greenie - Act 1 00:04
+Don't forget to enable Click to Move! (I forget sometimes too!) 00:04
+Starting Planet Greenie - Act 1 00:16
+Determining Movement Necessity on Map... 00:17
+No Map Found or Movement Unnecessary 00:33
+Successfully Loaded In 00:34
+Game started 00:41
+Placing Unit 1 (0/1) 00:41
+Unit Placed Successfully 00:45
+Placed Unit 1 (1/1) 00:45
+All units placed to requested amounts 00:46
+Initiating Unit Upgrades... 00:46
+Max upgrade reached for Unit 1 (1/1) 04:29
+All units maxed, proceeding to monitor stage 04:29
+Checking win/loss status 05:37
+Checking win/loss status 05:38
+Checking win/loss status 05:40
+Checking win/loss status 05:42
+Checking win/loss status 05:44
+Checking win/loss status 05:46
+Checking win/loss status 05:48
+Checking win/loss status 05:49
+Checking win/loss status 05:51
+Checking win/loss status 05:53
+Checking win/loss status 05:55
+Checking win/loss status 05:57
+Checking win/loss status 05:59
+Checking win/loss status 06:00
+Checking win/loss status 06:02
+Checking win/loss status 06:04
+Checking win/loss status 06:06
+Checking win/loss status 06:08
+Checking win/loss status 06:09
+
+==Ryn's Anime Last Stand Macrov1.0==
+  Start Time: [12h.04m.33s]
+Configuration settings loaded successfully 00:00
+
+==Ryn's Anime Last Stand Macrov1.0==
+  Start Time: [12h.13m.17s]
+Configuration settings loaded successfully 00:00
+
+==Ryn's Anime Last Stand Macrov1.0==
+  Start Time: [12h.31m.04s]
+Configuration settings loaded successfully 00:00
+Selected Planet Greenie - Act 1 04:00
+Don't forget to enable Click to Move! (I forget sometimes too!) 04:00
+Configuration settings saved successfully 04:02
+Configuration settings saved successfully 04:04
+Starting Planet Greenie - Act 1 04:05
+Determining Movement Necessity on Map... 04:06
+No Map Found or Movement Unnecessary 04:06
+Successfully Loaded In 04:08
+Closing Chat 04:10
+Game started 04:15
+Placing Unit 1 (0/1) 04:15
+Unit Placed Successfully 04:19
+Placed Unit 1 (1/1) 04:19
+All units placed to requested amounts 04:20
+Initiating Unit Upgrades... 04:20
+Stage ended during upgrades, proceeding to results 05:02
+Checking win/loss status 05:04
+Defeat detected - Stage Length: 00:00:48 05:04
+No webhook configured - skipping webhook 05:04
+Found Lobby Text - Current Mode: Story 05:07
+Handling Story mode end 05:09
+Replay level 05:09
+Determining Movement Necessity on Map... 05:10
+
+==Ryn's Anime Last Stand Macrov1.0==
+  Start Time: [12h.36m.36s]
+Configuration settings loaded successfully 00:00
+
+==Ryn's Anime Last Stand Macrov1.0==
+  Start Time: [12h.37m.32s]
+Configuration settings loaded successfully 00:00
+
+==Ryn's Anime Last Stand Macrov1.0==
+  Start Time: [12h.38m.39s]
+Configuration settings loaded successfully 00:00
+Selected Planet Greenie - Act 1 00:02
+Don't forget to enable Click to Move! (I forget sometimes too!) 00:02
+Configuration settings saved successfully 00:05
+Starting Planet Greenie - Act 1 00:06
+Determining Movement Necessity on Map... 00:07
+
+==Ryn's Anime Last Stand Macrov1.0==
+  Start Time: [12h.38m.58s]
+Configuration settings loaded successfully 00:00
+Selected Planet Greenie - Act 1 00:10
+Don't forget to enable Click to Move! (I forget sometimes too!) 00:10
+Starting Planet Greenie - Act 1 00:17
+Determining Movement Necessity on Map... 00:18
+
+==Ryn's Anime Last Stand Macrov1.0==
+  Start Time: [12h.39m.36s]
+Configuration settings loaded successfully 00:00
+Selected Planet Greenie - Act 1 00:04
+Don't forget to enable Click to Move! (I forget sometimes too!) 00:04
+Configuration settings saved successfully 00:07
+Starting Planet Greenie - Act 1 00:09
+Determining Movement Necessity on Map... 00:10
+No Map Found or Movement Unnecessary 00:16
+Successfully Loaded In 00:18
+Closing Chat 00:20
+Game started 00:25
+Placing Unit 1 (0/1) 00:26
+Unit Placed Successfully 00:49
+Placed Unit 1 (1/1) 00:49
+All units placed to requested amounts 00:50
+Initiating Unit Upgrades... 00:50
+Stage ended during upgrades, proceeding to results 01:46
+Checking win/loss status 01:48
+Defeat detected - Stage Length: 00:01:22 01:48
+No webhook configured - skipping webhook 01:48
+Found Lobby Text - Current Mode: Story 01:51
+Handling Story mode end 01:53
+Replay level 01:53
+Clicked replay level 01:54
+Determining Movement Necessity on Map... 01:54
+
+==Ryn's Anime Last Stand Macrov1.0==
+  Start Time: [12h.42m.14s]
+Configuration settings loaded successfully 00:00
+Selected Planet Greenie - Act 1 00:28
+Don't forget to enable Click to Move! (I forget sometimes too!) 00:28
+
+==Ryn's Anime Last Stand Macrov1.0==
+  Start Time: [12h.45m.56s]
+Configuration settings loaded successfully 00:00
+Selected Planet Greenie - Act 1 00:04
+Don't forget to enable Click to Move! (I forget sometimes too!) 00:04
+Starting Planet Greenie - Act 1 00:22
+Determining Movement Necessity on Map... 00:23
+No Map Found or Movement Unnecessary 00:39
+Successfully Loaded In 00:40
+Game started 00:48
+Placing Unit 1 (0/1) 00:48
+Unit Placed Successfully 01:01
+Placed Unit 1 (1/1) 01:01
+All units placed to requested amounts 01:02
+Initiating Unit Upgrades... 01:02
+Max upgrade reached for Unit 1 (1/1) 04:33
+All units maxed, proceeding to monitor stage 04:34
+Checking win/loss status 05:35
+Victory detected - Stage Length: 00:04:47 05:36
+No webhook configured - skipping webhook 05:36
+Found Lobby Text - Current Mode: Story 05:39
+Handling Story mode end 05:41
+Replay level 05:41
+Clicked replay level 05:42
+Determining Movement Necessity on Map... 05:42
+No Map Found or Movement Unnecessary 06:27
+Successfully Loaded In 06:44
+Game started 06:52
+Placing Unit 1 (0/1) 06:52
+
+==Ryn's Anime Last Stand Macrov1.0==
+  Start Time: [12h.52m.53s]
+Configuration settings loaded successfully 00:00
+Selected Planet Greenie - Act 1 01:46
+Don't forget to enable Click to Move! (I forget sometimes too!) 01:46
+Configuration settings saved successfully 01:49
+Starting Planet Greenie - Act 1 01:50
+Determining Movement Necessity on Map... 01:51
+No Map Found or Movement Unnecessary 02:11
+Successfully Loaded In 02:12
+
+==Ryn's Anime Last Stand Macrov1.0==
+  Start Time: [12h.55m.12s]
+Configuration settings loaded successfully 00:00
+Selected Planet Greenie - Act 1 00:05
+Don't forget to enable Click to Move! (I forget sometimes too!) 00:05
+Starting Planet Greenie - Act 1 00:08
+Determining Movement Necessity on Map... 00:09
+No Map Found or Movement Unnecessary 00:10
+Successfully Loaded In 00:11
+
+==Ryn's Anime Last Stand Macrov1.0==
+  Start Time: [12h.55m.26s]
+Configuration settings loaded successfully 00:00
+
+==Ryn's Anime Last Stand Macrov1.0==
+  Start Time: [13h.03m.21s]
+Configuration settings loaded successfully 00:00
+Selected Planet Greenie - Act 1 00:02
+Don't forget to enable Click to Move! (I forget sometimes too!) 00:02
+Starting Planet Greenie - Act 1 00:06
+Determining Movement Necessity on Map... 00:07
+No Map Found or Movement Unnecessary 00:07
+Successfully Loaded In 00:08
+
+==Ryn's Anime Last Stand Macrov1.0==
+  Start Time: [13h.05m.15s]
+Configuration settings loaded successfully 00:00
+Selected Planet Greenie - Act 1 00:02
+Don't forget to enable Click to Move! (I forget sometimes too!) 00:02
+Starting Planet Greenie - Act 1 00:08
+Determining Movement Necessity on Map... 00:09
+No Map Found or Movement Unnecessary 00:10
+Successfully Loaded In 00:11
+
+==Ryn's Anime Last Stand Macrov1.0==
+  Start Time: [13h.05m.43s]
+Configuration settings loaded successfully 00:00
+
+==Ryn's Anime Last Stand Macrov1.0==
+  Start Time: [13h.06m.59s]
+Configuration settings loaded successfully 00:00
+Selected Planet Greenie - Act 1 00:03
+Don't forget to enable Click to Move! (I forget sometimes too!) 00:03
+Starting Planet Greenie - Act 1 00:04
+Determining Movement Necessity on Map... 00:05
+No Map Found or Movement Unnecessary 00:05
+Successfully Loaded In 00:06
+Game started 00:14
+Placing Unit 1 (0/1) 00:14
+Unit Placed Successfully 00:17
+Placed Unit 1 (1/1) 00:17
+All units placed to requested amounts 00:18
+Initiating Unit Upgrades... 00:18
+Stage ended during upgrades, proceeding to results 00:45
+Checking win/loss status 00:47
+Defeat detected - Stage Length: 00:00:32 00:47
+No webhook configured - skipping webhook 00:47
+Found Lobby Text - Current Mode: Story 00:50
+Handling Story mode end 00:52
+Replay level 00:52
+Clicked replay level 00:53
+Determining Movement Necessity on Map... 00:53
+No Map Found or Movement Unnecessary 00:53
+Successfully Loaded In 00:54
+Game started 01:01
+Placing Unit 1 (0/1) 01:01
+Unit Placed Successfully 01:05
+Placed Unit 1 (1/1) 01:05
+All units placed to requested amounts 01:06
+Initiating Unit Upgrades... 01:06
+
+==Ryn's Anime Last Stand Macrov1.0==
+  Start Time: [13h.08m.38s]
+Configuration settings loaded successfully 00:00
+
+==Ryn's Anime Last Stand Macrov1.0==
+  Start Time: [13h.09m.35s]
+Configuration settings loaded successfully 00:00
+
+==Ryn's Anime Last Stand Macrov1.0==
+  Start Time: [15h.37m.09s]
+Configuration settings loaded successfully 00:00
+
+==Ryn's Anime Last Stand Macrov1.0==
+  Start Time: [15h.45m.41s]
+Configuration settings loaded successfully 00:00
+
+==Ryn's Anime Last Stand Macrov1.0==
+  Start Time: [16h.12m.43s]
+Configuration settings loaded successfully 00:00
+
+==Ryn's Anime Last Stand Macrov1.0==
+  Start Time: [16h.15m.00s]
+Configuration settings loaded successfully 00:00
+Configuration settings saved successfully 00:36
+
+==Ryn's Anime Last Stand Macrov1.0==
+  Start Time: [16h.15m.41s]
+Configuration settings loaded successfully 00:00
+
+==Ryn's Last Stand Macrov1.0==
+  Start Time: [16h.16m.03s]
+Configuration settings loaded successfully 00:00
+
+==Ryn's Anime Last Stand Macro v1.0==
+  Start Time: [16h.16m.13s]
+Configuration settings loaded successfully 00:00
+
+==Ryn's Anime Last Stand Macro v1.0==
+  Start Time: [16h.17m.24s]
+Configuration settings loaded successfully 00:00
+
+==Ryn's Anime Last Stand Macro v1.0==
+  Start Time: [16h.22m.15s]
+Configuration settings loaded successfully 00:00
+
+==Ryn's Anime Last Stand Macro v1.0==
+  Start Time: [16h.25m.43s]
+Configuration settings loaded successfully 00:00
+
+==Ryn's Anime Last Stand Macro v1.0==
+  Start Time: [16h.27m.07s]
+Configuration settings loaded successfully 00:00
+
+==Ryn's Anime Last Stand Macro v1.0==
+  Start Time: [16h.29m.42s]
+Configuration settings loaded successfully 00:00
+
+==Ryn's Anime Last Stand Macro v1.0==
+  Start Time: [16h.31m.14s]
+Configuration settings loaded successfully 00:00
+
+==Ryn's Anime Last Stand Macro v1.0==
+  Start Time: [16h.52m.22s]
+Configuration settings loaded successfully 00:00
+
+==Ryn's Anime Last Stand Macro v1.0==
+  Start Time: [16h.55m.19s]
+Configuration settings loaded successfully 00:00
+
+==Ryn's Anime Last Stand Macro v1.0==
+  Start Time: [16h.55m.34s]
+Configuration settings loaded successfully 00:00
+
+==Ryn's Anime Last Stand Macro v1.0==
+  Start Time: [16h.58m.00s]
+Configuration settings loaded successfully 00:00
+Configuration settings saved successfully 06:28
+
+==Ryn's Anime Last Stand Macro v1.0==
+  Start Time: [17h.11m.18s]
+Configuration settings loaded successfully 00:00
+
+==Ryn's Anime Last Stand Macro v1.0==
+  Start Time: [17h.14m.01s]
+Configuration settings loaded successfully 00:00
+Selected Snowy Capital 00:30
+Don't forget to enable Click to Move! (I forget sometimes too!) 00:30
+Moving to position for Snowy Capital 00:32
+
+==Ryn's Anime Last Stand Macro v1.0==
+  Start Time: [17h.14m.39s]
+Configuration settings loaded successfully 00:00
+Please select a gamemode before confirming 00:04
+Selected Snowy Capital 00:12
+Don't forget to enable Click to Move! (I forget sometimes too!) 00:12
+Moving to position for Snowy Capital 00:13
+
+==Ryn's Anime Last Stand Macro v1.0==
+  Start Time: [17h.14m.57s]
+Configuration settings loaded successfully 00:00
+
+==Ryn's Anime Last Stand Macro v1.0==
+  Start Time: [17h.17m.17s]
+Configuration settings loaded successfully 00:00
+Selected Snowy Capital 00:06
+Don't forget to enable Click to Move! (I forget sometimes too!) 00:06
+Determining Movement Necessity on Map... 00:09
+No Map Found or Movement Unnecessary 00:28
+
+==Ryn's Anime Last Stand Macro v1.0==
+  Start Time: [17h.17m.53s]
+Configuration settings loaded successfully 00:00
+
+==Ryn's Anime Last Stand Macro v1.0==
+  Start Time: [17h.18m.28s]
+Configuration settings loaded successfully 00:00
+Selected Snowy Capital 00:05
+Don't forget to enable Click to Move! (I forget sometimes too!) 00:05
+Determining Movement Necessity on Map... 00:08
+
+==Ryn's Anime Last Stand Macro v1.0==
+  Start Time: [17h.18m.54s]
+Configuration settings loaded successfully 00:00
+
+==Ryn's Anime Last Stand Macro v1.0==
+  Start Time: [17h.21m.02s]
+Configuration settings loaded successfully 00:00
+Selected Snowy Capital 00:05
+Don't forget to enable Click to Move! (I forget sometimes too!) 00:05
+Determining Movement Necessity on Map... 00:08
+No Map Found or Movement Unnecessary 00:08
+Successfully Loaded In 00:09
+Game started 00:16
+Placing Unit 1 (0/1) 00:17
+
+==Ryn's Anime Last Stand Macro v1.0==
+  Start Time: [17h.21m.41s]
+Configuration settings loaded successfully 00:00
+
+==Ryn's Anime Last Stand Macro v1.0==
+  Start Time: [17h.22m.06s]
+Configuration settings loaded successfully 00:00
+Selected Snowy Capital 00:07
+Don't forget to enable Click to Move! (I forget sometimes too!) 00:07
+Determining Movement Necessity on Map... 00:09
+No Map Found or Movement Unnecessary 00:09
+Successfully Loaded In 00:10
+Game started 00:18
+Placing Unit 1 (0/1) 00:18
+
+==Ryn's Anime Last Stand Macro v1.0==
+  Start Time: [17h.22m.49s]
+Configuration settings loaded successfully 00:00
+
+==Ryn's Anime Last Stand Macro v1.0==
+  Start Time: [17h.23m.18s]
+Configuration settings loaded successfully 00:00
+Selected Snowy Capital 00:02
+Don't forget to enable Click to Move! (I forget sometimes too!) 00:02
+Determining Movement Necessity on Map... 00:05
+No Map Found or Movement Unnecessary 00:05
+Successfully Loaded In 00:06
+Game started 00:14
+Placing Unit 1 (0/1) 00:14
+
+==Ryn's Anime Last Stand Macro v1.0==
+  Start Time: [17h.23m.45s]
+Configuration settings loaded successfully 00:00
+
+==Ryn's Anime Last Stand Macro v1.0==
+  Start Time: [17h.24m.40s]
+Configuration settings loaded successfully 00:00
+Selected Snowy Capital 00:04
+Don't forget to enable Click to Move! (I forget sometimes too!) 00:04
+Determining Movement Necessity on Map... 00:10
+No Map Found or Movement Unnecessary 00:10
+Successfully Loaded In 00:11
+Closing Chat 00:13
+Game started 00:19
+Placing Unit 1 (0/1) 00:19
+
+==Ryn's Anime Last Stand Macro v1.0==
+  Start Time: [17h.25m.25s]
+Configuration settings loaded successfully 00:00
+
+==Ryn's Anime Last Stand Macro v1.0==
+  Start Time: [17h.28m.13s]
+Configuration settings loaded successfully 00:00
+Closing Chat 01:38
+
+==Ryn's Anime Last Stand Macro v1.0==
+  Start Time: [17h.32m.50s]
+Configuration settings loaded successfully 00:00
+
+==Ryn's Anime Last Stand Macro v1.0==
+  Start Time: [17h.34m.52s]
+Configuration settings loaded successfully 00:00
+Selected Central City 00:04
+Don't forget to enable Click to Move! (I forget sometimes too!) 00:04
+Determining Movement Necessity on Map... 00:07
+No Map Found or Movement Unnecessary 00:07
+Successfully Loaded In 00:08
+Closing Chat 00:10
+Game started 00:16
+Placing Unit 1 (0/1) 00:16
+
+==Ryn's Anime Last Stand Macro v1.0==
+  Start Time: [17h.35m.28s]
+Configuration settings loaded successfully 00:00
+
+==Ryn's Anime Last Stand Macro v1.0==
+  Start Time: [17h.37m.38s]
+Configuration settings loaded successfully 00:00
+
+==Ryn's Anime Last Stand Macro v1.0==
+  Start Time: [17h.40m.33s]
+Configuration settings loaded successfully 00:00
+
+==Ryn's Anime Last Stand Macro v1.0==
+  Start Time: [17h.41m.08s]
+Configuration settings loaded successfully 00:00
+
+==Ryn's Anime Last Stand Macro v1.0==
+  Start Time: [17h.41m.37s]
+Configuration settings loaded successfully 00:00
+
+==Ryn's Anime Last Stand Macro v1.0==
+  Start Time: [17h.41m.48s]
+Configuration settings loaded successfully 00:00
+
+==Ryn's Anime Last Stand Macro v1.0==
+  Start Time: [17h.42m.43s]
+Configuration settings loaded successfully 00:00
+
+==Ryn's Anime Last Stand Macro v1.0==
+  Start Time: [17h.43m.10s]
+Configuration settings loaded successfully 00:00
+Selected Central City 00:29
+Don't forget to enable Click to Move! (I forget sometimes too!) 00:29
+Determining Movement Necessity on Map... 00:55
+No Map Found or Movement Unnecessary 01:02
+Successfully Loaded In 01:03
+Game started 01:10
+Placing Unit 1 (0/1) 01:10
+Unit Placed Successfully 01:30
+Placed Unit 1 (1/1) 01:30
+All units placed to requested amounts 01:31
+Initiating Unit Upgrades... 01:31
+Stage ended during upgrades, proceeding to results 02:44
+Checking win/loss status 02:46
+Defeat detected - Stage Length: 00:01:35 02:46
+No webhook configured - skipping webhook 02:46
+Found Lobby Text - Current Mode: Raid 02:49
+Handling Raid end 02:51
+Return to lobby 02:51
+
+==Ryn's Anime Last Stand Macro v1.0==
+  Start Time: [17h.50m.08s]
+Configuration settings loaded successfully 00:00
+
+==Ryn's Anime Last Stand Macro v1.0==
+  Start Time: [18h.06m.08s]
+Configuration settings loaded successfully 00:00
+
+==Ryn's Anime Last Stand Macro v1.0==
+  Start Time: [18h.06m.11s]
+Configuration settings loaded successfully 00:00
+
+==Ryn's Anime Last Stand Macro v1.0==
+  Start Time: [18h.16m.46s]
+Configuration settings loaded successfully 00:00
+Selected Central City 00:06
+Don't forget to enable Click to Move! (I forget sometimes too!) 00:06
+Determining Movement Necessity on Map... 00:09
+No Map Found or Movement Unnecessary 00:09
+Successfully Loaded In 00:10
+Closing Chat 00:12
+Executing Movement for: |<>*88$302.zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz01zzzzzzzzzzzzzzzzzzzzzzzzzs00003zzzzzzzzzzzzzzzzz007zzzzzzzzzzzzzzzzzzzzzzzzs00000TzzzzzzzzzzzzzzzzU00Tzzzzzzzzzzzzzzzzzzzzzzzy000003zzzzzzzzzzzzzzzzk003zzzzzzzzzzzzzzzzzzzzzzzzU00000zzzzzzzzzzzzzzzzs000zzzzzzzzzzzzzzzzzzzzzzzzs00000Dzzzzzzzzzzzzzzzw0007zzzzzzzzzzzzzzzzzzzzzzzy000003zzzzzzzzzzzzzzzz0001zzzzzzzzzzzzzzzzzzzzzzzzU00001zzzzzzzzzzzzzzzzU000zzzzzzzzzzzzzzzzzzzzzzzzy00001zzzzzzzzzzzzzzzzs0T0Tzzzzzzzzzzzzzzzzzzzzzzzzzz07zzzzzzzzzzzzzzzzzy0Ds7zzzzzzzzzzzzzzzzzzzzzzzzzzk1zzzzzzzzzzzzzzzzzzU3zbzzzzzzzw3zznzzzzDz7zzDzzzzw0Tzzs7zzbzzzyTzzzzzs0zzzs3U7zzs07zkDw7z0z0zzUTzzzz07zzk0DzUTsDy1y0s1zy0Dzzw0k0Tzs00Tk3y0zk7UDzk3zzzzk1zzk00zU7w1zUD0A07zU0zzz0003zw003w0TU7s0k1zw0zzzzw0Tzs007s0z0Dk1k000zs01zzk000Ty000T07k1y0A0Ty0Dzzzz07zw000y0DU3w0Q0007z001zw0003z0003k1w0D0303zU3zzzzk1zy0007U3s0S070000zk003z0000zU000Q0D03k1s0Tk0zzzzw0Tz0000s0S07U3k000Dy000Dk0007s0007U3U0w0S07w0Tzzzz07zk000D0701s0w0001zk001w0001w0000s0s060Dk0y07zzzzk1zs0001k1k0A0T0000Ty000T00k0D01s0D0601U3w0DU3zzzzw0Ty03s0S0A0307k0A03zs003k0z03k1zU3k10080zU1k0zzzzz07zU3z07U200E1w0Dk0zzk00w0Ts0s0Ts0Q00000Tw0A0Tzzzzk1zk0zk0s00000z07y0Dzzk0707y0C0Dz07U00007z0307zzzzw0Tw0Ty0D00000Dk1zU3zzzU1k1zU3U3zk1s00003zs001zzzzz07z07zU3k00007w0Ts0zzzw0Q0Tw0s0zw0T00000zy000zzzzzk1zk1zs0y00001z07z0DsTz0707z0C0Dz07k0000Dzk00Dzzzzw0Tw0Ty0DU0000Tk1zk3w3zk1k1zk3k1zU3y00007zy007zzzzz07zU3z07w0000Dw0Tw0y0Dw0Q0Tw0w0Dk0zU0A01zzU01zzzzzk1zs0TU1z00E03z07z0D01y0D07z0D00k0Ds0300zzw00zzzzzw0Ty01U0Tk0601zk1zk3k0003k1zk3s0007z01k0Dzz00Dzzzzz07zk000Dy03U0Tw0Tw0y0000w0Tw0y0001zk0S03zzs07zzzzzk1zw0003zU0w07z07z0DU000T07z0Dk000zy07U1zzz01zzzzzw0TzU001zw0D03zk1zk3w0007k1zk3y000DzU3s0Tzzk0Tzzzzz07zw000Tz07k0zw0Tw0zU003w0Tw0zU007zs0z0Dzzy0Dzzzzzk1zz000Dzk1y0Tz07z0Dw001z07z0Dy003zz0Dk3zzz03zzzzzw0zzw00Dzy0TU7zk1zk3zk01zs3zk3zk03zzk7y1zzzk1zzzzzz0DzzU07zzUDw3zy0zw0zz01zz1zy1zz03zzz3zkzzzs0Tzzzzzs7zzy07zzy7zVzzkTzUTzzzzzzzzzzzzzzzzzzzzzzy0Dzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz03zzzzzzzzzzzzzzzzzzzzzzzzzs 00:17
+Game started 00:18
+Placing Unit 1 (0/1) 00:18
+
+==Ryn's Anime Last Stand Macro v1.0==
+  Start Time: [18h.17m.17s]
+Configuration settings loaded successfully 00:00
+
+==Ryn's Anime Last Stand Macro v1.0==
+  Start Time: [18h.18m.11s]
+Configuration settings loaded successfully 00:00
+Selected Central City 00:07
+Don't forget to enable Click to Move! (I forget sometimes too!) 00:07
+Determining Movement Necessity on Map... 00:10
+No Map Found or Movement Unnecessary 00:10
+Successfully Loaded In 00:11
+Executing Movement for: Central City 00:17
+Game started 00:24
+Placing Unit 1 (0/1) 00:24
+Unit Placed Successfully 00:27
+Placed Unit 1 (1/1) 00:27
+All units placed to requested amounts 00:28
+Initiating Unit Upgrades... 00:28
+
+==Ryn's Anime Last Stand Macro v1.0==
+  Start Time: [18h.18m.56s]
+Configuration settings loaded successfully 00:00
+Configuration settings saved successfully 00:40
+
+==Ryn's Anime Last Stand Macro v1.0==
+  Start Time: [18h.29m.37s]
+Configuration settings loaded successfully 00:00
+Selected Central City 00:12
+Don't forget to enable Click to Move! (I forget sometimes too!) 00:12
+Determining Movement Necessity on Map... 00:27
+Map detected: Central City 00:27
+Successfully Loaded In 00:55
+Executing Movement for: Central City 01:01
+Game started 01:08
+Placing Unit 1 (0/1) 01:08
+Unit Placed Successfully 01:11
+Placed Unit 1 (1/1) 01:11
+All units placed to requested amounts 01:12
+Initiating Unit Upgrades... 01:12
+Stage ended during upgrades, proceeding to results 03:30
+Checking win/loss status 03:32
+Defeat detected - Stage Length: 00:02:24 03:32
+No webhook configured - skipping webhook 03:32
+Found Lobby Text - Current Mode: Raid 03:35
+Handling Raid end 03:38
+Replay raid 03:38
+Determining Movement Necessity on Map... 03:38
+Map detected: Central City 03:38
+Successfully Loaded In 03:39
+Executing Movement for: Central City 03:45
+Game started 03:52
+Placing Unit 1 (0/1) 03:52
+Unit Placed Successfully 03:55
+Placed Unit 1 (1/1) 03:55
+All units placed to requested amounts 03:56
+Initiating Unit Upgrades... 03:56
+
+==Ryn's Anime Last Stand Macro v1.0==
+  Start Time: [18h.34m.21s]
+Configuration settings loaded successfully 00:00
+Configuration settings saved successfully 00:19
+Selected Central City 00:26
+Don't forget to enable Click to Move! (I forget sometimes too!) 00:27
+Determining Movement Necessity on Map... 00:30
+Map detected: Central City 00:30
+Successfully Loaded In 00:31
+Executing Movement for: Central City 00:38
+Game started 00:44
+Placing Unit 1 (0/1) 00:44
+Unit Placed Successfully 00:47
+Placed Unit 1 (1/1) 00:48
+Placing Unit 3 (0/1) 00:49
+Unit Placed Successfully 00:52
+Placed Unit 3 (1/1) 00:52
+Placing Unit 6 (0/1) 00:53
+Unit Placed Successfully 00:56
+Placed Unit 6 (1/1) 00:56
+All units placed to requested amounts 00:57
+Initiating Unit Upgrades... 00:57
+Using priority upgrade system 00:57
+Starting upgrades for priority 1 (slot 6) 00:57
+Stage ended during upgrades, proceeding to results 01:09
+Checking win/loss status 01:10
+Defeat detected - Stage Length: 00:00:26 01:11
+No webhook configured - skipping webhook 01:11
+Found Lobby Text - Current Mode: Raid 01:14
+Handling Raid end 01:16
+Replay raid 01:16
+Determining Movement Necessity on Map... 01:17
+Map detected: Central City 01:17
+Successfully Loaded In 01:18
+Executing Movement for: Central City 01:24
+Game started 01:30
+Placing Unit 1 (0/1) 01:30
+Unit Placed Successfully 01:33
+Placed Unit 1 (1/1) 01:34
+Placing Unit 3 (0/1) 01:35
+Unit Placed Successfully 02:19
+Placed Unit 3 (1/1) 02:20
+Placing Unit 6 (0/1) 02:21
+Unit Placed Successfully 02:31
+Placed Unit 6 (1/1) 02:31
+All units placed to requested amounts 02:32
+Initiating Unit Upgrades... 02:32
+Using priority upgrade system 02:32
+Starting upgrades for priority 1 (slot 6) 02:32
+Max upgrade reached for Unit 6 (1/1) 04:07
+Finished upgrades for priority 1 04:07
+Starting upgrades for priority 2 (slot 3) 04:07
+Max upgrade reached for Unit 3 (1/1) 04:42
+Finished upgrades for priority 2 04:42
+Starting upgrades for priority 3 (slot 1) 04:42
+Max upgrade reached for Unit 1 (1/1) 04:51
+Finished upgrades for priority 3 04:52
+Priority upgrading completed 04:52
+Checking win/loss status 05:48
+Victory detected - Stage Length: 00:04:17 05:48
+No webhook configured - skipping webhook 05:48
+Found Lobby Text - Current Mode: Raid 05:51
+Handling Raid end 05:53
+Replay raid 05:53
+Determining Movement Necessity on Map... 05:54
+Map detected: Central City 05:54
+Successfully Loaded In 05:55
+Executing Movement for: Central City 06:01
+Game started 06:07
+Placing Unit 1 (0/1) 06:07
+Unit Placed Successfully 06:11
+Placed Unit 1 (1/1) 06:11
+Placing Unit 3 (0/1) 06:12
+Unit Placed Successfully 07:04
+Placed Unit 3 (1/1) 07:04
+Placing Unit 6 (0/1) 07:05
+Unit Placed Successfully 07:08
+Placed Unit 6 (1/1) 07:08
+All units placed to requested amounts 07:09
+Initiating Unit Upgrades... 07:09
+Using priority upgrade system 07:09
+Starting upgrades for priority 1 (slot 6) 07:09
+Max upgrade reached for Unit 6 (1/1) 08:45
+Finished upgrades for priority 1 08:46
+Starting upgrades for priority 2 (slot 3) 08:46
+Max upgrade reached for Unit 3 (1/1) 09:20
+Finished upgrades for priority 2 09:20
+Starting upgrades for priority 3 (slot 1) 09:20
+Max upgrade reached for Unit 1 (1/1) 09:30
+Finished upgrades for priority 3 09:30
+Priority upgrading completed 09:30
+
+==Ryn's Anime Last Stand Macro v1.0==
+  Start Time: [18h.44m.00s]
+Configuration settings loaded successfully 00:00
