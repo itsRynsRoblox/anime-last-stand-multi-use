@@ -1,11 +1,11 @@
 Mode=
 
 
-Enabled1=1
-Enabled2=0
+Enabled1=0
+Enabled2=1
 Enabled3=1
-Enabled4=0
-Enabled5=0
+Enabled4=1
+Enabled5=1
 Enabled6=1
 
 Placement1=1
@@ -21,7 +21,7 @@ Priority4=4
 Priority5=5
 Priority6=1
 [PlacementLogic]
-Logic=6
+Logic=4
 
 [PlaceSpeed]
 Speed=1

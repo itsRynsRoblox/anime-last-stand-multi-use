@@ -2,6 +2,9 @@
 #Include Image.ahk
 global macroStartTime := A_TickCount
 global stageStartTime := A_TickCount
+
+global step := 50
+
 InitializeMacro() {
     if (!ValidateMode()) {
         return
@@ -30,7 +33,7 @@ PlacingUnits() {
         return MonitorStage()
     }
 
-    placementPoints := PlacementPatternDropdown.Text = "Best For Map" ? UseRecommendedPoints() : PlacementPatternDropdown.Text = "Circle" ? GenerateCirclePoints() : PlacementPatternDropdown.Text = "Grid" ? GenerateGridPoints() : PlacementPatternDropdown.Text = "Spiral" ? GenerateSpiralPoints() : PlacementPatternDropdown.Text = "Up and Down" ? GenerateUpandDownPoints() : GenerateRandomPoints()
+    placementPoints := PlacementPatternDropdown.Text = "3x3 Grid" ? Generate3x3GridPoints() : "Map Specific" ? UseRecommendedPoints() : PlacementPatternDropdown.Text = "Circle" ? GenerateCirclePoints() : PlacementPatternDropdown.Text = "Grid" ? GenerateGridPoints() : PlacementPatternDropdown.Text = "Spiral" ? GenerateSpiralPoints() : PlacementPatternDropdown.Text = "Up and Down" ? GenerateUpandDownPoints() : GenerateRandomPoints()
     
     ; Go through each slot
     for slotNum in [1, 2, 3, 4, 5, 6] {
@@ -70,7 +73,6 @@ PlacingUnits() {
                         AddToLog("Placed Unit " slotNum " (" placedCounts[slotNum] "/" placements ")")
                         CheckAbility()
                         FixClick(560, 560) ; Move Click
-                        break
                     }
                     
                     if CheckForXp()
@@ -1125,6 +1127,47 @@ UseRecommendedPoints() {
     return GenerateRandomPoints()
 }
 
+Generate3x3GridPoints() {
+    points := []
+    gridSize := 20  ; Space between points
+    gridSizeHalf := gridSize // 2
+    
+    ; Center point coordinates
+    centerX := GetWindowCenter(rblxID).x - 30
+    centerY := GetWindowCenter(rblxID).y - 30
+    
+    ; Define movement directions: right, down, left, up
+    directions := [[1, 0], [0, 1], [-1, 0], [0, -1]]
+    
+    ; Spiral logic for a 3x3 grid
+    x := centerX
+    y := centerY
+    step := 1  ; Number of steps in the current direction
+    dirIndex := 0  ; Current direction index
+    moves := 0  ; Move count to switch direction
+    
+    points.Push({x: x, y: y})  ; Start at center
+    
+    Loop 8 {  ; Fill remaining 8 spots (3x3 grid has 9 total)
+        dx := directions[dirIndex + 1][1] * gridSize
+        dy := directions[dirIndex + 1][2] * gridSize
+        x += dx
+        y += dy
+        points.Push({x: x, y: y})
+        
+        moves++
+        if (moves = step) {  ; Change direction
+            moves := 0
+            dirIndex := Mod(dirIndex + 1, 4)  ; Rotate through 4 directions
+            if (dirIndex = 0 || dirIndex = 2) {
+                step++  ; Increase step size after every two direction changes
+            }
+        }
+    }
+    
+    return points
+}
+
 ; raid coordinates
 GenerateMarineFortPoints() {
     points := []
@@ -1177,9 +1220,10 @@ GenerateCentralCityPoints() {
 
 GenerateCentralCityPoints2() {
     points := []
-    points.Push({ x: Round(258), y: Round(312) })
+    points.Push({ x: Round(258), y: Round(312) }) ; Hill
     points.Push({ x: Round(167), y: Round(287) })
     points.Push({ x: Round(167), y: Round(242) })
+    points.Push({ x: Round(147), y: Round(242) })
     
     return points
 }

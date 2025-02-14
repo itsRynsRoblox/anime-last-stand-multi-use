@@ -205,7 +205,7 @@ OpenGuide(*) {
     GuideGUI.Add("Text", "x0 w800 cWhite +Center", "2 - Make sure you have enabled unit selection to the right")
     GuideGUI.Add("Picture", "x100 w511   cWhite +Center", "Images\als_settings.png")
     GuideGUI.Add("Text", "x0 w800 cWhite +Center", "3 - Start the macro after you have started your mode")
-    GuideGUI.Add("Text", "x0 w800 cWhite +Center", "4 - Best For Map currently only covers Raids")
+    GuideGUI.Add("Text", "x0 w800 cWhite +Center", "4 - Map Specific placement currently only covers Raids")
 
     GuideGUI.Show("w800")
 }
@@ -227,7 +227,7 @@ global AutoAbilityBox := aaMainUI.Add("CheckBox", "x900 y410 cffffff Checked", "
 global ReturnLobbyBox := aaMainUI.Add("Checkbox", "x1143 y410 cffffff Checked", "Return To Lobby")
 ;global ChallengeBox := aaMainUI.Add("CheckBox", "x1143 y410 cffffff", "Auto Challenge")
 global PriorityUpgrade := aaMainUI.Add("CheckBox", "x1005 y410 cffffff", "Priority Upgrade")
-global PlacementPatternDropdown := aaMainUI.Add("DropDownList", "x1250 y662 w100 h180 Choose2 +Center", ["Random", "Grid", "Circle", "Spiral", "Up and Down", "Best For Map"])
+global PlacementPatternDropdown := aaMainUI.Add("DropDownList", "x1250 y662 w100 h180 Choose2 +Center", ["Circle", "Grid", "3x3 Grid", "Map Specific", "Spiral", "Up and Down", "Random", ])
 PlacementPatternText := aaMainUI.Add("Text", "x1250 y642 w105 h20", "Placement Type")
 PlaceSpeedText := aaMainUI.Add("Text", "x1123 y642 w115 h20", "Placement Speed")
 global PlaceSpeed := aaMainUI.Add("DropDownList", "x1130 y662 w100 h180 Choose1 +Center", ["2.25 sec", "2 sec", "2.5 sec", "2.75 sec", "3 sec"])
