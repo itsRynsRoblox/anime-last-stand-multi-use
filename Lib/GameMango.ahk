@@ -379,29 +379,45 @@ MonitorStage() {
     
     Loop {
         Sleep(1000)
+
+        ; Click through drops until results screen appears
+        if !CheckForXp() {
+            ClickThroughDrops()
+            continue
+        }
+
         ; Check for XP screen
-        if CheckForXp() {
-            AddToLog("Checking win/loss status")
+        AddToLog("Checking win/loss status")
             
-            ; Calculate stage end time here, before checking win/loss
-            stageEndTime := A_TickCount
-            stageLength := FormatStageTime(stageEndTime - stageStartTime)
+        ; Calculate stage end time here, before checking win/loss
+        stageEndTime := A_TickCount
+        stageLength := FormatStageTime(stageEndTime - stageStartTime)
             
-            ; Check for Victory or Defeat
-            if (ok := FindText(&X, &Y, 405-150000, 268-150000, 405+150000, 268+150000, 0, 0, Victory)) {
-                AddToLog("Victory detected - Stage Length: " stageLength)
-                Wins += 1
-                SendWebhookWithTime(true, stageLength)
-                return MonitorEndScreen()  ; Original behavior for other modes
-            }
-            else if (ok := FindText(&X, &Y, 403-150000, 269-150000, 403+150000, 269+150000, 0, 0, Defeat)) {
-                AddToLog("Defeat detected - Stage Length: " stageLength)
-                loss += 1
-                SendWebhookWithTime(false, stageLength) 
-                return MonitorEndScreen()  ; Original behavior for other modes
-            }
+        ; Check for Victory or Defeat
+        if (ok := FindText(&X, &Y, 405-150000, 268-150000, 405+150000, 268+150000, 0, 0, Victory)) {
+            AddToLog("Victory detected - Stage Length: " stageLength)
+            Wins += 1
+            SendWebhookWithTime(true, stageLength)
+            return MonitorEndScreen()  ; Original behavior for other modes
+        }
+        else if (ok := FindText(&X, &Y, 403-150000, 269-150000, 403+150000, 269+150000, 0, 0, Defeat)) {
+            AddToLog("Defeat detected - Stage Length: " stageLength)
+            loss += 1
+            SendWebhookWithTime(false, stageLength) 
+            return MonitorEndScreen()  ; Original behavior for other modes
         }
         Reconnect()
+    }
+}
+
+ClickThroughDrops() {
+    AddToLog("Clicking through item drops...")
+    Loop 10 {
+        FixClick(400, 495)
+        Sleep(500)
+        if CheckForXp() {
+            return
+        }
     }
 }
 
