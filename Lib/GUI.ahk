@@ -30,6 +30,15 @@ global currentTime := GetCurrentTime()
 global challengeStartTime := A_TickCount
 global inChallengeMode := false
 global firstStartup := true
+;Custom Search Area
+global waitingForClick := false
+global savedX := 0, savedY := 0
+global savedCoords := []  ; Initialize an empty array to hold the coordinates
+;Hotkeys
+global F1Key := "F1"
+global F2Key := "F2"
+global F3Key := "F3"
+global F4Key := "F4"
 ;Gui creation
 global uiBorders := []
 global uiBackgrounds := []
@@ -136,6 +145,17 @@ ShowSettingsGUI(*) {
     global DiscordUserIDBox := SettingsGUI.Add("Edit", "x320 y103 w260 h20 c" uiTheme[6])  ; Store Discord ID
     global SendActivityLogsBox := SettingsGUI.Add("Checkbox", "x320 y135 c" uiTheme[1], "Send Process")  ; Enable Activity
 
+    ; HotKeys
+    SettingsGUI.Add("GroupBox", "x10 y90 w160 h160 c" uiTheme[1], "Keybinds")
+    SettingsGUI.Add("Text", "x20 y110 c" uiTheme[1], "Position Roblox:")
+    global F1Box := SettingsGUI.Add("Edit", "x125 y110 w30 h20 c" uiTheme[6], F1Key)
+    SettingsGUI.Add("Text", "x20 y140 c" uiTheme[1], "Start Macro:")
+    global F2Box := SettingsGUI.Add("Edit", "x100 y140 w30 h20 c" uiTheme[6], F2Key)
+    SettingsGUI.Add("Text", "x20 y170 c" uiTheme[1], "Stop Macro:")
+    global F3Box := SettingsGUI.Add("Edit", "x100 y170 w30 h20 c" uiTheme[6], F3Key)
+    SettingsGUI.Add("Text", "x20 y200 c" uiTheme[1], "Pause Macro:")
+    global F4Box := SettingsGUI.Add("Edit", "x110 y200 w30 h20 c" uiTheme[6], F4Key)
+
     ; Banner section
     SettingsGUI.Add("GroupBox", "x310 y175 w280 h100 c" uiTheme[1], "Banner Checker")  ; Box
     SettingsGUI.Add("Text", "x320 y195 c" uiTheme[1], "Banner Unit Name (Adding later)")  ; Banner Text
@@ -160,6 +180,9 @@ ShowSettingsGUI(*) {
     ; Save buttons
     webhookSaveBtn := SettingsGUI.Add("Button", "x460 y135 w120 h25", "Save Webhook")
     webhookSaveBtn.OnEvent("Click", (*) => SaveWebhookSettings())
+
+    keybindSaveBtn := SettingsGUI.Add("Button", "x20 y220 w50 h20", "Save")
+    keybindSaveBtn.OnEvent("Click", SaveKeybindSettings)
 
     bannerSaveBtn := SettingsGUI.Add("Button", "x460 y240 w120 h25", "Save Banner")
     bannerSaveBtn.OnEvent("Click", (*) => )
@@ -218,6 +241,7 @@ guideBtn.OnEvent("Click", OpenGuide)
 
 placementSaveBtn := aaMainUI.Add("Button", "x807 y471 w80 h20", "Save")
 placementSaveBtn.OnEvent("Click", SaveSettings)
+
 aaMainUI.SetFont("s9")
 global NextLevelBox := aaMainUI.Add("Checkbox", "x900 y451 cffffff", "Next Level")
 ;global SkipLobby2 := aaMainUI.Add("Checkbox", "x1035 y385 cffffff Checked", "Skip Lobby")
@@ -228,7 +252,7 @@ global ReturnLobbyBox := aaMainUI.Add("Checkbox", "x1143 y476 cffffff Checked", 
 ;global ChallengeBox := aaMainUI.Add("CheckBox", "x1143 y410 cffffff", "Auto Challenge")
 global PriorityUpgrade := aaMainUI.Add("CheckBox", "x1005 y476 cffffff", "Priority Upgrade")
 PlacementPatternText := aaMainUI.Add("Text", "x1032 y390 w115 h20", "Placement Type")
-global PlacementPatternDropdown := aaMainUI.Add("DropDownList", "x1035 y410 w100 h180 Choose2 +Center", ["Circle", "Grid", "3x3 Grid", "Map Specific", "Spiral", "Up and Down", "Random", ])
+global PlacementPatternDropdown := aaMainUI.Add("DropDownList", "x1035 y410 w100 h180 Choose2 +Center", ["Circle", "Grid", "3x3 Grid", "Map Specific", "Spiral", "Up and Down", "Random", "Custom"])
 PlaceSpeedText := aaMainUI.Add("Text", "x1193 y390 w115 h20", "Placement Speed")
 global PlaceSpeed := aaMainUI.Add("DropDownList", "x1205 y410 w100 h180 Choose1 +Center", ["2.25 sec", "2 sec", "2.5 sec", "2.75 sec", "3 sec"])
 
@@ -241,13 +265,21 @@ Hotkeytext3 := aaMainUI.Add("Text", "x807 y65 w200 h30", "F3: Stop mango")
 GithubButton := aaMainUI.Add("Picture", "x30 y640 w40 h40 +BackgroundTrans cffffff", GithubImage)
 DiscordButton := aaMainUI.Add("Picture", "x112 y645 w60 h34 +BackgroundTrans cffffff", DiscordImage)
 
+customPlacementText := aaMainUI.Add("Text", "x200 y642 w120 h20 +Left", "Set Placements")
+customPlacementButton := aaMainUI.Add("Button", "x210 y662 w80 h20", "Set")
+customPlacementButton.OnEvent("Click", (*) => StartClickCapture())
+
+customPlacementClearText := aaMainUI.Add("Text", "x345 y642 w120 h20 +Left", "Clear Placements")
+customPlacementClearButton := aaMainUI.Add("Button", "x360 y662 w80 h20", "Clear")
+customPlacementClearButton.OnEvent("Click", (*) => DeleteSavedCoords())
+
 GithubButton.OnEvent("Click", (*) => OpenGithub())
 DiscordButton.OnEvent("Click", (*) => OpenDiscord())
 ;--------------SETTINGS;--------------SETTINGS;--------------SETTINGS;--------------SETTINGS;--------------SETTINGS;--------------SETTINGS;--------------SETTINGS
 ;--------------MODE SELECT;--------------MODE SELECT;--------------MODE SELECT;--------------MODE SELECT;--------------MODE SELECT;--------------MODE SELECT
 global modeSelectionGroup := aaMainUI.Add("GroupBox", "x808 y38 w500 h45 Background" uiTheme[2], "Mode Select")
 aaMainUI.SetFont("s10 c" uiTheme[6])
-global ModeDropdown := aaMainUI.Add("DropDownList", "x818 y53 w140 h180 Choose0 +Center", ["Elemental Cavern", "Story", "Legend", "Raid"])
+global ModeDropdown := aaMainUI.Add("DropDownList", "x818 y53 w140 h180 Choose0 +Center", ["Raid", "Custom"])
 global StoryDropdown := aaMainUI.Add("DropDownList", "x968 y53 w150 h180 Choose0 +Center", ["Story #1"])
 ;global StoryActDropdown := aaMainUI.Add("DropDownList", "x1128 y53 w80 h180 Choose0 +Center", ["Act 1", "Act 2", "Act 3", "Act 4", "Act 5", "Act 6", "Infinity"])
 global LegendDropDown := aaMainUI.Add("DropDownlist", "x968 y53 w150 h180 Choose0 +Center", ["Legend Stage #1"] )
@@ -486,3 +518,45 @@ checkSizeTimer() {
     }
 }
 
+StartClickCapture() {
+    global waitingForClick
+    waitingForClick := true
+    SetTimer UpdateTooltip, 50  ; Update tooltip position every 50ms
+}
+
+UpdateTooltip() {
+    global waitingForClick
+    if waitingForClick {
+        MouseGetPos &x, &y
+        ToolTip "Press shift anywhere to save coordinates...", x + 10, y + 10  ; Offset tooltip slightly
+    } else {
+        ToolTip()  ; Hide tooltip when not waiting
+        SetTimer UpdateTooltip, 0  ; Stop the timer
+    }
+}
+
+~LShift:: 
+{
+    global waitingForClick, savedCoords  
+    if waitingForClick {
+        MouseGetPos &x, &y
+        waitingForClick := false
+        if !IsSet(savedCoords)  ; Ensure savedCoords is initialized
+            savedCoords := []
+        savedCoords.Push({x: x, y: y})  ; Store as an object
+        ToolTip "Coordinates added: " x ", " y, x + 10, y + 10  ; Show tooltip at mouse position
+        AddToLog("📌 Saved Coordinates → X: " x ", Y: " y)
+        SetTimer () => ToolTip(), -2000  ; Hide tooltip after 2 sec
+    }
+}
+
+DeleteSavedCoords() {
+    global savedCoords
+
+    if (IsSet(savedCoords) && savedCoords.Length > 0) {
+        savedCoords := []  ; Clear the saved coordinates list
+        AddToLog("🗑️ All saved coordinates have been cleared.")
+    } else {
+        AddToLog("⚠️ No saved coordinates to clear.")
+    }
+}

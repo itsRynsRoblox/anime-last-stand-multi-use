@@ -1193,3 +1193,745 @@ Configuration settings saved successfully 00:06
   Start Time: [18h.30m.58s]
 Configuration settings loaded successfully 00:00
 Configuration settings saved successfully 00:02
+
+==Ryn's Anime Last Stand Macro v1.1==
+  Start Time: [15h.41m.09s]
+Configuration settings loaded successfully 00:00
+Incorrect Angle. Turning again. 00:02
+Incorrect Angle. Turning again. 00:03
+Incorrect Angle. Turning again. 00:04
+Incorrect Angle. Turning again. 00:05
+Incorrect Angle. Turning again. 00:06
+Incorrect Angle. Turning again. 00:07
+Incorrect Angle. Turning again. 00:08
+Incorrect Angle. Turning again. 00:09
+Incorrect Angle. Turning again. 00:10
+
+==Ryn's Anime Last Stand Macro v1.1==
+  Start Time: [15h.41m.21s]
+Configuration settings loaded successfully 00:00
+
+==Ryn's Anime Last Stand Macro v1.1==
+  Start Time: [15h.41m.44s]
+Configuration settings loaded successfully 00:00
+Incorrect Angle. Turning again. 00:05
+Incorrect Angle. Turning again. 00:06
+Incorrect Angle. Turning again. 00:07
+
+==Ryn's Anime Last Stand Macro v1.1==
+  Start Time: [15h.41m.54s]
+Configuration settings loaded successfully 00:00
+
+==Ryn's Anime Last Stand Macro v1.1==
+  Start Time: [15h.42m.16s]
+Configuration settings loaded successfully 00:00
+Incorrect Angle. Turning again. 00:05
+Incorrect Angle. Turning again. 00:06
+Incorrect Angle. Turning again. 00:07
+Incorrect Angle. Turning again. 00:08
+Incorrect Angle. Turning again. 00:09
+Incorrect Angle. Turning again. 00:10
+Incorrect Angle. Turning again. 00:11
+
+==Ryn's Anime Last Stand Macro v1.1==
+  Start Time: [15h.42m.30s]
+Configuration settings loaded successfully 00:00
+
+==Ryn's Anime Last Stand Macro v1.1==
+  Start Time: [15h.42m.31s]
+Configuration settings loaded successfully 00:00
+
+==Ryn's Anime Last Stand Macro v1.1==
+  Start Time: [15h.42m.33s]
+Configuration settings loaded successfully 00:00
+
+==Ryn's Anime Last Stand Macro v1.1==
+  Start Time: [15h.43m.21s]
+Configuration settings loaded successfully 00:00
+Incorrect Angle. Turning again. 00:15
+
+==Ryn's Anime Last Stand Macro v1.1==
+  Start Time: [15h.43m.39s]
+Configuration settings loaded successfully 00:00
+
+==Ryn's Anime Last Stand Macro v1.1==
+  Start Time: [15h.45m.12s]
+Configuration settings loaded successfully 00:00
+Correct Angle 00:06
+
+==Ryn's Anime Last Stand Macro v1.1==
+  Start Time: [15h.45m.24s]
+Configuration settings loaded successfully 00:00
+Incorrect Angle. Turning again. 00:42
+Correct Angle 00:45
+
+==Ryn's Anime Last Stand Macro v1.1==
+  Start Time: [16h.54m.03s]
+Configuration settings loaded successfully 00:00
+Found Roblox window 00:20
+
+==Ryn's Anime Last Stand Macro v1.1==
+  Start Time: [20h.04m.31s]
+Configuration settings loaded successfully 00:00
+
+==Ryn's Anime Last Stand Macro v1.1==
+  Start Time: [20h.04m.41s]
+Configuration settings loaded successfully 00:00
+Configuration settings saved successfully 00:01
+
+==Ryn's Anime Last Stand Macro v1.1==
+  Start Time: [20h.04m.46s]
+Configuration settings loaded successfully 00:00
+
+==Ryn's Anime Last Stand Macro v1.1==
+  Start Time: [20h.05m.15s]
+Configuration settings loaded successfully 00:00
+
+==Ryn's Anime Last Stand Macro v1.1==
+  Start Time: [20h.06m.11s]
+Configuration settings loaded successfully 00:00
+Configuration settings saved successfully 00:11
+
+==Ryn's Anime Last Stand Macro v1.1==
+  Start Time: [20h.08m.12s]
+Configuration settings loaded successfully 00:00
+Selected Story #1 00:04
+Don't forget to enable Click to Move! (I forget sometimes too!) 00:04
+
+==Ryn's Anime Last Stand Macro v1.1==
+  Start Time: [20h.08m.46s]
+Configuration settings loaded successfully 00:00
+
+==Ryn's Anime Last Stand Macro v1.1==
+  Start Time: [20h.11m.08s]
+Configuration settings loaded successfully 00:00
+Saving Keybind Configuration 00:03
+Please select a gamemode before starting the macro! 00:07
+Waiting for Roblox window... 00:08
+
+==Ryn's Anime Last Stand Macro v1.1==
+  Start Time: [20h.11m.16s]
+Configuration settings loaded successfully 00:00
+
+==Ryn's Anime Last Stand Macro v1.1==
+  Start Time: [20h.11m.54s]
+Configuration settings loaded successfully 00:00
+
+==Ryn's Anime Last Stand Macro v1.1==
+  Start Time: [20h.13m.42s]
+Configuration settings loaded successfully 00:00
+Loaded Keybinds 00:01
+
+==Ryn's Anime Last Stand Macro v1.1==
+  Start Time: [20h.13m.54s]
+Configuration settings loaded successfully 00:00
+
+==Ryn's Anime Last Stand Macro v1.1==
+  Start Time: [20h.14m.56s]
+Configuration settings loaded successfully 00:00
+Loaded Keybinds 00:01
+Selected Wanderniech 00:49
+Don't forget to enable Click to Move! (I forget sometimes too!) 00:49
+Determining Movement Necessity on Map... 01:00
+Map detected: Wanderniech 01:01
+Successfully Loaded In 01:08
+Executing Movement for: Wanderniech 01:14
+Game started 01:15
+Placing Unit 2 (0/1) 01:15
+Unit Placed Successfully 01:18
+Placed Unit 2 (1/1) 01:19
+Placing Unit 3 (0/1) 01:26
+
+==Ryn's Anime Last Stand Macro v1.1==
+  Start Time: [20h.16m.44s]
+Configuration settings loaded successfully 00:00
+Loaded Keybinds 00:01
+
+==Ryn's Anime Last Stand Macro v1.1==
+  Start Time: [9h.33m.23s]
+Configuration settings loaded successfully 00:00
+
+==Ryn's Anime Last Stand Macro v1.1==
+  Start Time: [9h.34m.02s]
+Configuration settings loaded successfully 00:00
+
+==Ryn's Anime Last Stand Macro v1.1==
+  Start Time: [9h.36m.06s]
+Configuration settings loaded successfully 00:00
+Loaded Keybinds 00:01
+Selected Wanderniech 00:42
+Don't forget to enable Click to Move! (I forget sometimes too!) 00:42
+Determining Movement Necessity on Map... 00:46
+Map detected: Wanderniech 00:46
+Successfully Loaded In 00:47
+Executing Movement for: Wanderniech 00:53
+Game started 00:54
+Placing Unit 2 (0/1) 00:54
+
+==Ryn's Anime Last Stand Macro v1.1==
+  Start Time: [9h.37m.08s]
+Configuration settings loaded successfully 00:00
+Loaded Keybinds 00:01
+
+==Ryn's Anime Last Stand Macro v1.1==
+  Start Time: [9h.40m.48s]
+Configuration settings loaded successfully 00:00
+Loaded Keybinds 00:01
+Selected Wanderniech 00:12
+Don't forget to enable Click to Move! (I forget sometimes too!) 00:12
+Determining Movement Necessity on Map... 00:14
+Map detected: Wanderniech 00:14
+Successfully Loaded In 00:15
+Executing Movement for: Wanderniech 00:22
+Game started 00:23
+Placing Unit 2 (0/1) 00:23
+
+==Ryn's Anime Last Stand Macro v1.1==
+  Start Time: [9h.41m.30s]
+Configuration settings loaded successfully 00:00
+Loaded Keybinds 00:01
+Selected Wanderniech 00:16
+Don't forget to enable Click to Move! (I forget sometimes too!) 00:16
+Determining Movement Necessity on Map... 00:18
+Map detected: Wanderniech 00:18
+Successfully Loaded In 00:19
+Executing Movement for: Wanderniech 00:25
+Game started 00:26
+Placing Unit 2 (0/1) 00:26
+Unit Placed Successfully 00:29
+Placed Unit 2 (1/1) 00:30
+
+==Ryn's Anime Last Stand Macro v1.1==
+  Start Time: [9h.42m.03s]
+Configuration settings loaded successfully 00:00
+Loaded Keybinds 00:01
+Selected Wanderniech 00:14
+Don't forget to enable Click to Move! (I forget sometimes too!) 00:14
+Determining Movement Necessity on Map... 00:16
+Map detected: Wanderniech 00:16
+Successfully Loaded In 00:17
+Executing Movement for: Wanderniech 00:24
+Game started 00:25
+Placing Unit 2 (0/1) 00:25
+Unit Placed Successfully 00:28
+Placed Unit 2 (1/1) 00:29
+Placing Unit 3 (0/1) 00:36
+
+==Ryn's Anime Last Stand Macro v1.1==
+  Start Time: [9h.42m.41s]
+Configuration settings loaded successfully 00:00
+Loaded Keybinds 00:01
+Selected Wanderniech 00:10
+Don't forget to enable Click to Move! (I forget sometimes too!) 00:10
+Determining Movement Necessity on Map... 00:12
+Map detected: Wanderniech 00:12
+Successfully Loaded In 00:13
+Executing Movement for: Wanderniech 00:19
+Game started 00:21
+
+==Ryn's Anime Last Stand Macro v1.1==
+  Start Time: [9h.43m.11s]
+Configuration settings loaded successfully 00:00
+Loaded Keybinds 00:01
+
+==Ryn's Anime Last Stand Macro v1.1==
+  Start Time: [9h.44m.49s]
+Configuration settings loaded successfully 00:00
+Loaded Keybinds 00:01
+Selected Wanderniech 00:15
+Don't forget to enable Click to Move! (I forget sometimes too!) 00:15
+Determining Movement Necessity on Map... 00:18
+Map detected: Wanderniech 00:18
+Successfully Loaded In 00:19
+Executing Movement for: Wanderniech 00:25
+Game started 00:26
+Placing Unit 2 (0/1) 00:26
+
+==Ryn's Anime Last Stand Macro v1.1==
+  Start Time: [9h.45m.22s]
+Configuration settings loaded successfully 00:00
+Loaded Keybinds 00:01
+
+==Ryn's Anime Last Stand Macro v1.1==
+  Start Time: [9h.45m.35s]
+Configuration settings loaded successfully 00:00
+Loaded Keybinds 00:01
+
+==Ryn's Anime Last Stand Macro v1.1==
+  Start Time: [9h.47m.00s]
+Configuration settings loaded successfully 00:00
+Loaded Keybinds 00:01
+
+==Ryn's Anime Last Stand Macro v1.1==
+  Start Time: [9h.51m.42s]
+Configuration settings loaded successfully 00:00
+Loaded Keybinds 00:01
+Selected Custom mode 00:17
+Don't forget to enable Click to Move! (I forget sometimes too!) 00:17
+
+==Ryn's Anime Last Stand Macro v1.1==
+  Start Time: [9h.52m.29s]
+Configuration settings loaded successfully 00:00
+Loaded Keybinds 00:01
+
+==Ryn's Anime Last Stand Macro v1.1==
+  Start Time: [9h.53m.30s]
+Configuration settings loaded successfully 00:00
+Loaded Keybinds 00:01
+Selected Custom mode 00:17
+Don't forget to enable Click to Move! (I forget sometimes too!) 00:17
+Successfully Loaded In 00:20
+Placing Unit 2 (0/1) 00:21
+
+==Ryn's Anime Last Stand Macro v1.1==
+  Start Time: [9h.54m.19s]
+Configuration settings loaded successfully 00:00
+Loaded Keybinds 00:01
+Configuration settings saved successfully 00:04
+
+==Ryn's Anime Last Stand Macro v1.1==
+  Start Time: [9h.56m.17s]
+Configuration settings loaded successfully 00:00
+Loaded Keybinds 00:01
+Selected Custom mode 00:08
+Don't forget to enable Click to Move! (I forget sometimes too!) 00:08
+Successfully Loaded In 00:26
+Placing Unit 3 (0/1) 00:27
+
+==Ryn's Anime Last Stand Macro v1.1==
+  Start Time: [9h.57m.32s]
+Configuration settings loaded successfully 00:00
+Loaded Keybinds 00:01
+Configuration settings saved successfully 00:08
+Please select a gamemode before starting the macro! 00:11
+Selected Custom mode 00:15
+Don't forget to enable Click to Move! (I forget sometimes too!) 00:15
+Successfully Loaded In 00:17
+Placing Unit 4 (0/1) 00:19
+
+==Ryn's Anime Last Stand Macro v1.1==
+  Start Time: [9h.57m.57s]
+Configuration settings loaded successfully 00:00
+Loaded Keybinds 00:01
+Selected Custom mode 00:02
+Don't forget to enable Click to Move! (I forget sometimes too!) 00:02
+Successfully Loaded In 00:07
+Placing Unit 4 (0/1) 00:08
+Unit Placed Successfully 00:11
+Placed Unit 4 (1/1) 00:12
+All units placed to requested amounts 00:13
+Initiating Unit Upgrades... 00:13
+
+==Ryn's Anime Last Stand Macro v1.1==
+  Start Time: [9h.58m.15s]
+Configuration settings loaded successfully 00:00
+Loaded Keybinds 00:01
+
+==Ryn's Anime Last Stand Macro v1.1==
+  Start Time: [9h.59m.28s]
+Configuration settings loaded successfully 00:00
+Loaded Keybinds 00:01
+Coordinates X : 524, Y: 294 added 00:02
+Coordinates X : 533, Y: 231 added 00:08
+
+==Ryn's Anime Last Stand Macro v1.1==
+  Start Time: [10h.00m.36s]
+Configuration settings loaded successfully 00:00
+Loaded Keybinds 00:01
+Coordinates X : 563, Y: 253 added 00:05
+Coordinates X : 431, Y: 250 added 00:10
+
+==Ryn's Anime Last Stand Macro v1.1==
+  Start Time: [10h.02m.11s]
+Configuration settings loaded successfully 00:00
+Loaded Keybinds 00:01
+?? Saved Coordinates ? X: 522, Y: 297 00:05
+?? Saved Coordinates ? X: 489, Y: 311 00:12
+
+==Ryn's Anime Last Stand Macro v1.1==
+  Start Time: [10h.04m.00s]
+Configuration settings loaded successfully 00:00
+Loaded Keybinds 00:01
+
+==Ryn's Anime Last Stand Macro v1.1==
+  Start Time: [10h.04m.18s]
+Configuration settings loaded successfully 00:00
+Loaded Keybinds 00:01
+
+==Ryn's Anime Last Stand Macro v1.1==
+  Start Time: [10h.04m.37s]
+Configuration settings loaded successfully 00:00
+Loaded Keybinds 00:01
+
+==Ryn's Anime Last Stand Macro v1.1==
+  Start Time: [10h.05m.02s]
+Configuration settings loaded successfully 00:00
+Loaded Keybinds 00:01
+
+==Ryn's Anime Last Stand Macro v1.1==
+  Start Time: [10h.05m.40s]
+Configuration settings loaded successfully 00:00
+Loaded Keybinds 00:01
+
+==Ryn's Anime Last Stand Macro v1.1==
+  Start Time: [10h.06m.03s]
+Configuration settings loaded successfully 00:00
+Loaded Keybinds 00:01
+
+==Ryn's Anime Last Stand Macro v1.1==
+  Start Time: [10h.06m.30s]
+Configuration settings loaded successfully 00:00
+Loaded Keybinds 00:01
+
+==Ryn's Anime Last Stand Macro v1.1==
+  Start Time: [10h.06m.49s]
+Configuration settings loaded successfully 00:00
+Loaded Keybinds 00:01
+
+==Ryn's Anime Last Stand Macro v1.1==
+  Start Time: [10h.07m.18s]
+Configuration settings loaded successfully 00:00
+Loaded Keybinds 00:01
+
+==Ryn's Anime Last Stand Macro v1.1==
+  Start Time: [10h.07m.38s]
+Configuration settings loaded successfully 00:00
+Loaded Keybinds 00:01
+
+==Ryn's Anime Last Stand Macro v1.1==
+  Start Time: [10h.08m.00s]
+Configuration settings loaded successfully 00:00
+Loaded Keybinds 00:01
+
+==Ryn's Anime Last Stand Macro v1.1==
+  Start Time: [10h.10m.04s]
+Configuration settings loaded successfully 00:00
+Loaded Keybinds 00:01
+Selected Custom 00:11
+Don't forget to enable Click to Move! (I forget sometimes too!) 00:11
+
+==Ryn's Anime Last Stand Macro v1.1==
+  Start Time: [10h.10m.22s]
+Configuration settings loaded successfully 00:00
+Loaded Keybinds 00:01
+
+==Ryn's Anime Last Stand Macro v1.1==
+  Start Time: [10h.10m.35s]
+Configuration settings loaded successfully 00:00
+Loaded Keybinds 00:01
+Selected Custom 00:01
+Don't forget to enable Click to Move! (I forget sometimes too!) 00:01
+
+==Ryn's Anime Last Stand Macro v1.1==
+  Start Time: [10h.10m.40s]
+Configuration settings loaded successfully 00:00
+
+==Ryn's Anime Last Stand Macro v1.1==
+  Start Time: [10h.11m.43s]
+Configuration settings loaded successfully 00:00
+Loaded Keybinds 00:01
+? No saved coordinates! Please capture some points first. 00:02
+?? Saved Coordinates ? X: 487, Y: 284 00:08
+Selected Custom 00:09
+Don't forget to enable Click to Move! (I forget sometimes too!) 00:09
+Successfully Loaded In 00:13
+Placing Unit 4 (0/1) 00:14
+Unit Placed Successfully 00:17
+Placed Unit 4 (1/1) 00:17
+All units placed to requested amounts 00:18
+Initiating Unit Upgrades... 00:18
+
+==Ryn's Anime Last Stand Macro v1.1==
+  Start Time: [10h.12m.17s]
+Configuration settings loaded successfully 00:00
+Loaded Keybinds 00:01
+
+==Ryn's Anime Last Stand Macro v1.1==
+  Start Time: [10h.13m.19s]
+Configuration settings loaded successfully 00:00
+Loaded Keybinds 00:01
+? No saved coordinates! Please capture some points first. 00:06
+?? Saved Coordinates ? X: 495, Y: 289 00:08
+Selected Custom 00:09
+Don't forget to enable Click to Move! (I forget sometimes too!) 00:09
+Successfully Loaded In 00:13
+Placing Unit 4 (0/1) 00:14
+
+==Ryn's Anime Last Stand Macro v1.1==
+  Start Time: [10h.13m.38s]
+Configuration settings loaded successfully 00:00
+Loaded Keybinds 00:01
+
+==Ryn's Anime Last Stand Macro v1.1==
+  Start Time: [10h.17m.08s]
+? Settings loaded successfully, 0 coordinates restored! 00:00
+Loaded Keybinds 00:01
+?? Saved Coordinates ? X: 520, Y: 297 00:07
+?? Saved Coordinates ? X: 322, Y: 293 00:09
+? Configuration settings & coordinates saved successfully! 00:09
+
+==Ryn's Anime Last Stand Macro v1.1==
+  Start Time: [10h.17m.23s]
+? Settings loaded successfully, 2 coordinates restored! 00:00
+Loaded Keybinds 00:01
+Selected Custom 00:11
+Don't forget to enable Click to Move! (I forget sometimes too!) 00:11
+Successfully Loaded In 00:14
+Placing Unit 4 (0/1) 00:15
+Unit Placed Successfully 00:18
+Placed Unit 4 (1/1) 00:19
+All units placed to requested amounts 00:23
+Initiating Unit Upgrades... 00:23
+
+==Ryn's Anime Last Stand Macro v1.1==
+  Start Time: [10h.17m.57s]
+? Settings loaded successfully, 2 coordinates restored! 00:00
+Loaded Keybinds 00:01
+
+==Ryn's Anime Last Stand Macro v1.1==
+  Start Time: [10h.20m.14s]
+? Settings loaded successfully, 2 coordinates restored! 00:00
+Loaded Keybinds 00:01
+??? All saved coordinates have been cleared. 00:01
+?? No saved coordinates to clear. 00:02
+
+==Ryn's Anime Last Stand Macro v1.1==
+  Start Time: [10h.21m.23s]
+? Settings loaded successfully, 2 coordinates restored! 00:00
+Loaded Keybinds 00:01
+Selected Custom 00:09
+Don't forget to enable Click to Move! (I forget sometimes too!) 00:09
+Successfully Loaded In 00:13
+No units enabled - skipping to monitoring 00:14
+Clicking through item drops... 00:15
+Clicking through item drops... 00:24
+Clicking through item drops... 00:33
+Clicking through item drops... 00:42
+Clicking through item drops... 00:51
+Clicking through item drops... 01:00
+Clicking through item drops... 01:08
+Clicking through item drops... 01:17
+Clicking through item drops... 01:26
+Clicking through item drops... 01:35
+Clicking through item drops... 01:44
+Clicking through item drops... 01:53
+Clicking through item drops... 02:02
+Clicking through item drops... 02:10
+Checking win/loss status 02:14
+Defeat detected - Stage Length: 00:02:14 02:15
+No webhook configured - skipping webhook 02:15
+Found Lobby Text - Current Mode:  02:18
+Handling end case 02:20
+Replaying 02:20
+Determining Movement Necessity on Map... 02:21
+No Map Found or Movement Unnecessary 02:21
+Successfully Loaded In 02:22
+
+==Ryn's Anime Last Stand Macro v1.1==
+  Start Time: [10h.23m.51s]
+? Settings loaded successfully, 2 coordinates restored! 00:00
+Loaded Keybinds 00:01
+
+==Ryn's Anime Last Stand Macro v1.1==
+  Start Time: [10h.25m.36s]
+? Settings loaded successfully, 2 coordinates restored! 00:00
+Loaded Keybinds 00:01
+? Configuration settings & coordinates saved successfully! 00:20
+
+==Ryn's Anime Last Stand Macro v1.1==
+  Start Time: [10h.27m.23s]
+? Settings loaded successfully, 2 coordinates restored! 00:00
+Loaded Keybinds 00:01
+Selected Custom 00:21
+Don't forget to enable Click to Move! (I forget sometimes too!) 00:21
+Successfully Loaded In 00:24
+No units enabled - skipping to monitoring 00:25
+Clicking through item drops... 00:27
+Clicking through item drops... 00:36
+Clicking through item drops... 00:44
+Clicking through item drops... 00:53
+Clicking through item drops... 01:02
+
+==Ryn's Anime Last Stand Macro v1.1==
+  Start Time: [10h.28m.30s]
+? Settings loaded successfully, 2 coordinates restored! 00:00
+Loaded Keybinds 00:01
+
+==Ryn's Anime Last Stand Macro v1.1==
+  Start Time: [11h.01m.07s]
+? Settings loaded successfully, 2 coordinates restored! 00:00
+Loaded Keybinds 00:01
+?? Saved Coordinates ? X: 517, Y: 318 00:18
+Selected Custom 00:23
+Don't forget to enable Click to Move! (I forget sometimes too!) 00:23
+Successfully Loaded In 00:26
+Placing Unit 6 (0/1) 00:27
+
+==Ryn's Anime Last Stand Macro v1.1==
+  Start Time: [11h.01m.40s]
+? Settings loaded successfully, 2 coordinates restored! 00:00
+Loaded Keybinds 00:01
+?? Saved Coordinates ? X: 512, Y: 328 00:05
+Selected Custom 00:06
+Don't forget to enable Click to Move! (I forget sometimes too!) 00:06
+??? All saved coordinates have been cleared. 00:09
+?? Saved Coordinates ? X: 514, Y: 331 00:11
+Successfully Loaded In 00:18
+Placing Unit 5 (0/1) 00:19
+Unit Placed Successfully 00:23
+Placed Unit 5 (1/1) 00:23
+All units placed to requested amounts 00:24
+Initiating Unit Upgrades... 00:24
+
+==Ryn's Anime Last Stand Macro v1.1==
+  Start Time: [11h.16m.57s]
+? Settings loaded successfully, 2 coordinates restored! 00:00
+Loaded Keybinds 00:01
+??? All saved coordinates have been cleared. 00:01
+? Configuration settings & coordinates saved successfully! 00:02
+
+==Ryn's Anime Last Stand Macro v1.1==
+  Start Time: [11h.17m.02s]
+? Settings loaded successfully, 0 coordinates restored! 00:00
+Loaded Keybinds 00:01
+
+==Ryn's Anime Last Stand Macro v1.1==
+  Start Time: [11h.18m.58s]
+? Settings loaded successfully, 0 coordinates restored! 00:00
+Loaded Keybinds 00:01
+? Configuration settings & coordinates saved successfully! 00:07
+?? Saved Coordinates ? X: 533, Y: 291 00:26
+Selected Custom 00:29
+Don't forget to enable Click to Move! (I forget sometimes too!) 00:29
+Successfully Loaded In 00:32
+Placing Unit 5 (0/1) 00:33
+Unit Placed Successfully 00:36
+Placed Unit 5 (1/1) 00:37
+All units placed to requested amounts 00:38
+Initiating Unit Upgrades... 00:38
+
+==Ryn's Anime Last Stand Macro v1.1==
+  Start Time: [11h.23m.47s]
+? Settings loaded successfully, 0 coordinates restored! 00:00
+Loaded Keybinds 00:01
+
+==Ryn's Anime Last Stand Macro v1.1==
+  Start Time: [11h.24m.36s]
+? Settings loaded successfully, 0 coordinates restored! 00:00
+
+==Ryn's Anime Last Stand Macro v1.1==
+  Start Time: [12h.25m.12s]
+? Settings loaded successfully, 0 coordinates restored! 00:00
+Loaded Keybinds 00:01
+?? Saved Coordinates ? X: 493, Y: 356 00:09
+Please select a gamemode before confirming 00:13
+Please select a gamemode before starting the macro! 00:14
+Selected Custom 00:22
+Don't forget to enable Click to Move! (I forget sometimes too!) 00:22
+Successfully Loaded In 00:25
+Placing Unit 5 (0/1) 00:26
+
+==Ryn's Anime Last Stand Macro v1.1==
+  Start Time: [12h.26m.03s]
+? Settings loaded successfully, 0 coordinates restored! 00:00
+Loaded Keybinds 00:01
+
+==Ryn's Anime Last Stand Macro v1.1==
+  Start Time: [12h.26m.22s]
+? Settings loaded successfully, 0 coordinates restored! 00:00
+Loaded Keybinds 00:01
+
+==Ryn's Anime Last Stand Macro v1.1==
+  Start Time: [12h.29m.01s]
+? Settings loaded successfully, 0 coordinates restored! 00:00
+Loaded Keybinds 00:01
+?? Saved Coordinates ? X: 532, Y: 307 00:21
+Selected Custom 00:30
+Don't forget to enable Click to Move! (I forget sometimes too!) 00:30
+Successfully Loaded In 00:34
+Placing Unit 5 (0/1) 00:35
+Unit Placed Successfully 00:42
+Placed Unit 5 (1/1) 00:42
+All units placed to requested amounts 00:43
+Initiating Unit Upgrades... 00:43
+Stage ended during upgrades, proceeding to results 04:19
+Clicking through item drops... 04:20
+Clicking through item drops... 04:23
+Clicking through item drops... 04:27
+Clicking through item drops... 04:30
+Clicking through item drops... 04:33
+Clicking through item drops... 04:36
+Clicking through item drops... 04:39
+Clicking through item drops... 04:43
+Clicking through item drops... 04:46
+Clicking through item drops... 04:49
+Clicking through item drops... 04:52
+
+==Ryn's Anime Last Stand Macro v1.1==
+  Start Time: [12h.33m.57s]
+? Settings loaded successfully, 0 coordinates restored! 00:00
+Loaded Keybinds 00:01
+
+==Ryn's Anime Last Stand Macro v1.1==
+  Start Time: [12h.37m.28s]
+? Settings loaded successfully, 0 coordinates restored! 00:00
+Loaded Keybinds 00:01
+? Configuration settings & coordinates saved successfully! 00:04
+?? Saved Coordinates ? X: 506, Y: 337 00:06
+Selected Custom 00:08
+Don't forget to enable Click to Move! (I forget sometimes too!) 00:08
+Successfully Loaded In 00:11
+Placing Unit 2 (0/1) 00:12
+Unit Placed Successfully 00:15
+Placed Unit 2 (1/1) 00:16
+All units placed to requested amounts 00:17
+Initiating Unit Upgrades... 00:17
+Stage ended during upgrades, proceeding to results 01:38
+Clicking through item drops... 01:39
+Clicking through item drops... 01:42
+Clicking through item drops... 01:45
+
+==Ryn's Anime Last Stand Macro v1.1==
+  Start Time: [12h.39m.16s]
+? Settings loaded successfully, 0 coordinates restored! 00:00
+Loaded Keybinds 00:01
+
+==Ryn's Anime Last Stand Macro v1.1==
+  Start Time: [12h.39m.28s]
+? Settings loaded successfully, 0 coordinates restored! 00:00
+Loaded Keybinds 00:01
+
+==Ryn's Anime Last Stand Macro v1.1==
+  Start Time: [12h.39m.39s]
+? Settings loaded successfully, 0 coordinates restored! 00:00
+Loaded Keybinds 00:01
+
+==Ryn's Anime Last Stand Macro v1.1==
+  Start Time: [12h.45m.08s]
+? Settings loaded successfully, 0 coordinates restored! 00:00
+Loaded Keybinds 00:01
+?? Saved Coordinates ? X: 517, Y: 334 00:07
+Selected Custom 00:10
+Don't forget to enable Click to Move! (I forget sometimes too!) 00:10
+Successfully Loaded In 00:14
+Placing Unit 2 (0/1) 00:15
+Unit Placed Successfully 00:21
+Placed Unit 2 (1/1) 00:22
+All units placed to requested amounts 00:23
+Initiating Unit Upgrades... 00:23
+Stage ended during upgrades, proceeding to results 03:21
+Clicking through item drops... 03:22
+Checking win/loss status 03:24
+Victory detected - Stage Length: 00:03:25 03:25
+No webhook configured - skipping webhook 03:25
+Found Lobby Text - Current Mode:  03:28
+Handling end case 03:30
+Replaying 03:30
+Successfully Loaded In 03:32
+Placing Unit 2 (0/1) 03:33
+
+==Ryn's Anime Last Stand Macro v1.1==
+  Start Time: [12h.48m.43s]
+? Settings loaded successfully, 0 coordinates restored! 00:00
+Loaded Keybinds 00:01
+? Configuration settings & coordinates saved successfully! 00:06

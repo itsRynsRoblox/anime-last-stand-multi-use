@@ -1,19 +1,6 @@
+#Requires AutoHotkey v2.0
 #Include %A_ScriptDir%\Lib\GUI.ahk
 global confirmClicked := false
-
-;HotKeys
-F1:: {
-    moveRobloxWindow()
-}
-F2:: {
-    InitializeMacro()
-}
-F3:: {
-    Reload()
-}
-F4:: {
-    BasicSetup()
-}
 
 SavePsSettings(*) {
     AddToLog("Saving Private Server")
@@ -131,6 +118,15 @@ OnConfirmClick(*) {
             return
         }
         AddToLog("Selected " LegendDropDown.Text)
+    }
+    ; For Custom mode, check if coords are empty
+    else if (ModeDropdown.Text = "Custom") {
+        global savedCoords
+        if (!IsSet(savedCoords) || savedCoords.Length = 0) {
+            AddToLog("❌ No saved coordinates! Please capture some points first.")
+            return
+        }
+        AddToLog("Selected Custom")
     }
     ; For Raid mode, check if both Raid and RaidAct are selected
     else if (ModeDropdown.Text = "Raid") {

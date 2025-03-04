@@ -5,11 +5,28 @@ global stageStartTime := A_TickCount
 
 global step := 50
 
-InitializeMacro() {
+LoadKeybindSettings()  ; Load saved keybinds
+Hotkey(F1Key, (*) => moveRobloxWindow())
+Hotkey(F2Key, (*) => StartMacro())
+Hotkey(F3Key, (*) => Reload())
+Hotkey(F4Key, (*) => CheckForXp()) ;TogglePause())
+
+StartMacro(*) {
     if (!ValidateMode()) {
         return
     }
     StartSelectedMode()
+}
+
+TogglePause(*) {
+    Pause -1
+    if (A_IsPaused) {
+        AddToLog("Macro Paused")
+        Sleep(1000)
+    } else {
+        AddToLog("Macro Resumed")
+        Sleep(1000)
+    }
 }
 
 PlacingUnits() {
@@ -33,7 +50,7 @@ PlacingUnits() {
         return MonitorStage()
     }
 
-    placementPoints := PlacementPatternDropdown.Text = "3x3 Grid" ? Generate3x3GridPoints() : PlacementPatternDropdown.Text = "Map Specific" ? UseRecommendedPoints() : PlacementPatternDropdown.Text = "Circle" ? GenerateCirclePoints() : PlacementPatternDropdown.Text = "Grid" ? GenerateGridPoints() : PlacementPatternDropdown.Text = "Spiral" ? GenerateSpiralPoints() : PlacementPatternDropdown.Text = "Up and Down" ? GenerateUpandDownPoints() : GenerateRandomPoints()
+    placementPoints := PlacementPatternDropdown.Text = "Custom" ? GenerateCustomPoints() : PlacementPatternDropdown.Text = "3x3 Grid" ? Generate3x3GridPoints() : PlacementPatternDropdown.Text = "Map Specific" ? UseRecommendedPoints() : PlacementPatternDropdown.Text = "Circle" ? GenerateCirclePoints() : PlacementPatternDropdown.Text = "Grid" ? GenerateGridPoints() : PlacementPatternDropdown.Text = "Spiral" ? GenerateSpiralPoints() : PlacementPatternDropdown.Text = "Up and Down" ? GenerateUpandDownPoints() : GenerateRandomPoints()
     
     ; Go through each slot
     for slotNum in [1, 2, 3, 4, 5, 6] {
@@ -91,7 +108,7 @@ PlacingUnits() {
 
 CheckForXp() {
     ; Check for lobby text
-    if (ok := FindText(&X, &Y, 340, 369, 437, 402, 0, 0, XpText) or FindText(&X, &Y, 273-150000, 229-150000, 273+150000, 229+150000, 0, 0, Results)) {
+    if (ok := FindText(&X, &Y, 273-150000, 229-150000, 273+150000, 229+150000, 0, 0, Results)) {
         FixClick(325, 185)
         FixClick(560, 560)
         return true
@@ -158,6 +175,13 @@ UpgradeUnits() {
                                     return
                                 }
 
+                                if CheckForPortalSelection() {
+                                    AddToLog("Stage ended during upgrades, proceeding to results")
+                                    successfulCoordinates := []
+                                    MonitorStage()
+                                    return
+                                }
+
                                 if MaxUpgrade() {
                                     upgradedCount[coord.slot]++
                                     AddToLog("Max upgrade reached for Unit " coord.slot " (" upgradedCount[coord.slot] "/" totalUnits[coord.slot] ")")
@@ -202,6 +226,14 @@ UpgradeUnits() {
                     MonitorStage()
                     return
                 }
+
+                if CheckForPortalSelection() {
+                    AddToLog("Stage ended during upgrades, proceeding to results")
+                    successfulCoordinates := []
+                    MonitorStage()
+                    return
+                }
+
 
                 if MaxUpgrade() {
                     upgradedCount[coord.slot]++
@@ -315,6 +347,11 @@ RaidMode() {
     }
 }
 
+CustomMode() {
+    AddToLog("Starting Custom Mode")
+    RestartCustomStage()
+}
+
 MonitorEndScreen() {
     global mode, StoryDropdown, ReturnLobbyBox
 
@@ -362,7 +399,11 @@ MonitorEndScreen() {
                     FixClick(404, 396)
                     FixClick(404, 396)
                     FixClick(404, 396)
-                    return RestartStage()
+                    if (ModeDropdown.Text = "Custom") {
+                        return RestartCustomStage()
+                    } else {
+                        return RestartStage()
+                    }
                 }
             }
         }
@@ -380,10 +421,10 @@ MonitorStage() {
     Loop {
         Sleep(1000)
 
-        ; Click through drops until results screen appears
-        if !CheckForXp() {
+        ; Click through drops until results screen (Portal or XP) appears
+        while !(CheckForXp() || CheckForPortalSelection()) {
             ClickThroughDrops()
-            continue
+            Sleep (100)  ; Small delay to prevent high CPU usage while clicking
         }
 
         ; Check for XP screen
@@ -421,6 +462,16 @@ ClickThroughDrops() {
     }
 }
 
+CheckForPortalSelection() {
+    if (ok:=FindText(&X, &Y, 348, 429, 454, 459, 0, 0, PortalSelection) or (ok:=FindText(&X, &Y, 348, 429, 454, 459, 0, 0, PortalSelection))) {
+        FixClick(399, 299)
+        Sleep (500)
+        FixClick(402, 414)
+        return true
+    }
+    return false
+}
+
 StoryMovement() {
     FixClick(35, 350) ; Click Teleport
     sleep (1000)
@@ -428,14 +479,11 @@ StoryMovement() {
     sleep (1000)
     FixClick(35, 350) ; Click Teleport to close
     sleep (1000)
-    SendInput ("{d down}")
-    Sleep(300)
-    SendInput ("{d up}")
-    Sleep(300)
-    SendInput ("{d down}")
+    LookForStoryAngle()
+    SendInput ("{a down}")
     SendInput ("{w down}")
     Sleep(4500)
-    SendInput ("{d up}")
+    SendInput ("{a up}")
     SendInput ("{w up}")
     Sleep(500)
 }
@@ -462,6 +510,26 @@ RaidMovement() {
     Sleep(5000)
     SendInput ("{w up}")
 }
+
+LookForStoryAngle() {
+    loop {
+        if FindText(&X, &Y, 301, 61, 529, 168, 0, 0, StoryPillar) {
+            AddToLog("Correct Angle")
+            break
+        }
+        else {
+            AddToLog("Incorrect Angle. Turning again.")
+            SendInput ("{Left up}")
+            Sleep 200
+            SendInput ("{Left down}")
+            Sleep 750
+            SendInput ("{Left up}")
+            KeyWait "Left" ; Wait for key to be fully processed
+        }
+    }
+}
+
+
 
 StartStory(map) {
     FixClick(640, 70) ; Closes Player leaderboard
@@ -758,6 +826,17 @@ RestartStage() {
     MonitorStage()
 }
 
+RestartCustomStage() {
+    ; Wait for loading
+    CheckLoaded()
+
+    ; Begin unit placement and management
+    PlacingUnits()
+    
+    ; Monitor stage progress
+    MonitorStage()
+}
+
 Reconnect() {   
     ; Check for Disconnected Screen using FindText
     if (ok := FindText(&X, &Y, 330, 218, 474, 247, 0, 0, Disconnect)) {
@@ -899,6 +978,9 @@ StartSelectedMode() {
     else if (ModeDropdown.Text = "Raid") {
         RaidMode()
     }
+    else if (ModeDropdown.Text = "Custom") {
+        RaidMode()
+    }
 }
 
 FormatStageTime(ms) {
@@ -926,6 +1008,18 @@ ValidateMode() {
 
 GetNavKeys() {
     return StrSplit(FileExist("Settings\UINavigation.txt") ? FileRead("Settings\UINavigation.txt", "UTF-8") : "\,#,}", ",")
+}
+
+GenerateCustomPoints() {
+    global savedCoords  ; Access the global saved coordinates
+    points := []
+
+    ; Directly use savedCoords without generating new points
+    for coord in savedCoords {
+        points.Push({x: coord.x, y: coord.y})
+    }
+
+    return points
 }
 
 GenerateRandomPoints() {
