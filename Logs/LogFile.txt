@@ -1935,3 +1935,8 @@ Placing Unit 2 (0/1) 03:33
 ? Settings loaded successfully, 0 coordinates restored! 00:00
 Loaded Keybinds 00:01
 ? Configuration settings & coordinates saved successfully! 00:06
+
+==Ryn's Anime Last Stand Macro v1.2==
+  Start Time: [12h.53m.47s]
+? Settings loaded successfully. 0 placement(s) successfully restored! 00:00
+? Configuration settings and custom placements saved successfully! 00:02

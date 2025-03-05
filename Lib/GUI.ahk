@@ -5,7 +5,7 @@
 
 ; Basic Application Info
 global aaTitle := "Ryn's Anime Last Stand Macro "
-global version := "v1.1"
+global version := "v1.2.1"
 global rblxID := "ahk_exe RobloxPlayerBeta.exe"
 ;Coordinate and Positioning Variables
 global targetWidth := 816
@@ -30,9 +30,8 @@ global currentTime := GetCurrentTime()
 global challengeStartTime := A_TickCount
 global inChallengeMode := false
 global firstStartup := true
-;Custom Search Area
+;Custom Unit Placement
 global waitingForClick := false
-global savedX := 0, savedY := 0
 global savedCoords := []  ; Initialize an empty array to hold the coordinates
 ;Hotkeys
 global F1Key := "F1"
@@ -273,6 +272,10 @@ customPlacementClearText := aaMainUI.Add("Text", "x345 y642 w120 h20 +Left", "Cl
 customPlacementClearButton := aaMainUI.Add("Button", "x360 y662 w80 h20", "Clear")
 customPlacementClearButton.OnEvent("Click", (*) => DeleteSavedCoords())
 
+fixCameraText := aaMainUI.Add("Text", "x520 y642 w120 h20 +Left", "Fix Setup")
+fixCameraButton := aaMainUI.Add("Button", "x510 y662 w80 h20", "Setup")
+fixCameraButton.OnEvent("Click", (*) => BasicSetup())
+
 GithubButton.OnEvent("Click", (*) => OpenGithub())
 DiscordButton.OnEvent("Click", (*) => OpenDiscord())
 ;--------------SETTINGS;--------------SETTINGS;--------------SETTINGS;--------------SETTINGS;--------------SETTINGS;--------------SETTINGS;--------------SETTINGS
@@ -285,7 +288,7 @@ global StoryDropdown := aaMainUI.Add("DropDownList", "x968 y53 w150 h180 Choose0
 global LegendDropDown := aaMainUI.Add("DropDownlist", "x968 y53 w150 h180 Choose0 +Center", ["Legend Stage #1"] )
 ;global LegendActDropdown := aaMainUI.Add("DropDownList", "x1128 y53 w80 h180 Choose0 +Center", ["Act 1", "Act 2", "Act 3"])
 global RaidDropdown := aaMainUI.Add("DropDownList", "x968 y53 w150 h180 Choose0 +Center", ["Marines Fort", "Hell City", "Snowy Capital", "Leaf Village", "Wanderniech", "Central City", "Giants District"])
-;global RaidActDropdown := aaMainUI.Add("DropDownList", "x1128 y53 w80 h180 Choose0 +Center", ["Act 1", "Act 2", "Act 3", "Act 4", "Act 5"])
+global RaidActDropdown := aaMainUI.Add("DropDownList", "x1128 y53 w80 h180 Choose0 +Center", ["Act 1", "Act 2", "Act 3", "Act 4", "Act 5", "Act 6"])
 global ConfirmButton := aaMainUI.Add("Button", "x1218 y53 w80 h25", "Confirm")
 
 StoryDropdown.Visible := false
@@ -293,7 +296,7 @@ StoryDropdown.Visible := false
 LegendDropDown.Visible := false
 ;LegendActDropdown.Visible := false
 RaidDropdown.Visible := false
-;RaidActDropdown.Visible := false
+RaidActDropdown.Visible := false
 SkipLobby.Visible := true
 ReturnLobbyBox.Visible := true
 NextLevelBox.Visible := false

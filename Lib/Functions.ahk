@@ -60,6 +60,7 @@ OpenDiscordLink() {
     StoryDropdown.Visible := false
     LegendDropDown.Visible := false
     RaidDropdown.Visible := false
+    RaidActDropdown.Visible := false
     
     if (selected = "Story") {
         StoryDropdown.Visible := true
@@ -69,6 +70,7 @@ OpenDiscordLink() {
         mode := "Legend"
     } else if (selected = "Raid") {
         RaidDropdown.Visible := true
+        RaidActDropdown.Visible := true
         mode := "Raid"
     }
 }
@@ -91,9 +93,9 @@ OnLegendChange(*) {
 
 OnRaidChange(*) {
     if (RaidDropdown.Text != "") {
-
+        RaidActDropdown.Visible := true
     } else {
-
+        RaidActDropdown.Visible := false
     }
 }
 
@@ -146,6 +148,7 @@ OnConfirmClick(*) {
     StoryDropdown.Visible := false
     LegendDropDown.Visible := false
     RaidDropdown.Visible := false
+    RaidActDropdown.Visible := false
     ConfirmButton.Visible := false
     modeSelectionGroup.Visible := false
     Hotkeytext.Visible := true

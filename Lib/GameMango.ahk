@@ -9,7 +9,7 @@ LoadKeybindSettings()  ; Load saved keybinds
 Hotkey(F1Key, (*) => moveRobloxWindow())
 Hotkey(F2Key, (*) => StartMacro())
 Hotkey(F3Key, (*) => Reload())
-Hotkey(F4Key, (*) => CheckForXp()) ;TogglePause())
+Hotkey(F4Key, (*) => TogglePause())
 
 StartMacro(*) {
     if (!ValidateMode()) {
@@ -325,18 +325,19 @@ RaidMode() {
     
     ; Get current map and act
     currentRaidMap := RaidDropdown.Text
+    currentRaidAct := RaidActDropdown.Text
 
-    if (!SkipLobby) {
+    if (!SkipLobby.Value) {
         ; Execute the movement pattern
         AddToLog("Moving to position for " currentRaidMap)
         RaidMovement()
     
         ; Start stage
-        while !(ok := FindText(&X, &Y, 325, 520, 489, 587, 0, 0, Story)) {
+        while !(ok := FindText(&X, &Y, 175, 173, 245, 204, 0, 0, Raids)) {
             RaidMovement()
         }
-        AddToLog("Starting " currentRaidMap)
-        StartRaid(currentRaidMap)
+        AddToLog("Starting " currentRaidMap " - " currentRaidAct)
+        StartRaidNoUI(currentRaidMap, currentRaidAct)
         ; Handle play mode selection
         PlayHere()
         RestartStage()
@@ -498,22 +499,49 @@ ChallengeMovement() {
 }
 
 RaidMovement() {
-    FixClick(765, 475) ; Click Area
-    Sleep(300)
-    FixClick(495, 410)
-    Sleep(500)
+    FixClick(35, 350) ; Click Teleport
+    Sleep (1000)
+    FixClick(270, 170) ; Click on side
+    Sleep (1000)
+    ; Scroll to bottom
+    Loop 10 {
+        Send "{WheelDown}"
+        Sleep 50
+    }
+    FixClick(399, 367) ; Click Raids
+    sleep (1000)
+    FixClick(35, 350) ; Click Teleport to close
+    sleep (1000)
+    LookForRaidAngle()
     SendInput ("{a down}")
-    Sleep(400)
-    SendInput ("{a up}")
-    Sleep(500)
     SendInput ("{w down}")
-    Sleep(5000)
+    Sleep(4500)
+    SendInput ("{a up}")
     SendInput ("{w up}")
+    Sleep(500)
 }
 
 LookForStoryAngle() {
     loop {
         if FindText(&X, &Y, 301, 61, 529, 168, 0, 0, StoryPillar) {
+            AddToLog("Correct Angle")
+            break
+        }
+        else {
+            AddToLog("Incorrect Angle. Turning again.")
+            SendInput ("{Left up}")
+            Sleep 200
+            SendInput ("{Left down}")
+            Sleep 750
+            SendInput ("{Left up}")
+            KeyWait "Left" ; Wait for key to be fully processed
+        }
+    }
+}
+
+LookForRaidAngle() {
+    loop {
+        if FindText(&X, &Y, 360, 47, 457, 86, 0, 0, RaidPillar) {
             AddToLog("Correct Angle")
             break
         }
@@ -634,6 +662,16 @@ StartRaid(map) {
     }
 }
 
+StartRaidNoUI(map, RaidActDropdown) {
+    FixClick(640, 70) ; Close Leaderboard
+    Sleep(500)
+    raidClickCoords := GetRaidClickCoords(map) ; Coords for Raid Map
+    FixClick(raidClickCoords.x, raidClickCoords.y) ; Choose Raid
+    Sleep(500)
+    actClickCoords := GetRaidActClickCoords(RaidActDropdown) ; Coords for Raid Act
+    FixClick(actClickCoords.x, actClickCoords.y) ; Choose Raid Act
+}
+
 PlayHere() {
     FixClick(400, 394)
     Sleep (300)
@@ -685,6 +723,51 @@ GetRaidActDownArrows(RaidActDropdown) {
         case "Act 3": return 3
         case "Act 4": return 4
         case "Act 5": return 5
+    }
+}
+
+GetStoryClickCoords(map) {
+    switch map {
+        case "Large Village": return { x: 235, y: 240 }
+        case "Hollow Land": return { x: 235, y: 295 }
+        case "Monster City": return { x: 235, y: 350 }
+        case "Academy Demon": return { x: 235, y: 400 }
+    }
+}
+
+GetStoryActClickCoords(StoryActDropdown) {
+    switch StoryActDropdown {
+        case "Act 1": return { x: 380, y: 230 }
+        case "Act 2": return { x: 380, y: 260 }
+        case "Act 3": return { x: 380, y: 290 }
+        case "Act 4": return { x: 380, y: 320 }
+        case "Act 5": return { x: 380, y: 350 }
+        case "Act 6": return { x: 380, y: 380 }
+        case "Infinity": return { x: 380, y: 405 }
+    }
+}
+
+GetRaidClickCoords(map) {
+    switch map {
+        case "Marines Fort": return { x: 230, y: 200 }
+        case "Hell City": return { x: 235, y: 220 }
+        case "Snowy Capital": return { x: 235, y: 255 }
+        case "Leaf Village": return { x: 235, y: 280 }
+        case "Wanderniech": return { x: 235, y: 305 }
+        case "Central City": return { x: 235, y: 330 }
+        case "Giants District": return { x: 235, y: 355 }
+        case "Flying Island": return { x: 235, y: 380 }
+    }
+}
+
+GetRaidActClickCoords(RaidActDropdown) {
+    switch RaidActDropdown {
+        case "Act 1": return { x: 315, y: 200 }
+        case "Act 2": return { x: 315, y: 230 }
+        case "Act 3": return { x: 315, y: 260 }
+        case "Act 4": return { x: 315, y: 290 }
+        case "Act 5": return { x: 315, y: 320 }
+        case "Act 6": return { x: 315, y: 350 }
     }
 }
 
@@ -849,30 +932,26 @@ Reconnect() {
             AddToLog("Connecting to private server...")
             Run(psLink)
         } else {
-            Run("roblox://placeID=8304191830")  ; Public server if no PS file or empty
+            Run("roblox://placeID=12886143095")
         }
 
-        Sleep(300000)
-        
-        ; Restore window if it exists
-        if WinExist(rblxID) {
-            forceRobloxSize() 
-            Sleep(1000)
-        }
-        
-        ; Keep checking until we're back in
+        Sleep(5000)  
+
         loop {
             AddToLog("Reconnecting to Roblox...")
-            Sleep(5000)
+            Sleep(15000)
+
+            if WinExist(rblxID) {
+                forceRobloxSize()
+                moveRobloxWindow()
+                Sleep(1000)
+            }
             
-            ; Check if we're back in lobby
             if (ok := FindText(&X, &Y, 746, 514, 789, 530, 0, 0, AreaText)) {
                 AddToLog("Reconnected Successfully!")
-                return StartSelectedMode() ; Return to raids
-            }
-            else {
-                ; If not in lobby, try reconnecting again
-                Reconnect()
+                return StartSelectedMode()
+            } else {
+                Reconnect() 
             }
         }
     }
@@ -979,7 +1058,7 @@ StartSelectedMode() {
         RaidMode()
     }
     else if (ModeDropdown.Text = "Custom") {
-        RaidMode()
+        CustomMode()
     }
 }
 
