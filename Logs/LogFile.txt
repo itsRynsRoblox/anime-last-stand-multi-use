@@ -1940,3 +1940,178 @@ Loaded Keybinds 00:01
   Start Time: [12h.53m.47s]
 ? Settings loaded successfully. 0 placement(s) successfully restored! 00:00
 ? Configuration settings and custom placements saved successfully! 00:02
+
+==Ryn's Anime Last Stand Macro v1.2.1==
+  Start Time: [13h.04m.16s]
+? Settings loaded successfully. 0 placement(s) successfully restored! 00:00
+Loaded Keybinds 00:01
+
+==Ryn's Anime Last Stand Macro v1.2.1==
+  Start Time: [13h.07m.41s]
+? Settings loaded successfully. 0 placement(s) successfully restored! 00:00
+Loaded Keybinds 00:01
+?? Saved Coordinates ? X: 559, Y: 244 00:10
+Selected Custom 00:12
+Don't forget to enable Click to Move! (I forget sometimes too!) 00:12
+Starting Custom Mode 00:14
+Successfully Loaded In 00:15
+Placing Unit 5 (0/1) 00:16
+Unit Placed Successfully 00:19
+Placed Unit 5 (1/1) 00:19
+All units placed to requested amounts 00:20
+Initiating Unit Upgrades... 00:20
+
+==Ryn's Anime Last Stand Macro v1.2.1==
+  Start Time: [13h.08m.13s]
+? Settings loaded successfully. 0 placement(s) successfully restored! 00:00
+Loaded Keybinds 00:01
+
+==Ryn's Anime Last Stand Macro v1.2.1==
+  Start Time: [18h.25m.11s]
+? Settings loaded successfully. 0 placement(s) successfully restored! 00:00
+
+==Ryn's Anime Last Stand Macro v1.2.1==
+  Start Time: [18h.25m.45s]
+? Settings loaded successfully. 0 placement(s) successfully restored! 00:00
+
+==Ryn's Anime Last Stand Macro v1.2.1==
+  Start Time: [18h.25m.57s]
+? Settings loaded successfully. 0 placement(s) successfully restored! 00:00
+
+==Ryn's Anime Last Stand Macro v1.2.1==
+  Start Time: [18h.26m.16s]
+? Settings loaded successfully. 0 placement(s) successfully restored! 00:00
+
+==Ryn's Anime Last Stand Macro v1.2.1==
+  Start Time: [18h.27m.53s]
+? Settings loaded successfully. 0 placement(s) successfully restored! 00:00
+Selected Marines Fort 00:05
+Don't forget to enable Click to Move! (I forget sometimes too!) 00:05
+
+==Ryn's Anime Last Stand Macro v1.2.1==
+  Start Time: [18h.28m.48s]
+? Settings loaded successfully. 0 placement(s) successfully restored! 00:00
+Attempting to locate the Roblox window 00:30
+Attempting to locate the Roblox window 00:35
+
+==Ryn's Anime Last Stand Macro v1.2.1==
+  Start Time: [18h.30m.11s]
+? Settings loaded successfully. 0 placement(s) successfully restored! 00:00
+
+==Ryn's Anime Last Stand Macro v1.2.1==
+  Start Time: [18h.35m.05s]
+? Settings loaded successfully. 0 placement(s) successfully restored! 00:00
+Found Roblox window 00:10
+Loaded Keybinds 00:11
+? No saved coordinates! Please capture some points first. 00:51
+? Configuration settings and custom placements saved successfully! 01:04
+?? Saved Coordinates ? X: 574, Y: 443 01:39
+Selected Custom 01:44
+Don't forget to enable Click to Move! (I forget sometimes too!) 01:44
+Starting Custom Mode 01:46
+Successfully Loaded In 01:47
+Macro Paused 01:48
+Macro Resumed 01:55
+Placing Unit 5 (0/1) 01:56
+
+==Ryn's Anime Last Stand Macro v1.2.1==
+  Start Time: [18h.37m.13s]
+? Settings loaded successfully. 0 placement(s) successfully restored! 00:00
+Loaded Keybinds 00:01
+?? Saved Coordinates ? X: 588, Y: 457 00:06
+Selected Custom 00:08
+Don't forget to enable Click to Move! (I forget sometimes too!) 00:08
+Starting Custom Mode 00:10
+Successfully Loaded In 00:11
+Placing Unit 5 (0/1) 00:12
+Checking win/loss status 01:34
+Defeat detected - Stage Length: 00:01:34 01:34
+No webhook configured - skipping webhook 01:34
+Found Lobby Text - Current Mode:  01:37
+Handling end case 01:39
+Replaying 01:40
+Successfully Loaded In 01:45
+Placing Unit 5 (0/1) 01:46
+
+==Ryn's Anime Last Stand Macro v1.2.1==
+  Start Time: [18h.39m.02s]
+? Settings loaded successfully. 0 placement(s) successfully restored! 00:00
+Loaded Keybinds 00:01
+
+==Ryn's Anime Last Stand Macro v1.2.1==
+  Start Time: [18h.39m.33s]
+? Settings loaded successfully. 0 placement(s) successfully restored! 00:00
+Loaded Keybinds 00:01
+
+==Ryn's Anime Last Stand Macro v1.2.1==
+  Start Time: [18h.46m.25s]
+? Settings loaded successfully. 0 placement(s) successfully restored! 00:00
+Loaded Keybinds 00:01
+? Configuration settings and custom placements saved successfully! 00:21
+?? No saved coordinates to clear. 00:32
+?? Saved Coordinates ? X: 647, Y: 577 00:35
+? Configuration settings and custom placements saved successfully! 00:38
+Selected Custom 00:42
+Don't forget to enable Click to Move! (I forget sometimes too!) 00:42
+Starting Custom Mode 00:44
+Successfully Loaded In 00:45
+Placing Unit 6 (0/1) 00:46
+Unit Placed Successfully 00:49
+Placed Unit 6 (1/1) 00:50
+Attempting to upgrade units... 00:50
+Using priority-based upgrading 00:50
+All units placed to requested amounts 00:53
+Initiating Unit Upgrades... 00:53
+Using priority upgrade system 00:53
+Starting upgrades for priority 1 (slot 6) 00:53
+Stage ended during upgrades, proceeding to results 02:59
+Checking win/loss status 03:01
+Defeat detected - Stage Length: 00:03:01 03:01
+No webhook configured - skipping webhook 03:01
+Found Lobby Text - Current Mode:  03:04
+Handling end case 03:07
+Replaying 03:07
+Waiting for Unit Manager to disappear... 03:08
+Waiting for Unit Manager to disappear... 03:09
+Waiting for Unit Manager to disappear... 03:10
+Waiting for Unit Manager to disappear... 03:11
+Waiting for Unit Manager to disappear... 03:12
+Waiting for Unit Manager to disappear... 03:14
+Unit Manager not found, proceeding... 03:15
+Successfully Loaded In 03:25
+Placing Unit 6 (0/1) 03:26
+Unit Placed Successfully 03:29
+Placed Unit 6 (1/1) 03:29
+Attempting to upgrade units... 03:30
+Using priority-based upgrading 03:30
+All units placed to requested amounts 03:32
+Initiating Unit Upgrades... 03:32
+Using priority upgrade system 03:32
+Starting upgrades for priority 1 (slot 6) 03:32
+
+==Ryn's Anime Last Stand Macro v1.2.1==
+  Start Time: [18h.50m.01s]
+? Settings loaded successfully. 1 placement(s) successfully restored! 00:00
+Loaded Keybinds 00:01
+
+==Ryn's Anime Last Stand Macro v1.2.1==
+  Start Time: [18h.52m.15s]
+? Settings loaded successfully. 1 placement(s) successfully restored! 00:00
+Loaded Keybinds 00:01
+
+==Ryn's Anime Last Stand Macro v1.2.1==
+  Start Time: [19h.19m.08s]
+? Settings loaded successfully. 1 placement(s) successfully restored! 00:00
+
+==Ryn's Anime Last Stand Macro v1.2.1==
+  Start Time: [19h.20m.02s]
+? Settings loaded successfully. 1 placement(s) successfully restored! 00:00
+? Configuration settings and custom placements saved successfully! 00:11
+? Configuration settings and custom placements saved successfully! 00:15
+??? All saved coordinates have been cleared. 00:20
+? Configuration settings and custom placements saved successfully! 00:22
+Attempting to locate the Roblox window 00:30
+? Configuration settings and custom placements saved successfully! 00:33
+Attempting to locate the Roblox window 00:35
+? Configuration settings and custom placements saved successfully! 00:38
+Attempting to locate the Roblox window 00:40

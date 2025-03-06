@@ -50,7 +50,7 @@ PlacingUnits() {
         return MonitorStage()
     }
 
-    placementPoints := PlacementPatternDropdown.Text = "Custom" ? GenerateCustomPoints() : PlacementPatternDropdown.Text = "3x3 Grid" ? Generate3x3GridPoints() : PlacementPatternDropdown.Text = "Map Specific" ? UseRecommendedPoints() : PlacementPatternDropdown.Text = "Circle" ? GenerateCirclePoints() : PlacementPatternDropdown.Text = "Grid" ? GenerateGridPoints() : PlacementPatternDropdown.Text = "Spiral" ? GenerateSpiralPoints() : PlacementPatternDropdown.Text = "Up and Down" ? GenerateUpandDownPoints() : GenerateRandomPoints()
+    placementPoints := PlacementPatternDropdown.Text = "Custom" ? GenerateCustomPoints() : PlacementPatternDropdown.Text = "Circle" ? GenerateCirclePoints() : PlacementPatternDropdown.Text = "Grid" ? GenerateGridPoints() : PlacementPatternDropdown.Text = "Spiral" ? GenerateSpiralPoints() : PlacementPatternDropdown.Text = "Up and Down" ? GenerateUpandDownPoints() : GenerateRandomPoints()
     
     ; Go through each slot
     for slotNum in [1, 2, 3, 4, 5, 6] {
@@ -88,8 +88,11 @@ PlacingUnits() {
                         successfulCoordinates.Push({x: point.x, y: point.y, slot: slotNum})
                         placedCounts[slotNum] += 1
                         AddToLog("Placed Unit " slotNum " (" placedCounts[slotNum] "/" placements ")")
-                        CheckAbility()
-                        FixClick(560, 560) ; Move Click
+                        FixClick(740, 545) ; Click away from unit
+                        if (UpgradeDuringPlacementBox.Value) {
+                            AttemptUpgrade()   ; Upgrade units while placing
+                        }
+                        break
                     }
                     
                     if CheckForXp()
@@ -104,6 +107,97 @@ PlacingUnits() {
     
     AddToLog("All units placed to requested amounts")
     UpgradeUnits()
+}
+
+AttemptUpgrade() {
+    global successfulCoordinates, PriorityUpgrade
+    global priority1, priority2, priority3, priority4, priority5, priority6
+
+    if (successfulCoordinates.Length = 0) {
+        return ; No units placed yet
+    }
+
+    AddToLog("Attempting to upgrade units...")
+
+    if (PriorityUpgrade.Value) {
+        AddToLog("Using priority-based upgrading")
+        
+        ; Loop through priority levels (1-6) and upgrade all matching units
+        for priorityNum in [1, 2, 3, 4, 5, 6] {
+            upgradedThisRound := false
+
+            for index, coord in successfulCoordinates.Clone() { ; Clone to allow removal
+                ; Get the priority value for this unit's slot
+                priority := "priority" coord.slot
+                priority := %priority%
+
+                if (priority.Text = priorityNum) {
+                    UpgradeUnit(coord.x, coord.y)
+
+                    if CheckForXp() {
+                        AddToLog("Stage ended during upgrades, proceeding to results")
+                        successfulCoordinates := []
+                        return MonitorStage()
+                    }
+
+                    if CheckForPortalSelection() {
+                        AddToLog("Stage ended during upgrades, proceeding to results")
+                        successfulCoordinates := []
+                        MonitorStage()
+                        return
+                    }
+
+                    if MaxUpgrade() {
+                        AddToLog("Max upgrade reached for Unit " coord.slot)
+                        successfulCoordinates.RemoveAt(index)
+                        FixClick(325, 185) ; Close upgrade menu
+                        continue
+                    }
+
+                    Sleep(200)
+                    FixClick(740, 545) ; Click away from unit
+                    Reconnect()
+                    CheckEndAndRoute()
+
+                    upgradedThisRound := true
+                }
+            }
+
+            if upgradedThisRound {
+                Sleep(300) ; Add a slight delay between batches
+            }
+        }
+    } else {
+        ; Normal (non-priority) upgrading - upgrade all available units
+        for index, coord in successfulCoordinates.Clone() {
+            UpgradeUnit(coord.x, coord.y)
+
+            if CheckForXp() {
+                AddToLog("Stage ended during upgrades, proceeding to results")
+                successfulCoordinates := []
+                return MonitorStage()
+            }
+
+            if CheckForPortalSelection() {
+                AddToLog("Stage ended during upgrades, proceeding to results")
+                successfulCoordinates := []
+                MonitorStage()
+                return
+            }
+
+            if MaxUpgrade() {
+                AddToLog("Max upgrade reached for Unit " coord.slot)
+                successfulCoordinates.RemoveAt(index)
+                FixClick(325, 185) ; Close upgrade menu
+                continue
+            }
+
+            Sleep(200)
+            FixClick(740, 545) ; Click away from unit
+            Reconnect()
+            CheckEndAndRoute()
+        }
+    }
 }
 
 CheckForXp() {
@@ -401,6 +495,22 @@ MonitorEndScreen() {
                     FixClick(404, 396)
                     FixClick(404, 396)
                     if (ModeDropdown.Text = "Custom") {
+                        if (!SeamlessToggle.Value) {
+                            loop {
+                                Sleep(1000) ; Check every second
+                        
+                                ; If Unit Manager is no longer found, break the loop
+                                if (!FindText(&X, &Y, 15, 321, 97, 345, 0, 0, UnitManager)) {
+                                    if (debugMessages) {
+                                        AddToLog("Unit Manager not found, proceeding...")
+                                    }
+                                    break
+                                }
+                                if (debugMessages) {
+                                    AddToLog("Unit Manager not found, proceeding...")
+                                }
+                            }
+                        }
                         return RestartCustomStage()
                     } else {
                         return RestartStage()
@@ -910,8 +1020,20 @@ RestartStage() {
 }
 
 RestartCustomStage() {
-    ; Wait for loading
-    CheckLoaded()
+    if (!SeamlessToggle.Value) {
+        currentMap := DetectMap()
+    
+        ; Wait for loading
+        CheckLoaded()
+    
+        ; Do initial setup and map-specific movement during vote timer
+        BasicSetup()
+        if (currentMap != "no map found") {
+            HandleMapMovement(currentMap)
+        }
+    }
+    ; Wait for game to actually start
+    StartedGame()
 
     ; Begin unit placement and management
     PlacingUnits()
@@ -983,14 +1105,23 @@ MaxUpgrade() {
 }
 
 UnitPlaced() {
-    PlacementSpeed() ; Custom Placement Speed
-    ; Check for upgrade text
-    if (ok := FindText(&X, &Y, 662-150000, 365-150000, 662+150000, 365+150000, 0, 0, NewUpgrade)) {
+    if (WaitForUpgradeText(GetPlacementSpeed())) { ; Wait up to 4.5 seconds for the upgrade text to appear
         AddToLog("Unit Placed Successfully")
-        FixClick(325, 185) ; close upg menu
+        FixClick(325, 185) ; Close upgrade menu
         return true
     }
     return false
+}
+
+WaitForUpgradeText(timeout := 4500) {
+    startTime := A_TickCount
+    while (A_TickCount - startTime < timeout) {
+        if (ok := FindText(&X, &Y, 662-150000, 365-150000, 662+150000, 365+150000, 0, 0, NewUpgrade)) {
+            return true
+        }
+        Sleep 100  ; Check every 100ms
+    }
+    return false  ; Timed out, upgrade text was not found
 }
 
 CheckAbility() {
@@ -1447,20 +1578,10 @@ ClickUntilGone(x, y, searchX1, searchY1, searchX2, searchY2, textToFind, offsetX
     }
 }
 
-PlacementSpeed() {
-    if PlaceSpeed.Text = "2.25 sec" {
-        sleep 2250
-    }
-    else if PlaceSpeed.Text = "2 sec" {
-        sleep 2000
-    }
-    else if PlaceSpeed.Text = "2.5 sec" {
-        sleep 2500
-    }
-    else if PlaceSpeed.Text = "2.75 sec" {
-        sleep 2.75
-    }
-    else if PlaceSpeed.Text = "3 sec" {
-        sleep 3000
-    }
+GetPlacementSpeed() {
+    speeds := [1000, 1500, 2000, 2500, 3000, 4000]  ; Array of sleep values
+    speedIndex := PlaceSpeed.Value  ; Get the selected speed value
+
+    if speedIndex is number  ; Ensure it's a number
+        return speeds[speedIndex]  ; Use the value directly from the array
 }

@@ -18,7 +18,7 @@ readInSettings() {
     global placement1, placement2, placement3, placement4, placement5, placement6
     global priority1, priority2, priority3, priority4, priority5, priority6
     global mode
-    global PlacementPatternDropdown, PlaceSpeed, SkipLobby, ReturnLobbyBox
+    global PlacementPatternDropdown, PlaceSpeed, SkipLobby, ReturnLobbyBox, UpgradeDuringPlacementBox, SeamlessToggle, PriorityUpgrade
     global savedCoords
 
     try {
@@ -85,8 +85,11 @@ readInSettings() {
                 case "Priority6": priority6.Text := parts[2]
                 case "Speed": PlaceSpeed.Value := parts[2]  ; Set dropdown value
                 case "Logic": PlacementPatternDropdown.Value := parts[2]  ; Set dropdown value
+                case "Upgrade": PriorityUpgrade.Value := parts[2] ; Set the checkbox value
                 case "Skipping": SkipLobby.Value := parts[2]  ; Set checkbox value
                 case "Lobby": ReturnLobbyBox.Value := parts[2]  ; Set checkbox value
+                case "AttemptUpgrade": UpgradeDuringPlacementBox.Value := parts[2] ; Set the checkbox value
+                case "isSeamless": SeamlessToggle.Value := parts[2] ; Set the checkbox value
             }
         }
         
@@ -100,7 +103,7 @@ SaveSettings(*) {
     global placement1, placement2, placement3, placement4, placement5, placement6
     global priority1, priority2, priority3, priority4, priority5, priority6
     global mode
-    global PlacementPatternDropdown, PlaceSpeed, SkipLobby, ReturnLobbyBox
+    global PlacementPatternDropdown, PlaceSpeed, SkipLobby, ReturnLobbyBox, UpgradeDuringPlacementBox, SeamlessToggle, PriorityUpgrade
     global savedCoords
 
     try {
@@ -145,11 +148,17 @@ SaveSettings(*) {
         content .= "`n[PlaceSpeed]"
         content .= "`nSpeed=" PlaceSpeed.Value "`n"
 
+        content .= "`n[PriorityUpgrade]"
+        content .= "`nUpgrade=" PriorityUpgrade.Value "`n"
+
         content .= "`n[SkipLobby]"
         content .= "`nSkipping=" SkipLobby.Value "`n"
 
         content .= "`n[ReturnToLobby]"
         content .= "`nLobby=" ReturnLobbyBox.Value "`n"
+
+        content .= "`n`n[UpgradeDuringPlacement]"
+        content .= "`nAttemptUpgrade=" UpgradeDuringPlacementBox.Value "`n"  ; Save modulation value
 
         ; Save the stored coordinates
         content .= "`n[SavedCoordinates]`n"

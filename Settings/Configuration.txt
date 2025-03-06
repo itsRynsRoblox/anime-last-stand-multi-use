@@ -5,7 +5,7 @@ Enabled1=0
 Enabled2=0
 Enabled3=0
 Enabled4=0
-Enabled5=1
+Enabled5=0
 Enabled6=0
 
 Placement1=1
@@ -14,23 +14,30 @@ Placement3=1
 Placement4=1
 Placement5=1
 Placement6=1
-Priority1=3
+Priority1=1
 Priority2=2
-Priority3=2
+Priority3=3
 Priority4=4
 Priority5=5
-Priority6=1
+Priority6=6
 [PlacementLogic]
-Logic=8
+Logic=1
 
 [PlaceSpeed]
 Speed=1
+
+[PriorityUpgrade]
+Upgrade=1
 
 [SkipLobby]
 Skipping=1
 
 [ReturnToLobby]
 Lobby=0
+
+
+[UpgradeDuringPlacement]
+AttemptUpgrade=0
 
 [SavedCoordinates]
 NoCoordinatesSaved

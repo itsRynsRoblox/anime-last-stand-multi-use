@@ -245,15 +245,16 @@ aaMainUI.SetFont("s9")
 global NextLevelBox := aaMainUI.Add("Checkbox", "x900 y451 cffffff", "Next Level")
 ;global SkipLobby2 := aaMainUI.Add("Checkbox", "x1035 y385 cffffff Checked", "Skip Lobby")
 global SkipLobby := aaMainUI.Add("Checkbox", "x900 y451 cffffff", "Skip Lobby")
-;global ReturnLobbyBox := aaMainUI.Add("Checkbox", "x900 y385 cffffff Checked", "Return To Lobby")
-global AutoAbilityBox := aaMainUI.Add("CheckBox", "x900 y476 cffffff Checked", "Auto Ability")
-global ReturnLobbyBox := aaMainUI.Add("Checkbox", "x1143 y476 cffffff Checked", "Return To Lobby")
-;global ChallengeBox := aaMainUI.Add("CheckBox", "x1143 y410 cffffff", "Auto Challenge")
+global UpgradeDuringPlacementBox := aaMainUI.Add("Checkbox", "x1150 y451 cffffff Checked", "Upgrade During Placement")
+global ReturnLobbyBox := aaMainUI.Add("Checkbox", "x1150 y476 cffffff Checked", "Return To Lobby")
+;global AutoAbilityBox := aaMainUI.Add("CheckBox", "x900 y476 cffffff Checked", "Auto Ability")
+global AutoAbilityBox := aaMainUI.Add("CheckBox", "x1005 y451 cffffff Checked", "Auto Ability")
+global SeamlessToggle := aaMainUI.Add("CheckBox", "x900 y476 cffffff", "Seamless")
 global PriorityUpgrade := aaMainUI.Add("CheckBox", "x1005 y476 cffffff", "Priority Upgrade")
 PlacementPatternText := aaMainUI.Add("Text", "x1032 y390 w115 h20", "Placement Type")
-global PlacementPatternDropdown := aaMainUI.Add("DropDownList", "x1035 y410 w100 h180 Choose2 +Center", ["Circle", "Grid", "3x3 Grid", "Map Specific", "Spiral", "Up and Down", "Random", "Custom"])
+global PlacementPatternDropdown := aaMainUI.Add("DropDownList", "x1035 y410 w100 h180 Choose2 +Center", ["Circle", "Custom", "Grid", "3x3 Grid", "Map Specific", "Spiral", "Up and Down", "Random"])
 PlaceSpeedText := aaMainUI.Add("Text", "x1193 y390 w115 h20", "Placement Speed")
-global PlaceSpeed := aaMainUI.Add("DropDownList", "x1205 y410 w100 h180 Choose1 +Center", ["2.25 sec", "2 sec", "2.5 sec", "2.75 sec", "3 sec"])
+global PlaceSpeed := aaMainUI.Add("DropDownList", "x1205 y410 w100 h180 Choose1 +Center", ["Super Fast (1s)", "Fast (1.5s)", "Default (2s)", "Slow (2.5s)", "Very Slow (3s)", "Toaster (4s)"])
 
 PlacementSelectionText := aaMainUI.Add("Text", "x857 y390 w130 h20", "Placement Settings")
 PlacementSelection := aaMainUI.Add("DropDownList", "x865 y410 w100 h180 Choose1 +Center", ["Normal"])
@@ -542,13 +543,18 @@ UpdateTooltip() {
 {
     global waitingForClick, savedCoords  
     if waitingForClick {
-        MouseGetPos &x, &y
         waitingForClick := false
+        Click  ; Simulate a click (registers actual click position)
+        Sleep 50  ; Small delay for processing
+        MouseGetPos &x, &y  ; Get the new click position
+       
         if !IsSet(savedCoords)  ; Ensure savedCoords is initialized
             savedCoords := []
         savedCoords.Push({x: x, y: y})  ; Store as an object
-        ToolTip "Coordinates added: " x ", " y, x + 10, y + 10  ; Show tooltip at mouse position
+        
+        ToolTip "📌 Coordinates added: " x ", " y, x + 10, y + 10  ; Show tooltip at mouse position
         AddToLog("📌 Saved Coordinates → X: " x ", Y: " y)
+
         SetTimer () => ToolTip(), -2000  ; Hide tooltip after 2 sec
     }
 }
