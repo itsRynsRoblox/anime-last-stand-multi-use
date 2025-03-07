@@ -94,6 +94,10 @@ PlacingUnits() {
                         }
                         break
                     }
+
+                    if (UpgradeDuringPlacementBox.Value) {
+                        AttemptUpgrade()
+                    }
                     
                     if CheckForXp()
                         return MonitorStage()
@@ -143,8 +147,7 @@ AttemptUpgrade() {
                     if CheckForPortalSelection() {
                         AddToLog("Stage ended during upgrades, proceeding to results")
                         successfulCoordinates := []
-                        MonitorStage()
-                        return
+                        return MonitorStage()
                     }
 
                     if MaxUpgrade() {
