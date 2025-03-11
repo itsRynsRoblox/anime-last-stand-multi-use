@@ -15,6 +15,7 @@ setupFilePath() {
 
 readInSettings() {
     global enabled1, enabled2, enabled3, enabled4, enabled5, enabled6
+    global upgradeEnabled1, upgradeEnabled2, upgradeEnabled3, upgradeEnabled4, upgradeEnabled5, upgradeEnabled6
     global placement1, placement2, placement3, placement4, placement5, placement6
     global priority1, priority2, priority3, priority4, priority5, priority6
     global mode
@@ -71,6 +72,12 @@ readInSettings() {
                 case "Enabled4": enabled4.Value := parts[2]
                 case "Enabled5": enabled5.Value := parts[2]
                 case "Enabled6": enabled6.Value := parts[2]
+                case "UpgradeEnabled1": upgradeEnabled1.Value := parts[2]
+                case "UpgradeEnabled2": upgradeEnabled2.Value := parts[2]
+                case "UpgradeEnabled3": upgradeEnabled3.Value := parts[2]
+                case "UpgradeEnabled4": upgradeEnabled4.Value := parts[2]
+                case "UpgradeEnabled5": upgradeEnabled5.Value := parts[2]
+                case "UpgradeEnabled6": upgradeEnabled6.Value := parts[2]
                 case "Placement1": placement1.Text := parts[2]
                 case "Placement2": placement2.Text := parts[2]
                 case "Placement3": placement3.Text := parts[2]
@@ -100,6 +107,7 @@ readInSettings() {
 
 SaveSettings(*) {
     global enabled1, enabled2, enabled3, enabled4, enabled5, enabled6
+    global upgradeEnabled1, upgradeEnabled2, upgradeEnabled3, upgradeEnabled4, upgradeEnabled5, upgradeEnabled6
     global placement1, placement2, placement3, placement4, placement5, placement6
     global priority1, priority2, priority3, priority4, priority5, priority6
     global mode
@@ -127,6 +135,13 @@ SaveSettings(*) {
         content .= "`nEnabled4=" enabled4.Value
         content .= "`nEnabled5=" enabled5.Value
         content .= "`nEnabled6=" enabled6.Value
+
+        content .= "`n`nUpgradeEnabled1=" upgradeEnabled1.Value
+        content .= "`nUpgradeEnabled2=" upgradeEnabled2.Value
+        content .= "`nUpgradeEnabled3=" upgradeEnabled3.Value
+        content .= "`nUpgradeEnabled4=" upgradeEnabled4.Value
+        content .= "`nUpgradeEnabled5=" upgradeEnabled5.Value
+        content .= "`nUpgradeEnabled6=" upgradeEnabled6.Value
 
         content .= "`n`nPlacement1=" placement1.Text
         content .= "`nPlacement2=" placement2.Text

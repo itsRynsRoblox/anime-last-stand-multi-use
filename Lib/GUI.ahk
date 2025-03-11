@@ -5,7 +5,7 @@
 
 ; Basic Application Info
 global aaTitle := "Ryn's Anime Last Stand Macro "
-global version := "v1.3"
+global version := "v1.4.1"
 global rblxID := "ahk_exe RobloxPlayerBeta.exe"
 ;Coordinate and Positioning Variables
 global targetWidth := 816
@@ -267,7 +267,7 @@ DiscordButton := aaMainUI.Add("Picture", "x112 y645 w60 h34 +BackgroundTrans cff
 
 customPlacementText := aaMainUI.Add("Text", "x200 y642 w120 h20 +Left", "Set Placements")
 customPlacementButton := aaMainUI.Add("Button", "x210 y662 w80 h20", "Set")
-customPlacementButton.OnEvent("Click", (*) => StartClickCapture())
+customPlacementButton.OnEvent("Click", (*) => StartCoordCapture())
 
 customPlacementClearText := aaMainUI.Add("Text", "x345 y642 w120 h20 +Left", "Clear Placements")
 customPlacementClearButton := aaMainUI.Add("Button", "x360 y662 w80 h20", "Clear")
@@ -345,6 +345,13 @@ enabled3 := aaMainUI.Add("CheckBox", "x818 y205 w15 h15", "")
 enabled4 := aaMainUI.Add("CheckBox", "x818 y255 w15 h15", "")
 enabled5 := aaMainUI.Add("CheckBox", "x818 y305 w15 h15", "")
 enabled6 := aaMainUI.Add("CheckBox", "x818 y355 w15 h15", "")
+
+upgradeEnabled1 := aaMainUI.Add("CheckBox", "x1070 y105 w15 h15", "")
+upgradeEnabled2 := aaMainUI.Add("CheckBox", "x1070 y155 w15 h15", "")
+upgradeEnabled3 := aaMainUI.Add("CheckBox", "x1070 y205 w15 h15", "")
+upgradeEnabled4 := aaMainUI.Add("CheckBox", "x1070 y255 w15 h15", "")
+upgradeEnabled5 := aaMainUI.Add("CheckBox", "x1070 y305 w15 h15", "")
+upgradeEnabled6 := aaMainUI.Add("CheckBox", "x1070 y355 w15 h15", "")
 
 aaMainUI.SetFont("s8 c" uiTheme[6])
 
@@ -522,7 +529,7 @@ checkSizeTimer() {
     }
 }
 
-StartClickCapture() {
+StartCoordCapture() {
     global waitingForClick
     waitingForClick := true
     SetTimer UpdateTooltip, 50  ; Update tooltip position every 50ms
@@ -532,31 +539,45 @@ UpdateTooltip() {
     global waitingForClick
     if waitingForClick {
         MouseGetPos &x, &y
-        ToolTip "Press shift anywhere to save coordinates...", x + 10, y + 10  ; Offset tooltip slightly
+        ToolTip "Click anywhere to save coordinates...", x + 10, y + 10  ; Offset tooltip slightly
     } else {
         ToolTip()  ; Hide tooltip when not waiting
         SetTimer UpdateTooltip, 0  ; Stop the timer
     }
 }
 
-~LShift:: 
+~LButton::
 {
-    global waitingForClick, savedCoords  
+    global waitingForClick, savedCoords
+    global placement1, placement2, placement3, placement4, placement5, placement6
+
     if waitingForClick {
+        ; Wait for the button press and get the position when the mouse button is clicked
+        MouseGetPos &x, &y
         waitingForClick := false
-        Click  ; Simulate a click (registers actual click position)
-        Sleep 50  ; Small delay for processing
-        MouseGetPos &x, &y  ; Get the new click position
-       
+        SetTimer UpdateTooltip, 0  ; Stop updating tooltip immediately
+
         if !IsSet(savedCoords)  ; Ensure savedCoords is initialized
             savedCoords := []
-        savedCoords.Push({x: x, y: y})  ; Store as an object
-        
-        ToolTip "📌 Coordinates added: " x ", " y, x + 10, y + 10  ; Show tooltip at mouse position
-        AddToLog("📌 Saved Coordinates → X: " x ", Y: " y)
+        savedCoords.Push({x: x, y: y - 25})  ; Store as an object
 
-        SetTimer () => ToolTip(), -2000  ; Hide tooltip after 2 sec
+        ; Retrieve values from dropdowns
+        totalEnabled := placement1.Value + placement2.Value + placement3.Value + placement4.Value + placement5.Value + placement6.Value
+
+        ; Display tooltip with coordinate count and enabled count
+        ToolTip("Coords Set: " savedCoords.Length " / Total Enabled: " totalEnabled, x + 10, y + 10)
+        AddToLog("📌 Saved Coordinates → X: " x ", Y: " y " | Set: " savedCoords.Length " / Total Enabled: " totalEnabled)
+
+        ; Ensure tooltip disappears properly
+        SetTimer ClearToolTip, -1200
     }
+}
+
+
+ClearToolTip() {
+    ToolTip()  ; Properly clear tooltip
+    Sleep 100  ; Small delay to ensure clearing happens across all systems
+    ToolTip()  ; Redundant clear to catch edge cases
 }
 
 DeleteSavedCoords() {
