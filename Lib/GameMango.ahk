@@ -11,6 +11,10 @@ Hotkey(F2Key, (*) => StartMacro())
 Hotkey(F3Key, (*) => Reload())
 Hotkey(F4Key, (*) => TogglePause())
 
+F5:: {
+
+}
+
 StartMacro(*) {
     if (!ValidateMode()) {
         return
@@ -266,7 +270,7 @@ AttemptUpgrade() {
 
 CheckForXp() {
     ; Check for lobby text
-    if (ok := FindText(&X, &Y, 273-150000, 229-150000, 273+150000, 229+150000, 0, 0, Results)) {
+    if (ok := FindText(&X, &Y, 225, 217, 356, 246, 0.20, 0.20, Results)) {
         FixClick(325, 185)
         FixClick(560, 560)
         return true
@@ -596,33 +600,39 @@ MonitorStage() {
     Loop {
         Sleep(1000)
 
-        ; Click through drops until results screen (Portal or XP) appears
-        while !CheckForXp() || CheckForPortalSelection() {
-            ClickThroughDrops()
-            Sleep (100)  ; Small delay to prevent high CPU usage while clicking
+        timeElapsed := A_TickCount - lastClickTime
+        if (timeElapsed >= 30000) {
+            AddToLog("Performing anti-AFK click")
+            FixClick(560, 560)
+            lastClickTime := A_TickCount
         }
 
-        ; Check for XP screen
-        AddToLog("Checking win/loss status")
-            
-        ; Calculate stage end time here, before checking win/loss
-        stageEndTime := A_TickCount
-        stageLength := FormatStageTime(stageEndTime - stageStartTime)
-            
-        ; Check for Victory or Defeat
-        if (ok := FindText(&X, &Y, 405-150000, 268-150000, 405+150000, 268+150000, 0, 0, Victory)) {
-            AddToLog("Victory detected - Stage Length: " stageLength)
-            Wins += 1
-            SendWebhookWithTime(true, stageLength)
-            return MonitorEndScreen()  ; Original behavior for other modes
+        CheckForPortalSelection()
+
+        if (CheckForXp()) {
+
+            ; Check for XP screen
+            AddToLog("Checking win/loss status")
+                
+            ; Calculate stage end time here, before checking win/loss
+            stageEndTime := A_TickCount
+            stageLength := FormatStageTime(stageEndTime - stageStartTime)
+                
+            ; Check for Victory or Defeat
+            if (ok := (FindText(&X, &Y, 405-150000, 268-150000, 405+150000, 268+150000, 0.20, 0.20, Victory)) or (FindText(&X, &Y, 405-150000, 268-150000, 405+150000, 268+150000, 0.20, 0.20, Cleared))) {
+                AddToLog("Victory detected - Stage Length: " stageLength)
+                Wins += 1
+                SendWebhookWithTime(true, stageLength)
+                return MonitorEndScreen()  ; Original behavior for other modes
+            }
+            else if (ok := FindText(&X, &Y, 403-150000, 269-150000, 403+150000, 269+150000, 0, 0, Defeat)) {
+                AddToLog("Defeat detected - Stage Length: " stageLength)
+                loss += 1
+                SendWebhookWithTime(false, stageLength) 
+                return MonitorEndScreen()  ; Original behavior for other modes
+            }
+            Reconnect()
         }
-        else if (ok := FindText(&X, &Y, 403-150000, 269-150000, 403+150000, 269+150000, 0, 0, Defeat)) {
-            AddToLog("Defeat detected - Stage Length: " stageLength)
-            loss += 1
-            SendWebhookWithTime(false, stageLength) 
-            return MonitorEndScreen()  ; Original behavior for other modes
-        }
-        Reconnect()
     }
 }
 
