@@ -99,9 +99,7 @@ PlacingUnits(untilSuccessful := true) {
                             AddToLog("Placed Unit " slotNum " (" placedCounts[slotNum] "/" placements ")")
                             CheckAbility()
                             FixClick(700, 560) ; Move Click
-                            if (UpgradeDuringPlacementBox.Value) {
-                                AttemptUpgrade()
-                            }
+                            AttemptUpgrade()
                         }
                     }
                 }
@@ -114,16 +112,10 @@ PlacingUnits(untilSuccessful := true) {
                             AddToLog("Placed Unit " slotNum " (" placedCounts[slotNum] "/" placements ")")
                             CheckAbility()
                             FixClick(700, 560) ; Move Click
-                            if (UpgradeDuringPlacementBox.Value) {
-                                AttemptUpgrade()
-                            }
+                            AttemptUpgrade()
                             break ; Move to the next placement spot
                         }
-
-                        if (UpgradeDuringPlacementBox.Value) {
-                            AttemptUpgrade()
-                        }
-
+                        AttemptUpgrade()
                         if CheckForXp()
                             return MonitorStage()
 
@@ -605,7 +597,7 @@ MonitorStage() {
         Sleep(1000)
 
         ; Click through drops until results screen (Portal or XP) appears
-        while !(CheckForXp() || CheckForPortalSelection()) {
+        while !CheckForXp() || CheckForPortalSelection() {
             ClickThroughDrops()
             Sleep (100)  ; Small delay to prevent high CPU usage while clicking
         }
@@ -1157,7 +1149,7 @@ PlaceUnit(x, y, slot := 1) {
     FixClick(x, y)
     Sleep 50
     SendInput("x")
-    Sleep 200
+    Sleep 500
     FixClick(x, y)
     Sleep 50
     if UnitPlaced() {

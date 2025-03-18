@@ -172,6 +172,9 @@ SaveSettings(*) {
         content .= "`n[ReturnToLobby]"
         content .= "`nLobby=" ReturnLobbyBox.Value "`n"
 
+        content .= "`n[Seamless]"
+        content .= "`nisSeamless=" SeamlessToggle.Value "`n"
+
         content .= "`n`n[UpgradeDuringPlacement]"
         content .= "`nAttemptUpgrade=" UpgradeDuringPlacementBox.Value "`n"  ; Save modulation value
 
@@ -269,7 +272,6 @@ SaveKeybindSettings(*) {
 
 LoadKeybindSettings() {
     if FileExist("Settings\Keybinds.txt") {
-        AddToLog("Loaded Keybinds")
         fileContent := FileRead("Settings\Keybinds.txt", "UTF-8")
         Loop Parse, fileContent, "`n" {
             parts := StrSplit(A_LoopField, "=")

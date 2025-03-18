@@ -123,11 +123,6 @@ OnConfirmClick(*) {
     }
     ; For Custom mode, check if coords are empty
     else if (ModeDropdown.Text = "Custom") {
-        global savedCoords
-        if (!IsSet(savedCoords) || savedCoords.Length = 0) {
-            AddToLog("❌ No saved coordinates! Please capture some points first.")
-            return
-        }
         AddToLog("Selected Custom")
     }
     ; For Raid mode, check if both Raid and RaidAct are selected

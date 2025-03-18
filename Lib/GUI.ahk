@@ -5,7 +5,7 @@
 
 ; Basic Application Info
 global aaTitle := "Ryn's Anime Last Stand Macro "
-global version := "v1.4.1"
+global version := "v1.4.2"
 global rblxID := "ahk_exe RobloxPlayerBeta.exe"
 ;Coordinate and Positioning Variables
 global targetWidth := 816
@@ -99,7 +99,7 @@ global windowTitle := aaMainUI.Add("Text", "x10 y3 w1200 h29 +BackgroundTrans", 
 aaMainUI.Add("Text", "x805 y501 w558 h25 +Center +BackgroundTrans", "Process") ;Process header
 uiBorders.Push(aaMainUI.Add("Text", "x803 y499 w560 h1 +Background" uiTheme[3])) ;Process Top
 aaMainUI.SetFont("norm s11 c" uiTheme[1]) ;Font
-global process1 := aaMainUI.Add("Text", "x810 y536 w538 h18 +BackgroundTrans c" uiTheme[7], "➤ Original Creator: Ryn") ;Processes
+global process1 := aaMainUI.Add("Text", "x810 y536 w538 h18 +BackgroundTrans c" uiTheme[7], "➤ Original Creator: Ryn (@TheRealTension)") ;Processes
 global process2 := aaMainUI.Add("Text", "xp yp+22 w538 h18 +BackgroundTrans", "") ;Processes 
 global process3 := aaMainUI.Add("Text", "xp yp+22 w538 h18 +BackgroundTrans", "") 
 global process4 := aaMainUI.Add("Text", "xp yp+22 w538 h18 +BackgroundTrans", "") 
@@ -326,7 +326,11 @@ AddUnitCard(aaMainUI, index, x, y) {
 
     aaMainUI.SetFont("s9 c" uiTheme[1])
     unit.PlacementText := aaMainUI.Add("Text", Format("x{} y{} w70 h20 +BackgroundTrans", x+100, y+2), "Placement")
-    unit.PriorityText := aaMainUI.Add("Text", Format("x{} y{} w60 h20 BackgroundTrans hidden", x+180, y+2), "Upgrade")
+    unit.PriorityText := aaMainUI.Add("Text", Format("x{} y{} w60 h20 BackgroundTrans", x+180, y+2), "Priority")
+
+    unit.BorderRight := aaMainUI.Add("Text", Format("x{} y{} w2 h45 +Background{}", x+390, y, uiTheme[3]))
+    unit.UpgradeCapText := aaMainUI.Add("Text", Format("x{} y{} w250 h20 BackgroundTrans", x+183+83, y+2), "Place && Upgrade")
+    unit.Title := aaMainUI.Add("Text", Format("x{} y{} w250 h25 +BackgroundTrans", x+295, y+20), "Enabled")
     
     UnitData.Push(unit)
     return unit
@@ -367,14 +371,12 @@ Placement4 := aaMainUI.Add("DropDownList", "x908 y255 w60 h180 Choose1 +Center",
 Placement5 := aaMainUI.Add("DropDownList", "x908 y305 w60 h180 Choose1 +Center", ["1","2","3","4","5","6"])
 Placement6 := aaMainUI.Add("DropDownList", "x908 y355 w60 h180 Choose1 +Center", ["1","2","3","4","5","6"])
 
-Priority1 := aaMainUI.Add("DropDownList", "x990 y105 w60 h180 Choose1 +Center Hidden", ["1","2","3","4","5","6"])
-Priority2 := aaMainUI.Add("DropDownList", "x990 y155 w60 h180 Choose1 +Center Hidden", ["1","2","3","4","5","6"])
-Priority3 := aaMainUI.Add("DropDownList", "x990 y205 w60 h180 Choose1 +Center Hidden", ["1","2","3","4","5","6"])
-Priority4 := aaMainUI.Add("DropDownList", "x990 y255 w60 h180 Choose1 +Center Hidden", ["1","2","3","4","5","6"])
-Priority5 := aaMainUI.Add("DropDownList", "x990 y305 w60 h180 Choose1 +Center Hidden", ["1","2","3","4","5","6"])
-Priority6 := aaMainUI.Add("DropDownList", "x990 y355 w60 h180 Choose1 +Center Hidden", ["1","2","3","4","5","6"])
-
-PriorityUpgrade.OnEvent("Click", TogglePriorityDropdowns)
+Priority1 := aaMainUI.Add("DropDownList", "x990 y105 w60 h180 Choose1 +Center", ["1","2","3","4","5","6"])
+Priority2 := aaMainUI.Add("DropDownList", "x990 y155 w60 h180 Choose1 +Center", ["1","2","3","4","5","6"])
+Priority3 := aaMainUI.Add("DropDownList", "x990 y205 w60 h180 Choose1 +Center", ["1","2","3","4","5","6"])
+Priority4 := aaMainUI.Add("DropDownList", "x990 y255 w60 h180 Choose1 +Center", ["1","2","3","4","5","6"])
+Priority5 := aaMainUI.Add("DropDownList", "x990 y305 w60 h180 Choose1 +Center", ["1","2","3","4","5","6"])
+Priority6 := aaMainUI.Add("DropDownList", "x990 y355 w60 h180 Choose1 +Center", ["1","2","3","4","5","6"])
 
 ToggleMode(*) {
     mode := PlacementSelection.Text
@@ -532,6 +534,7 @@ checkSizeTimer() {
 StartCoordCapture() {
     global waitingForClick
     waitingForClick := true
+    AddToLog("Press LShift to stop coordinate capture")
     SetTimer UpdateTooltip, 50  ; Update tooltip position every 50ms
 }
 
@@ -546,6 +549,15 @@ UpdateTooltip() {
     }
 }
 
+~LShift::
+{
+    global waitingForClick
+    if waitingForClick {
+        AddToLog("Stopping coordinate capture")
+        waitingForClick := false
+    }
+}
+
 ~LButton::
 {
     global waitingForClick, savedCoords
@@ -554,7 +566,6 @@ UpdateTooltip() {
     if waitingForClick {
         ; Wait for the button press and get the position when the mouse button is clicked
         MouseGetPos &x, &y
-        waitingForClick := false
         SetTimer UpdateTooltip, 0  ; Stop updating tooltip immediately
 
         if !IsSet(savedCoords)  ; Ensure savedCoords is initialized
