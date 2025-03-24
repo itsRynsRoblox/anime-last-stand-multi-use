@@ -5,7 +5,7 @@
 
 ; Basic Application Info
 global aaTitle := "Ryn's Anime Last Stand Macro "
-global version := "v1.4.3"
+global version := "v1.4.5"
 global rblxID := "ahk_exe RobloxPlayerBeta.exe"
 ;Coordinate and Positioning Variables
 global targetWidth := 816
@@ -257,7 +257,7 @@ PlaceSpeedText := aaMainUI.Add("Text", "x1193 y390 w115 h20", "Placement Speed")
 global PlaceSpeed := aaMainUI.Add("DropDownList", "x1205 y410 w100 h180 Choose1 +Center", ["Super Fast (1s)", "Fast (1.5s)", "Default (2s)", "Slow (2.5s)", "Very Slow (3s)", "Toaster (4s)"])
 
 PlacementSelectionText := aaMainUI.Add("Text", "x857 y390 w130 h20", "Placement Settings")
-PlacementSelection := aaMainUI.Add("DropDownList", "x865 y410 w100 h180 Choose1 +Center", ["Normal"])
+PlacementSelection := aaMainUI.Add("DropDownList", "x865 y410 w100 h180 Choose1 +Center", ["Normal", "Preset #1", "Preset #2"])
 placementSaveText := aaMainUI.Add("Text", "x807 y451 w80 h20", "Save Config")
 Hotkeytext := aaMainUI.Add("Text", "x807 y35 w200 h30", "F1: Position roblox")
 Hotkeytext2 := aaMainUI.Add("Text", "x807 y50 w200 h30", "F2: Start mango")
@@ -380,7 +380,6 @@ Priority6 := aaMainUI.Add("DropDownList", "x990 y355 w60 h180 Choose1 +Center", 
 
 ToggleMode(*) {
     mode := PlacementSelection.Text
-    isChallenge := (mode = "Challenge")
     Loop 6 {
         Placement%A_Index%.Visible := true
         Priority%A_Index%.Visible := PriorityUpgrade.Value
@@ -570,7 +569,7 @@ UpdateTooltip() {
 
         if !IsSet(savedCoords)  ; Ensure savedCoords is initialized
             savedCoords := []
-        savedCoords.Push({x: x, y: y - 25})  ; Store as an object
+        savedCoords.Push({x: x, y: y})  ; Store as an object
 
         ; Retrieve values from dropdowns
         totalEnabled := placement1.Value + placement2.Value + placement3.Value + placement4.Value + placement5.Value + placement6.Value

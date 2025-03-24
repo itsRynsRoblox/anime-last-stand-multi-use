@@ -12,7 +12,7 @@ Hotkey(F3Key, (*) => Reload())
 Hotkey(F4Key, (*) => TogglePause())
 
 F5:: {
-
+    MonitorStage
 }
 
 StartMacro(*) {
@@ -301,70 +301,52 @@ UpgradeUnits() {
         
         ; Go through each priority level (1-6)
         for priorityNum in [1, 2, 3, 4, 5, 6] {
-            ; Find which slot has this priority number
-            for slot in [1, 2, 3, 4, 5, 6] {
-                priority := "priority" slot
-                priority := %priority%
-                if (priority.Text = priorityNum) {
-                    ; Skip if no units in this slot
-                    hasUnitsInSlot := false
-                    for coord in successfulCoordinates {
-                        if (coord.slot = slot) {
-                            hasUnitsInSlot := true
+            AddToLog("Starting upgrades for priority " priorityNum)
+            
+            ; Keep upgrading units with the current priority until all are maxed
+            while true {
+                priorityDone := true
+                
+                for index, coord in successfulCoordinates {
+                    priority := "priority" coord.slot
+                    priority := %priority%
+                    if (priority.Text = priorityNum) {
+                        priorityDone := false
+                        UpgradeUnit(coord.x, coord.y)
+
+                        if CheckForXp() {
+                            AddToLog("Stage ended during upgrades, proceeding to results")
+                            successfulCoordinates := []
+                            MonitorStage()
+                            return
+                        }
+
+                        if CheckForPortalSelection() {
+                            AddToLog("Stage ended during upgrades, proceeding to results")
+                            successfulCoordinates := []
+                            MonitorStage()
+                            return
+                        }
+
+                        if MaxUpgrade() {
+                            upgradedCount[coord.slot]++
+                            AddToLog("Max upgrade reached for Unit " coord.slot " (" upgradedCount[coord.slot] "/" totalUnits[coord.slot] ")")
+                            successfulCoordinates.RemoveAt(index)
+                            FixClick(325, 185) ;Close upg menu
                             break
                         }
+
+                        Sleep(200)
+                        CheckAbility()
+                        FixClick(560, 560) ; Move Click
+                        Reconnect()
+                        CheckEndAndRoute()
                     }
-                    
-                    if (!hasUnitsInSlot) {
-                        continue
-                    }
-
-                    AddToLog("Starting upgrades for priority " priorityNum " (slot " slot ")")
-                    
-                    ; Keep upgrading current slot until all its units are maxed
-                    while true {
-                        slotDone := true
-                        
-                        for index, coord in successfulCoordinates {
-                            if (coord.slot = slot) {
-                                slotDone := false
-                                UpgradeUnit(coord.x, coord.y)
-
-                                if CheckForXp() {
-                                    AddToLog("Stage ended during upgrades, proceeding to results")
-                                    successfulCoordinates := []
-                                    MonitorStage()
-                                    return
-                                }
-
-                                if CheckForPortalSelection() {
-                                    AddToLog("Stage ended during upgrades, proceeding to results")
-                                    successfulCoordinates := []
-                                    MonitorStage()
-                                    return
-                                }
-
-                                if MaxUpgrade() {
-                                    upgradedCount[coord.slot]++
-                                    AddToLog("Max upgrade reached for Unit " coord.slot " (" upgradedCount[coord.slot] "/" totalUnits[coord.slot] ")")
-                                    successfulCoordinates.RemoveAt(index)
-                                    FixClick(325, 185) ;Close upg menu
-                                    break
-                                }
-
-                                Sleep(200)
-                                CheckAbility()
-                                FixClick(560, 560) ; Move Click
-                                Reconnect()
-                                CheckEndAndRoute()
-                            }
-                        }
-                        
-                        if (slotDone || successfulCoordinates.Length = 0) {
-                            AddToLog("Finished upgrades for priority " priorityNum)
-                            break
-                        }
-                    }
+                }
+                
+                if (priorityDone || successfulCoordinates.Length = 0) {
+                    AddToLog("Finished upgrades for priority " priorityNum)
+                    break
                 }
             }
         }
@@ -395,7 +377,6 @@ UpgradeUnits() {
                     MonitorStage()
                     return
                 }
-
 
                 if MaxUpgrade() {
                     upgradedCount[coord.slot]++
@@ -525,17 +506,17 @@ MonitorEndScreen() {
         FixClick(560, 560)
 
         ; Now handle each mode
-        if (ok := FindText(&X, &Y, 388-150000, 430-150000, 388+150000, 430+150000, 0, 0, Retry)) {
+        if (ok := FindText(&X, &Y, 238, 400, 566, 445, 0, 0, Retry)) {
             AddToLog("Found Lobby Text - Current Mode: " mode)
             Sleep(2000)
             if (mode = "Story") {
                 AddToLog("Handling Story mode end")
                     if (NextLevelBox.Value && lastResult = "win") {
                         AddToLog("Next level")
-                        ClickUntilGone(0, 0, 80, 85, 739, 224, LobbyText, +260, -35, LobbyText2)
+                        ClickUntilGone(0, 0, 80, 85, 739, 224, LobbyIcon, +260, -35)
                     } else {
                         AddToLog("Replay level")
-                        FixClick(389, 394)
+                        ClickReplay()
                     }
                 return RestartStage()
             }
@@ -543,11 +524,11 @@ MonitorEndScreen() {
                 AddToLog("Handling Raid end")
                 if (ReturnLobbyBox.Value) {
                     AddToLog("Return to lobby")
-                    ClickUntilGone(0, 0, 80, 85, 739, 224, LobbyText, 0, -35, LobbyText2)
+                    ClickReturnToLobby()
                     return CheckLobby()
                 } else {
                     AddToLog("Replay raid")
-                    FixClick(389, 394)
+                    ClickReplay()
                     return RestartStage()
                 }
             }
@@ -555,13 +536,11 @@ MonitorEndScreen() {
                 AddToLog("Handling end case")
                 if (ReturnLobbyBox.Value) {
                     AddToLog("Return to lobby enabled")
-                    ClickUntilGone(0, 0, 80, 85, 739, 224, LobbyText, 0, -35, LobbyText2)
+                    ClickReturnToLobby()
                     return CheckLobby()
                 } else {
                     AddToLog("Replaying")
-                    FixClick(404, 396)
-                    FixClick(404, 396)
-                    FixClick(404, 396)
+                    ClickReplay()
                     if (ModeDropdown.Text = "Custom") {
                         if (!SeamlessToggle.Value) {
                             loop {
@@ -619,13 +598,13 @@ MonitorStage() {
             stageLength := FormatStageTime(stageEndTime - stageStartTime)
                 
             ; Check for Victory or Defeat
-            if (ok := (FindText(&X, &Y, 405-150000, 268-150000, 405+150000, 268+150000, 0.20, 0.20, Victory)) or (FindText(&X, &Y, 405-150000, 268-150000, 405+150000, 268+150000, 0.20, 0.20, Cleared))) {
+            if (ok := (FindText(&X, &Y, 357, 253, 454, 310, 0.20, 0.20, Victory)) or (FindText(&X, &Y, 405-150000, 268-150000, 405+150000, 268+150000, 0.20, 0.20, Cleared))) {
                 AddToLog("Victory detected - Stage Length: " stageLength)
                 Wins += 1
                 SendWebhookWithTime(true, stageLength)
                 return MonitorEndScreen()  ; Original behavior for other modes
             }
-            else if (ok := FindText(&X, &Y, 403-150000, 269-150000, 403+150000, 269+150000, 0, 0, Defeat)) {
+            else if (ok := FindText(&X, &Y, 357, 253, 454, 310, 0, 0, Defeat)) {
                 AddToLog("Defeat detected - Stage Length: " stageLength)
                 loss += 1
                 SendWebhookWithTime(false, stageLength) 
@@ -1633,7 +1612,7 @@ GenerateBleachPoints() {
 }
 
 CheckEndAndRoute() {
-    if (ok := FindText(&X, &Y, 140, 130, 662, 172, 0, 0, LobbyText)) {
+    if (ok := FindText(&X, &Y, 140, 130, 662, 172, 0, 0, LobbyIcon)) {
         AddToLog("Found end screen")
         return MonitorEndScreen()
     }
@@ -1658,4 +1637,12 @@ GetPlacementSpeed() {
 
     if speedIndex is number  ; Ensure it's a number
         return speeds[speedIndex]  ; Use the value directly from the array
+}
+
+ClickReturnToLobby() {
+    ClickUntilGone(0, 0, 238, 400, 566, 445, LobbyIcon, 0, -35)
+}
+
+ClickReplay() {
+    ClickUntilGone(0, 0, 238, 400, 566, 445, Retry, 0, -25)
 }

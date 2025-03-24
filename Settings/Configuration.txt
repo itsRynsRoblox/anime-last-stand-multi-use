@@ -22,13 +22,13 @@ Placement4=1
 Placement5=1
 Placement6=1
 Priority1=1
-Priority2=2
-Priority3=3
-Priority4=4
+Priority2=1
+Priority3=2
+Priority4=3
 Priority5=5
 Priority6=6
 [PlacementLogic]
-Logic=1
+Logic=2
 
 [PlaceSpeed]
 Speed=3
@@ -50,4 +50,7 @@ isSeamless=1
 AttemptUpgrade=1
 
 [SavedCoordinates]
-X=543, Y=328
+X=320, Y=240
+X=338, Y=321
+X=312, Y=342
+X=453, Y=201
