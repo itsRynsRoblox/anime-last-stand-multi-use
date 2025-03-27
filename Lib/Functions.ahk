@@ -61,6 +61,7 @@ OpenDiscordLink() {
     LegendDropDown.Visible := false
     RaidDropdown.Visible := false
     RaidActDropdown.Visible := false
+    NextLevelBox.Visible := false
     
     if (selected = "Story") {
         StoryDropdown.Visible := true
@@ -71,7 +72,13 @@ OpenDiscordLink() {
     } else if (selected = "Raid") {
         RaidDropdown.Visible := true
         RaidActDropdown.Visible := true
+        NextLevelBox.Visible := true
         mode := "Raid"
+    } else if (selected = "Custom") {
+        mode := "Custom"
+        NextLevelBox.Visible := true
+    } else if (selected = "Dungeon") {
+        mode := "Dungeon"
     }
 }
 

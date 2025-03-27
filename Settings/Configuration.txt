@@ -1,12 +1,12 @@
 Mode=
 
 
-Enabled1=0
-Enabled2=0
-Enabled3=0
-Enabled4=0
-Enabled5=0
-Enabled6=0
+Enabled1=1
+Enabled2=1
+Enabled3=1
+Enabled4=1
+Enabled5=1
+Enabled6=1
 
 UpgradeEnabled1=0
 UpgradeEnabled2=0
@@ -22,13 +22,13 @@ Placement4=1
 Placement5=1
 Placement6=1
 Priority1=1
-Priority2=1
-Priority3=2
-Priority4=3
+Priority2=2
+Priority3=3
+Priority4=4
 Priority5=5
 Priority6=6
 [PlacementLogic]
-Logic=2
+Logic=1
 
 [PlaceSpeed]
 Speed=3
@@ -45,12 +45,8 @@ Lobby=0
 [Seamless]
 isSeamless=1
 
-
-[UpgradeDuringPlacement]
-AttemptUpgrade=1
-
 [SavedCoordinates]
-X=320, Y=240
-X=338, Y=321
-X=312, Y=342
-X=453, Y=201
+X=670, Y=480
+X=435, Y=228
+X=402, Y=224
+X=711, Y=301

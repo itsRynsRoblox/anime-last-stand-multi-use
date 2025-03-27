@@ -12,7 +12,7 @@ Hotkey(F3Key, (*) => Reload())
 Hotkey(F4Key, (*) => TogglePause())
 
 F5:: {
-    MonitorStage
+
 }
 
 StartMacro(*) {
@@ -55,7 +55,7 @@ PlacingUnits(untilSuccessful := true) {
         return MonitorStage()
     }
 
-    placementPoints := PlacementPatternDropdown.Text = "Custom" ? GenerateCustomPoints() : PlacementPatternDropdown.Text = "Circle" ? GenerateCirclePoints() : PlacementPatternDropdown.Text = "Grid" ? GenerateGridPoints() : PlacementPatternDropdown.Text = "Spiral" ? GenerateSpiralPoints() : PlacementPatternDropdown.Text = "Up and Down" ? GenerateUpandDownPoints() : GenerateRandomPoints()
+    placementPoints := PlacementPatternDropdown.Text = "Map Specific" ? UseRecommendedPoints() : PlacementPatternDropdown.Text = "Custom" ? GenerateCustomPoints() : PlacementPatternDropdown.Text = "Circle" ? GenerateCirclePoints() : PlacementPatternDropdown.Text = "Grid" ? GenerateGridPoints() : PlacementPatternDropdown.Text = "Spiral" ? GenerateSpiralPoints() : PlacementPatternDropdown.Text = "Up and Down" ? GenerateUpandDownPoints() : GenerateRandomPoints()
 
     ; Go through each slot
     for slotNum in [1, 2, 3, 4, 5, 6] {
@@ -138,8 +138,6 @@ PlacingUnits(untilSuccessful := true) {
     AddToLog("All units placed to requested amounts")
     UpgradeUnits()
 }
-
-
 
 AttemptUpgrade() {
     global successfulCoordinates, maxedCoordinates, PriorityUpgrade, debugMessages
@@ -280,7 +278,7 @@ CheckForXp() {
 
 
 UpgradeUnits() {
-    global successfulCoordinates, PriorityUpgrade, priority1, priority2, priority3, priority4, priority5, priority6
+    global successfulCoordinates, PriorityUpgrade
 
     totalUnits := Map()    
     upgradedCount := Map()  
@@ -501,72 +499,89 @@ MonitorEndScreen() {
 
     Loop {
         Sleep(3000)  
-        
-        FixClick(560, 560)
-        FixClick(560, 560)
 
-        ; Now handle each mode
+        ; Check for end screen text
         if (ok := FindText(&X, &Y, 238, 400, 566, 445, 0, 0, Retry)) {
             AddToLog("Found Lobby Text - Current Mode: " mode)
             Sleep(2000)
-            if (mode = "Story") {
-                AddToLog("Handling Story mode end")
-                    if (NextLevelBox.Value && lastResult = "win") {
-                        AddToLog("Next level")
-                        ClickUntilGone(0, 0, 80, 85, 739, 224, LobbyIcon, +260, -35)
-                    } else {
-                        AddToLog("Replay level")
-                        ClickReplay()
-                    }
-                return RestartStage()
-            }
-            else if (mode = "Raid") {
-                AddToLog("Handling Raid end")
-                if (ReturnLobbyBox.Value) {
-                    AddToLog("Return to lobby")
-                    ClickReturnToLobby()
-                    return CheckLobby()
-                } else {
-                    AddToLog("Replay raid")
-                    ClickReplay()
-                    return RestartStage()
-                }
-            }
-            else {
-                AddToLog("Handling end case")
-                if (ReturnLobbyBox.Value) {
-                    AddToLog("Return to lobby enabled")
-                    ClickReturnToLobby()
-                    return CheckLobby()
-                } else {
-                    AddToLog("Replaying")
-                    ClickReplay()
-                    if (ModeDropdown.Text = "Custom") {
-                        if (!SeamlessToggle.Value) {
-                            loop {
-                                Sleep(1000) ; Check every second
-                        
-                                ; If Unit Manager is no longer found, break the loop
-                                if (!FindText(&X, &Y, 15, 321, 97, 345, 0, 0, UnitManager)) {
-                                    if (debugMessages) {
-                                        AddToLog("Unit Manager not found, proceeding...")
-                                    }
-                                    break
-                                }
-                                if (debugMessages) {
-                                    AddToLog("Unit Manager not found, proceeding...")
-                                }
-                            }
-                        }
-                        return RestartCustomStage()
-                    } else {
-                        return RestartStage()
-                    }
-                }
-            }
-        }
-        
+            HandleEndScreen()
+        }  
         Reconnect()
+    }
+}
+
+HandleEndScreen() {
+    global mode
+    if (mode = "Dungeon") {
+        HandleDungeonEnd()
+    }
+    else if (mode = "Story") {
+        HandleStoryEnd()
+    }
+    else if (mode = "Raid") {
+        HandleRaidEnd()
+    } else {
+        HandleCustomEnd()
+    }
+}
+
+HandleStoryEnd() {
+    global lastResult
+    AddToLog("Handling Story mode end")
+    if (NextLevelBox.Value && lastResult = "win") {
+        AddToLog("Next level")
+        ClickUntilGone(0, 0, 80, 85, 739, 224, LobbyIcon, +260, -35)
+    } else {
+        AddToLog("Replay level")
+        ClickReplay()
+    }
+    return RestartStage()
+}
+
+HandleRaidEnd() {
+    AddToLog("Handling Raid end")
+    if (ReturnLobbyBox.Value) {
+        AddToLog("Return to lobby")
+        ClickReturnToLobby()
+        return CheckLobby()
+    } else {
+        AddToLog("Replay raid")
+        ClickReplay()
+        return RestartStage()
+    }
+}
+
+HandleCustomEnd() {
+    global lastResult
+    AddToLog("Handling end case")
+    if (NextLevelBox.Value) {
+        if (lastResult = "win") {
+            AddToLog("Next level")
+            ClickUntilGone(0, 0, 80, 85, 739, 224, LobbyIcon, +260, -35)
+            return RestartCustomStage()
+        }
+    } else {
+        AddToLog("Replaying")
+        ClickReplay()
+        if (ModeDropdown.Text = "Custom") {
+            if (!SeamlessToggle.Value) {
+                loop {
+                    Sleep(1000) ; Check every second
+                    if (!FindText(&X, &Y, 15, 321, 97, 345, 0, 0, UnitManager)) {
+                        if (debugMessages) {
+                            AddToLog("Unit Manager not found, proceeding...")
+                        }
+                        break
+                    }
+                    if (debugMessages) {
+                        AddToLog("Unit Manager not found, proceeding...")
+                    }
+                }
+            }
+            return RestartCustomStage()
+        } else {
+            return RestartStage()
+        }
     }
 }
 
@@ -977,11 +992,13 @@ CloseChat() {
 BasicSetup() {
     SendInput("{Tab}") ; Closes Player leaderboard
     Sleep 300
-    FixClick(564, 72) ; Closes Player leaderboard
+    FixClick(487, 71) ; Closes Player leaderboard
     Sleep 300
     CloseChat()
     Sleep 300
-    Zoom()
+    if !(ModeDropdown.Text = "Dungeon") {
+        Zoom()
+    }
     Sleep 300
     TpSpawn()
 }
@@ -1066,7 +1083,7 @@ RestartStage() {
     StartedGame()
 
     ; Begin unit placement and management
-    PlacingUnits(PlacementPatternDropdown.Text == "Custom")
+    PlacingUnits(PlacementPatternDropdown.Text == "Custom" || PlacementPatternDropdown.Text = "Map Specific")
     
     ; Monitor stage progress
     MonitorStage()
@@ -1089,7 +1106,7 @@ RestartCustomStage() {
     StartedGame()
 
     ; Begin unit placement and management
-    PlacingUnits(PlacementPatternDropdown.Text == "Custom")
+    PlacingUnits(PlacementPatternDropdown.Text == "Custom" || PlacementPatternDropdown.Text = "Map Specific")
     
     ; Monitor stage progress
     MonitorStage()
@@ -1160,7 +1177,6 @@ MaxUpgrade() {
 UnitPlaced() {
     if (WaitForUpgradeText(GetPlacementSpeed())) { ; Wait up to 4.5 seconds for the upgrade text to appear
         AddToLog("Unit Placed Successfully")
-        FixClick(325, 185) ; Close upgrade menu
         return true
     }
     return false
@@ -1190,7 +1206,7 @@ CheckAbility() {
 }
 
 UpgradeUnit(x, y) {
-    FixClick(x, y - 3)
+    FixClick(x, y)
     SendInput ("{T}")
     SendInput ("{T}")
     SendInput ("{T}")
@@ -1213,7 +1229,7 @@ CheckLoaded() {
         Sleep(1000)
         
         ; Check for in-game settings
-        if (ok := FindText(&X, &Y, 15, 321, 97, 345, 0, 0, UnitManager)) {
+        if (ok := FindText(&X, &Y, 15, 321, 97, 345, 0.10, 0.10, UnitManager)) {
             AddToLog("Successfully Loaded In")
             Sleep(1000)
             break
@@ -1232,7 +1248,10 @@ StartedGame() {
 StartSelectedMode() {
     FixClick(400,340)
     FixClick(400,390)
-    if (ModeDropdown.Text = "Story") {
+    if (ModeDropdown.Text = "Dungeon") {
+        DungeonMode()
+    }
+    else if (ModeDropdown.Text = "Story") {
         StoryMode()
     }
     else if (ModeDropdown.Text = "Legend") {
@@ -1497,6 +1516,9 @@ UseRecommendedPoints() {
            ; return GenerateCentralCityPoints()
         }
     }
+    if (ModeDropdown.Text = "Dungeon") {
+        return GenerateDungeonPoints()
+    }
     return GenerateRandomPoints()
 }
 
@@ -1590,6 +1612,19 @@ GenerateCentralCityPoints() {
     
     return points
 }
+
+GenerateDungeonPoints() {
+    points := []
+
+    points.Push({ x: 695, y: 460 })
+    points.Push({ x: 662, y: 300 })
+    points.Push({ x: 753, y: 329 })
+    points.Push({ x: 499, y: 268 }) ; Hill
+    
+    return points
+}
+
+
 
 GenerateCentralCityPoints2() {
     points := []

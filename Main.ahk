@@ -7,6 +7,7 @@ SendMode "Event"
 #Include %A_ScriptDir%\lib/GameMango.ahk
 #Include %A_ScriptDir%\lib/Functions.ahk
 #Include %A_ScriptDir%\lib/Config.ahk
+#Include %A_ScriptDir%\Lib\Modes\Dungeon.ahk
 #Include %A_ScriptDir%\lib/webhooksettings.ahk
 #Include %A_ScriptDir%\Lib\FindText.ahk
 #Include %A_ScriptDir%\Lib\Toggles.ahk

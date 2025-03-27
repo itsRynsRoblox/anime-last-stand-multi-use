@@ -19,7 +19,7 @@ readInSettings() {
     global placement1, placement2, placement3, placement4, placement5, placement6
     global priority1, priority2, priority3, priority4, priority5, priority6
     global mode
-    global PlacementPatternDropdown, PlaceSpeed, SkipLobby, ReturnLobbyBox, UpgradeDuringPlacementBox, SeamlessToggle, PriorityUpgrade
+    global PlacementPatternDropdown, PlaceSpeed, SkipLobby, ReturnLobbyBox, SeamlessToggle, PriorityUpgrade
     global savedCoords
 
     try {
@@ -95,7 +95,6 @@ readInSettings() {
                 case "Upgrade": PriorityUpgrade.Value := parts[2] ; Set the checkbox value
                 case "Skipping": SkipLobby.Value := parts[2]  ; Set checkbox value
                 case "Lobby": ReturnLobbyBox.Value := parts[2]  ; Set checkbox value
-                case "AttemptUpgrade": UpgradeDuringPlacementBox.Value := parts[2] ; Set the checkbox value
                 case "isSeamless": SeamlessToggle.Value := parts[2] ; Set the checkbox value
             }
         }
@@ -111,7 +110,7 @@ SaveSettings(*) {
     global placement1, placement2, placement3, placement4, placement5, placement6
     global priority1, priority2, priority3, priority4, priority5, priority6
     global mode
-    global PlacementPatternDropdown, PlaceSpeed, SkipLobby, ReturnLobbyBox, UpgradeDuringPlacementBox, SeamlessToggle, PriorityUpgrade
+    global PlacementPatternDropdown, PlaceSpeed, SkipLobby, ReturnLobbyBox, SeamlessToggle, PriorityUpgrade
     global savedCoords
 
     try {
@@ -174,9 +173,6 @@ SaveSettings(*) {
 
         content .= "`n[Seamless]"
         content .= "`nisSeamless=" SeamlessToggle.Value "`n"
-
-        content .= "`n`n[UpgradeDuringPlacement]"
-        content .= "`nAttemptUpgrade=" UpgradeDuringPlacementBox.Value "`n"  ; Save modulation value
 
         ; Save the stored coordinates
         content .= "`n[SavedCoordinates]`n"
