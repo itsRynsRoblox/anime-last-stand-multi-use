@@ -99,7 +99,7 @@ readInSettings() {
             }
         }
         
-        AddToLog("✅ Settings loaded successfully. " savedCoords.Length " placement(s) successfully restored!")
+        AddToLog("✅ Settings loaded successfully. " savedCoords.Length " placement(s) successfully loaded!")
     } 
 }
 
@@ -185,7 +185,7 @@ SaveSettings(*) {
         }
 
         FileAppend(content, settingsFile)
-        AddToLog("✅ Configuration settings and custom placements saved successfully!")
+        AddToLog("✅ Configuration settings saved successfully!")
     }
 }
 

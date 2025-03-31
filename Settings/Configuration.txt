@@ -43,10 +43,7 @@ Skipping=1
 Lobby=0
 
 [Seamless]
-isSeamless=1
+isSeamless=0
 
 [SavedCoordinates]
-X=670, Y=480
-X=435, Y=228
-X=402, Y=224
-X=711, Y=301
+NoCoordinatesSaved

@@ -255,7 +255,7 @@ PlaceSpeedText := aaMainUI.Add("Text", "x1193 y390 w115 h20", "Placement Speed")
 global PlaceSpeed := aaMainUI.Add("DropDownList", "x1205 y410 w100 h180 Choose1 +Center", ["Super Fast (1s)", "Fast (1.5s)", "Default (2s)", "Slow (2.5s)", "Very Slow (3s)", "Toaster (4s)"])
 
 PlacementSelectionText := aaMainUI.Add("Text", "x857 y390 w130 h20", "Placement Settings")
-PlacementSelection := aaMainUI.Add("DropDownList", "x865 y410 w100 h180 Choose1 +Center", ["Normal"])
+PlacementSelection := aaMainUI.Add("DropDownList", "x865 y410 w100 h180 Choose1 +Center", ["Normal", "Has Godly"])
 placementSaveText := aaMainUI.Add("Text", "x807 y451 w80 h20", "Save Config")
 Hotkeytext := aaMainUI.Add("Text", "x807 y35 w200 h30", "F1: Fix Roblox Position")
 Hotkeytext2 := aaMainUI.Add("Text", "x807 y50 w200 h30", "F2: Start Macro")

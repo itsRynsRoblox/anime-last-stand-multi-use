@@ -12,7 +12,7 @@ Hotkey(F3Key, (*) => Reload())
 Hotkey(F4Key, (*) => TogglePause())
 
 F5:: {
-
+    PlacingUnits(true)
 }
 
 StartMacro(*) {
@@ -55,10 +55,18 @@ PlacingUnits(untilSuccessful := true) {
         return MonitorStage()
     }
 
-    placementPoints := PlacementPatternDropdown.Text = "Map Specific" ? UseRecommendedPoints() : PlacementPatternDropdown.Text = "Custom" ? GenerateCustomPoints() : PlacementPatternDropdown.Text = "Circle" ? GenerateCirclePoints() : PlacementPatternDropdown.Text = "Grid" ? GenerateGridPoints() : PlacementPatternDropdown.Text = "Spiral" ? GenerateSpiralPoints() : PlacementPatternDropdown.Text = "Up and Down" ? GenerateUpandDownPoints() : GenerateRandomPoints()
+    ; Get the user-defined placement order (could be from a dropdown or user input)
+    placementOrder := PlacementSelection.Text = "Normal" ? [1, 2, 3, 4, 5, 6] : [2, 1, 3, 4, 5, 6]
 
-    ; Go through each slot
-    for slotNum in [1, 2, 3, 4, 5, 6] {
+    placementPoints := PlacementPatternDropdown.Text = "Map Specific" ? UseRecommendedPoints() :
+                        PlacementPatternDropdown.Text = "Custom" ? GenerateCustomPoints() :
+                        PlacementPatternDropdown.Text = "Circle" ? GenerateCirclePoints() :
+                        PlacementPatternDropdown.Text = "Grid" ? GenerateGridPoints() :
+                        PlacementPatternDropdown.Text = "Spiral" ? GenerateSpiralPoints() :
+                        PlacementPatternDropdown.Text = "Up and Down" ? GenerateUpandDownPoints() : GenerateRandomPoints()
+
+    ; Use user-defined placement order to iterate through slots
+    for slotNum in placementOrder {
         enabled := "enabled" slotNum
         enabled := %enabled%
         enabled := enabled.Value
@@ -139,9 +147,50 @@ PlacingUnits(untilSuccessful := true) {
     UpgradeUnits()
 }
 
+PlaceDungeonUnits() {
+    placementPoints := PlacementPatternDropdown.Text = "Custom" ? GenerateCustomPoints() : GenerateDungeonPoints()
+
+    ; Collect enabled slots
+    enabledSlots := []
+    for slotNum in [1, 2, 3, 4, 5, 6] {
+        enabled := "enabled" slotNum
+        enabled := %enabled%
+        enabled := enabled.Value
+        if (enabled) {
+            enabledSlots.Push(slotNum)
+        }
+    }
+
+    if (enabledSlots.Length = 0) {
+        if (debugMessages) {
+            AddToLog("No units enabled - exiting")
+        }
+        return
+    }
+
+    ; Loop through placement points and assign them to enabled slots in order
+    pointIndex := 1
+    while true {
+        for slotIndex, slotNum in enabledSlots {
+            point := placementPoints[pointIndex]
+            if PlaceUnit(point.x, point.y, slotNum) {
+                SendInput("{T}")
+                CheckAbility()
+                FixClick(700, 560) ; Move Click
+            }
+            Sleep(500) ; Prevent spamming
+
+            ; Move to the next placement point, loop back if at the end
+            pointIndex++
+            if (pointIndex > placementPoints.Length) {
+                pointIndex := 1
+            }
+        }
+    }
+}
+
 AttemptUpgrade() {
-    global successfulCoordinates, maxedCoordinates, PriorityUpgrade, debugMessages
-    global priority1, priority2, priority3, priority4, priority5, priority6
+    global successfulCoordinates, maxedCoordinates
 
     if (successfulCoordinates.Length = 0) {
         return ; No units placed yet
@@ -567,9 +616,9 @@ HandleCustomEnd() {
             if (!SeamlessToggle.Value) {
                 loop {
                     Sleep(1000) ; Check every second
-                    if (!FindText(&X, &Y, 15, 321, 97, 345, 0, 0, UnitManager)) {
+                    if (FindText(&X, &Y, 15, 321, 97, 345, 0, 0, UnitManager)) {
                         if (debugMessages) {
-                            AddToLog("Unit Manager not found, proceeding...")
+                            AddToLog("Unit Manager found, proceeding...")
                         }
                         break
                     }
@@ -1198,8 +1247,8 @@ CheckAbility() {
     
     ; Only check ability if checkbox is checked
     if (AutoAbilityBox.Value) {
-        if (ok := FindText(&X, &Y, 342, 253, 401, 281, 0, 0, AutoOff)) {
-            FixClick(373, 237)  ; Turn ability on
+        if (ok := FindText(&X, &Y, 527, 250, 558, 395, 0, 0, AutoOff)) {
+            FixClick(540, 290)
             AddToLog("Auto Ability Enabled")
         }
     }
