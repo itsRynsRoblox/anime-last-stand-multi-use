@@ -3,8 +3,6 @@
 global macroStartTime := A_TickCount
 global stageStartTime := A_TickCount
 
-global step := 50
-
 LoadKeybindSettings()  ; Load saved keybinds
 Hotkey(F1Key, (*) => moveRobloxWindow())
 Hotkey(F2Key, (*) => StartMacro())
@@ -12,14 +10,34 @@ Hotkey(F3Key, (*) => Reload())
 Hotkey(F4Key, (*) => TogglePause())
 
 F5:: {
-    PlacingUnits(true)
+
+}
+
+F6:: {
+
+}
+
+F7:: {
+    CopyMouseCoords(false)
+}
+
+F8:: {
+    Run (A_ScriptDir "\Lib\FindText.ahk")
 }
 
 StartMacro(*) {
     if (!ValidateMode()) {
         return
     }
-    StartSelectedMode()
+    if (StartsInLobby(ModeDropdown.Text)) {
+        if (ok := FindText(&X, &Y, 7, 590, 37, 618, 0, 0, LobbySettings)) {
+            StartSelectedMode()
+        } else {
+            AddToLog("You need to be in the lobby to start " ModeDropdown.Text " mode")
+        }
+    } else {
+        StartSelectedMode()
+    }
 }
 
 TogglePause(*) {
@@ -33,7 +51,7 @@ TogglePause(*) {
     }
 }
 
-PlacingUnits(untilSuccessful := true) {
+StartPlacingUnits(untilSuccessful := true) {
     global successfulCoordinates, maxedCoordinates
     successfulCoordinates := []
     maxedCoordinates := []
@@ -56,14 +74,25 @@ PlacingUnits(untilSuccessful := true) {
     }
 
     ; Get the user-defined placement order (could be from a dropdown or user input)
-    placementOrder := PlacementSelection.Text = "Normal" ? [1, 2, 3, 4, 5, 6] : [2, 1, 3, 4, 5, 6]
+    placementOrder := PlacementSelection.Text = "Slot #1 First" ? [1, 2, 3, 4, 5, 6] : [2, 1, 3, 4, 5, 6]
 
-    placementPoints := PlacementPatternDropdown.Text = "Map Specific" ? UseRecommendedPoints() :
-                        PlacementPatternDropdown.Text = "Custom" ? GenerateCustomPoints() :
-                        PlacementPatternDropdown.Text = "Circle" ? GenerateCirclePoints() :
-                        PlacementPatternDropdown.Text = "Grid" ? GenerateGridPoints() :
-                        PlacementPatternDropdown.Text = "Spiral" ? GenerateSpiralPoints() :
-                        PlacementPatternDropdown.Text = "Up and Down" ? GenerateUpandDownPoints() : GenerateRandomPoints()
+    placementStrategies := Map(
+        "Map Specific", UseRecommendedPoints,
+        "Custom", UseCustomPoints,
+        "Circle", GenerateCirclePoints,
+        "Grid", GenerateGridPoints,
+        "Spiral", GenerateSpiralPoints,
+        "Up and Down", GenerateUpandDownPoints
+    )
+
+    ; Get the selected text
+    selection := PlacementPatternDropdown.Text
+
+    ; Call mapped function if it exists, else use fallback
+    if placementStrategies.Has(selection)
+        placementPoints := placementStrategies[selection].Call()
+    else
+        placementPoints := GenerateRandomPoints()
 
     ; Use user-defined placement order to iterate through slots
     for slotNum in placementOrder {
@@ -82,6 +111,7 @@ PlacingUnits(untilSuccessful := true) {
 
         ; If enabled, place all units for this slot
         if (enabled && placements > 0) {
+            HandleStartButton() ; Check for start button if placement failed
             AddToLog("Placing Unit " slotNum " (0/" placements ")")
             
             for point in placementPoints {
@@ -109,9 +139,12 @@ PlacingUnits(untilSuccessful := true) {
                             successfulCoordinates.Push({x: point.x, y: point.y, slot: slotNum})
                             placedCounts[slotNum] += 1
                             AddToLog("Placed Unit " slotNum " (" placedCounts[slotNum] "/" placements ")")
-                            CheckAbility()
+                            HandleAutoAbility()
                             FixClick(700, 560) ; Move Click
-                            AttemptUpgrade()
+                            ;AttemptUpgrade()
+                            UpgradePlacedUnits()
+                        } else {
+                            HandleStartButton() ; Check for start button if placement failed
                         }
                     }
                 }
@@ -122,17 +155,24 @@ PlacingUnits(untilSuccessful := true) {
                             successfulCoordinates.Push({x: point.x, y: point.y, slot: slotNum})
                             placedCounts[slotNum] += 1
                             AddToLog("Placed Unit " slotNum " (" placedCounts[slotNum] "/" placements ")")
-                            CheckAbility()
+                            HandleAutoAbility()
                             FixClick(700, 560) ; Move Click
-                            AttemptUpgrade()
+                            ;AttemptUpgrade()
+                            UpgradePlacedUnits()
                             break ; Move to the next placement spot
                         }
-                        AttemptUpgrade()
+                        UpgradePlacedUnits()
+                        ;AttemptUpgrade()
                         if CheckForXp()
                             return MonitorStage()
 
+                        if (CheckForStartButton()) {
+                            AddToLog("Start button found, clicking to start stage")
+                            FixClick(355, 515) ; Click the start button
+                            Sleep(500)
+                        }
+
                         Reconnect()
-                        CheckEndAndRoute()
                         Sleep(500) ; Prevents spamming clicks too fast
                     }
                 }
@@ -148,7 +188,7 @@ PlacingUnits(untilSuccessful := true) {
 }
 
 PlaceDungeonUnits() {
-    placementPoints := PlacementPatternDropdown.Text = "Custom" ? GenerateCustomPoints() : GenerateDungeonPoints()
+    placementPoints := PlacementPatternDropdown.Text = "Custom" ? UseCustomPoints() : GenerateDungeonPoints()
 
     ; Collect enabled slots
     enabledSlots := []
@@ -175,7 +215,7 @@ PlaceDungeonUnits() {
             point := placementPoints[pointIndex]
             if PlaceUnit(point.x, point.y, slotNum) {
                 SendInput("{T}")
-                CheckAbility()
+                HandleAutoAbility()
                 FixClick(700, 560) ; Move Click
             }
             Sleep(500) ; Prevent spamming
@@ -252,16 +292,14 @@ AttemptUpgrade() {
                         AddToLog("Max upgrade reached for Unit " coord.slot)
                         successfulCoordinates.RemoveAt(index)
                         maxedCoordinates.Push(coord)
-                        FixClick(325, 185) ; Close upgrade menu
+                        FixClick(700, 560) ; Move Click
                         continue
                     }
 
                     Sleep(200)
-                    CheckAbility()
+                    HandleAutoAbility()
                     FixClick(700, 560) ; Move Click
                     Reconnect()
-                    CheckEndAndRoute()
-
                     upgradedThisRound := true
                 }
             }
@@ -304,10 +342,9 @@ AttemptUpgrade() {
             }
 
             Sleep(200)
-            CheckAbility()
+            HandleAutoAbility()
             FixClick(700, 560) ; Move Click
             Reconnect()
-            CheckEndAndRoute()
         }
     }
     if (debugMessages) {
@@ -318,8 +355,6 @@ AttemptUpgrade() {
 CheckForXp() {
     ; Check for lobby text
     if (ok := FindText(&X, &Y, 225, 217, 356, 246, 0.20, 0.20, Results)) {
-        FixClick(325, 185)
-        FixClick(560, 560)
         return true
     }
     return false
@@ -327,120 +362,40 @@ CheckForXp() {
 
 
 UpgradeUnits() {
-    global successfulCoordinates, PriorityUpgrade
+    global stage
+    global successfulCoordinates, maxedCoordinates
 
-    totalUnits := Map()    
-    upgradedCount := Map()  
-    
-    ; Initialize counters
+    global totalUnits := Map(), upgradedCount := Map()
+
     for coord in successfulCoordinates {
-        if (!totalUnits.Has(coord.slot)) {
-            totalUnits[coord.slot] := 0
-            upgradedCount[coord.slot] := 0
-        }
-        totalUnits[coord.slot]++
+        totalUnits[coord.slot] := (totalUnits.Has(coord.slot) ? totalUnits[coord.slot] + 1 : 1)
+        upgradedCount[coord.slot] := upgradedCount.Has(coord.slot) ? upgradedCount[coord.slot] : 0
     }
 
     AddToLog("Initiating Unit Upgrades...")
-
+    stage := "Upgrading"
     if (PriorityUpgrade.Value) {
         AddToLog("Using priority upgrade system")
-        
-        ; Go through each priority level (1-6)
         for priorityNum in [1, 2, 3, 4, 5, 6] {
-            AddToLog("Starting upgrades for priority " priorityNum)
-            
-            ; Keep upgrading units with the current priority until all are maxed
-            while true {
-                priorityDone := true
-                
-                for index, coord in successfulCoordinates {
-                    priority := "priority" coord.slot
-                    priority := %priority%
-                    if (priority.Text = priorityNum) {
-                        priorityDone := false
-                        UpgradeUnit(coord.x, coord.y)
+            for slot in [1, 2, 3, 4, 5, 6] {
+                priority := "priority" slot
+                priority := %priority%
 
-                        if CheckForXp() {
-                            AddToLog("Stage ended during upgrades, proceeding to results")
-                            successfulCoordinates := []
-                            MonitorStage()
-                            return
-                        }
-
-                        if CheckForPortalSelection() {
-                            AddToLog("Stage ended during upgrades, proceeding to results")
-                            successfulCoordinates := []
-                            MonitorStage()
-                            return
-                        }
-
-                        if MaxUpgrade() {
-                            upgradedCount[coord.slot]++
-                            AddToLog("Max upgrade reached for Unit " coord.slot " (" upgradedCount[coord.slot] "/" totalUnits[coord.slot] ")")
-                            successfulCoordinates.RemoveAt(index)
-                            FixClick(325, 185) ;Close upg menu
-                            break
-                        }
-
-                        Sleep(200)
-                        CheckAbility()
-                        FixClick(560, 560) ; Move Click
-                        Reconnect()
-                        CheckEndAndRoute()
-                    }
-                }
-                
-                if (priorityDone || successfulCoordinates.Length = 0) {
-                    AddToLog("Finished upgrades for priority " priorityNum)
-                    break
+                if (priority.Text = priorityNum && HasUnitsInSlot(slot, successfulCoordinates)) {
+                    AddToLog("Starting upgrades for priority " priorityNum " (slot " slot ")")
+                    ProcessUpgrades(slot, priorityNum)
                 }
             }
         }
-        
         AddToLog("Priority upgrading completed")
-        return MonitorStage()
     } else {
-        ; Normal upgrade (no priority)
-        while true {
-            if (successfulCoordinates.Length == 0) {
-                AddToLog("All units maxed, proceeding to monitor stage")
-                return MonitorStage()
-            }
-
-            for index, coord in successfulCoordinates {
-                UpgradeUnit(coord.x, coord.y)
-
-                if CheckForXp() {
-                    AddToLog("Stage ended during upgrades, proceeding to results")
-                    successfulCoordinates := []
-                    MonitorStage()
-                    return
-                }
-
-                if CheckForPortalSelection() {
-                    AddToLog("Stage ended during upgrades, proceeding to results")
-                    successfulCoordinates := []
-                    MonitorStage()
-                    return
-                }
-
-                if MaxUpgrade() {
-                    upgradedCount[coord.slot]++
-                    AddToLog("Max upgrade reached for Unit " coord.slot " (" upgradedCount[coord.slot] "/" totalUnits[coord.slot] ")")
-                    successfulCoordinates.RemoveAt(index)
-                    FixClick(325, 185) ;Close upg menu
-                    continue
-                }
-
-                Sleep(200)
-                CheckAbility()
-                FixClick(560, 560) ; Move Click
-                Reconnect()
-                CheckEndAndRoute()
-            }
+        while (successfulCoordinates.Length > 0) {
+            ProcessUpgrades(false, "")
         }
+        AddToLog("All units maxed, proceeding to monitor stage")
     }
+
+    return MonitorStage()
 }
 
 ChallengeMode() {    
@@ -455,33 +410,26 @@ ChallengeMode() {
 }
 
 StoryMode() {
-    global SkipLobby
-    global StoryDropdown
     
     ; Get current map and act
     currentStoryMap := StoryDropdown.Text
-    if (!SkipLobby) {
+    currentStoryAct := StoryActDropdown.Text
         
-        ; Execute the movement pattern
-        AddToLog("Moving to position for " currentStoryMap)
-        StoryMovement()
-        
-        ; Start stage
-        while !(ok:=FindText(&X, &Y, 208-150000, 188-150000, 208+150000, 188+150000, 0, 0, Story)) {
-            StoryMovement()
-        }
-        AddToLog("Starting " currentStoryMap)
-        StartStory(currentStoryMap)
+    ; Execute the movement pattern
+    AddToLog("Moving to position for " currentStoryMap)
+    StoryMovement()
     
-        ; Handle play mode selection
-        PlayHere()
-        RestartStage()
-    } else {
-        AddToLog("Starting " currentStoryMap)
-        ; Handle play mode selection
-        PlayHere()
-        RestartStage()
+    ; Start stage
+    while !(ok:=FindText(&X, &Y, 352, 431, 451, 458, 0, 0, StorySelectButton)) {
+        StoryMovement()
     }
+
+    AddToLog("Starting " currentStoryMap " - " currentStoryAct)
+    StartStory(currentStoryMap, currentStoryAct)
+
+    ; Handle play mode selection
+    PlayHere()
+    RestartStage()
 }
 
 
@@ -510,32 +458,25 @@ LegendMode() {
 }
 
 RaidMode() {
-    global SkipLobby
-    global RaidDropdown
-    
+
     ; Get current map and act
     currentRaidMap := RaidDropdown.Text
     currentRaidAct := RaidActDropdown.Text
 
-    if (!SkipLobby.Value) {
-        ; Execute the movement pattern
-        AddToLog("Moving to position for " currentRaidMap)
+    ; Execute the movement pattern
+    AddToLog("Moving to position for " currentRaidMap)
+    RaidMovement()
+
+    ; Start stage
+    while !(ok := FindText(&X, &Y, 351, 435, 454, 455, 0, 0, RaidSelectButton)) {
         RaidMovement()
-    
-        ; Start stage
-        while !(ok := FindText(&X, &Y, 175, 173, 245, 204, 0, 0, Raids)) {
-            RaidMovement()
-        }
-        AddToLog("Starting " currentRaidMap " - " currentRaidAct)
-        StartRaidNoUI(currentRaidMap, currentRaidAct)
-        ; Handle play mode selection
-        PlayHere()
-        RestartStage()
-    } else {
-        ; Handle play mode selection
-        PlayHere()
-        RestartStage()
     }
+
+    AddToLog("Starting " currentRaidMap " - " currentRaidAct)
+    StartRaid(currentRaidMap, currentRaidAct)
+    ; Handle play mode selection
+    PlayHere("Raid")
+    RestartStage()
 }
 
 CustomMode() {
@@ -543,34 +484,18 @@ CustomMode() {
     RestartCustomStage()
 }
 
-MonitorEndScreen() {
-    global mode, StoryDropdown, ReturnLobbyBox
-
-    Loop {
-        Sleep(3000)  
-
-        ; Check for end screen text
-        if (ok := FindText(&X, &Y, 238, 400, 566, 445, 0, 0, Retry)) {
-            AddToLog("Found Lobby Text - Current Mode: " mode)
-            Sleep(2000)
-            HandleEndScreen()
-        }  
-        Reconnect()
-    }
-}
-
-HandleEndScreen() {
-    global mode
-    if (mode = "Dungeon") {
-        HandleDungeonEnd()
-    }
-    else if (mode = "Story") {
-        HandleStoryEnd()
-    }
-    else if (mode = "Raid") {
-        HandleRaidEnd()
-    } else {
-        HandleCustomEnd()
+HandleEndScreen(isVictory := true) {
+    Switch ModeDropdown.Text {
+        Case "Dungeon":
+            HandleDungeonEnd()
+        Case "Story":
+            HandleStoryEnd()
+        Case "Raid":
+            HandleRaidEnd()
+        Case "Portal":
+            HandlePortalEnd(isVictory)
+        Default:
+            HandleCustomEnd()
     }
 }
 
@@ -612,69 +537,61 @@ HandleCustomEnd() {
     } else {
         AddToLog("Replaying")
         ClickReplay()
-        if (ModeDropdown.Text = "Custom") {
-            if (!SeamlessToggle.Value) {
-                loop {
-                    Sleep(1000) ; Check every second
-                    if (FindText(&X, &Y, 15, 321, 97, 345, 0, 0, UnitManager)) {
-                        if (debugMessages) {
-                            AddToLog("Unit Manager found, proceeding...")
-                        }
-                        break
-                    }
-                    if (debugMessages) {
-                        AddToLog("Unit Manager not found, proceeding...")
-                    }
-                }
-            }
-            return RestartCustomStage()
-        } else {
-            return RestartStage()
-        }
+        return RestartStage()
     }
 }
 
 
 MonitorStage() {
-    global Wins, loss, mode
+    global Wins, loss, mode, stageStartTime
 
     lastClickTime := A_TickCount
-    
+
     Loop {
         Sleep(1000)
 
-        timeElapsed := A_TickCount - lastClickTime
-        if (timeElapsed >= 30000) {
+        ; --- Anti-AFK ---
+        if ((A_TickCount - lastClickTime) >= 30000) {
             AddToLog("Performing anti-AFK click")
             FixClick(560, 560)
             lastClickTime := A_TickCount
         }
 
+        ; --- Check for progression or special cases ---
         CheckForPortalSelection()
+        CheckForWave100()
 
-        if (CheckForXp()) {
+        ; --- Fallback if disconnected ---
+        Reconnect()
 
-            ; Check for XP screen
-            AddToLog("Checking win/loss status")
-                
-            ; Calculate stage end time here, before checking win/loss
-            stageEndTime := A_TickCount
-            stageLength := FormatStageTime(stageEndTime - stageStartTime)
-                
-            ; Check for Victory or Defeat
-            if (ok := (FindText(&X, &Y, 357, 253, 454, 310, 0.20, 0.20, Victory)) or (FindText(&X, &Y, 405-150000, 268-150000, 405+150000, 268+150000, 0.20, 0.20, Cleared))) {
-                AddToLog("Victory detected - Stage Length: " stageLength)
-                Wins += 1
-                SendWebhookWithTime(true, stageLength)
-                return MonitorEndScreen()  ; Original behavior for other modes
-            }
-            else if (ok := FindText(&X, &Y, 357, 253, 454, 310, 0, 0, Defeat)) {
-                AddToLog("Defeat detected - Stage Length: " stageLength)
-                loss += 1
-                SendWebhookWithTime(false, stageLength) 
-                return MonitorEndScreen()  ; Original behavior for other modes
-            }
+        ; --- Wait for XP/Results screen ---
+        if (!CheckForXp())
+            continue
+
+        AddToLog("Checking win/loss status")
+        stageEndTime := A_TickCount
+        stageLength := FormatStageTime(stageEndTime - stageStartTime)
+
+        ; --- Victory or Cleared ---
+        if (FindText(&X, &Y, 357, 253, 454, 310, 0.20, 0.20, Victory) || FindText(&X, &Y, 255, 118, 555, 418, 0.20, 0.20, Cleared)) {
+            AddToLog("Victory detected - Stage Length: " stageLength)
+            Wins++
+            SendWebhookWithTime(true, stageLength)
+            Sleep(2000)
             Reconnect()
+            HandleEndScreen(true)
+            return
+        }
+
+        ; --- Defeat ---
+        if (FindText(&X, &Y, 357, 253, 454, 310, 0, 0, Defeat)) {
+            AddToLog("Defeat detected - Stage Length: " stageLength)
+            loss++
+            SendWebhookWithTime(false, stageLength)
+            Sleep(2000)
+            Reconnect()
+            HandleEndScreen(false)
+            return
         }
     }
 }
@@ -700,20 +617,26 @@ CheckForPortalSelection() {
     return false
 }
 
+CheckForWave100() {
+    if (ok:=FindText(&X, &Y, 258, 36, 293, 52, 0, 0, Wave100)) {
+        FixClick(399, 299)
+        Sleep (500)
+        FixClick(402, 414)
+        return true
+    }
+    return false
+}
+
 StoryMovement() {
     FixClick(35, 350) ; Click Teleport
-    sleep (1000)
+    Sleep (1000)
     FixClick(392, 333) ; Click Story & Infinite
-    sleep (1000)
+    Sleep (1000)
     FixClick(35, 350) ; Click Teleport to close
-    sleep (1000)
-    LookForStoryAngle()
-    SendInput ("{a down}")
-    SendInput ("{w down}")
-    Sleep(4500)
-    SendInput ("{a up}")
-    SendInput ("{w up}")
-    Sleep(500)
+    Sleep (1000)
+
+    spawnAngle := DetectAngle()
+    WalkToStoryRoom(spawnAngle)
 }
 
 ChallengeMovement() {
@@ -726,26 +649,11 @@ ChallengeMovement() {
 }
 
 RaidMovement() {
-    FixClick(35, 350) ; Click Teleport
+    Teleport("Raid")
     Sleep (1000)
-    FixClick(270, 170) ; Click on side
+    spawnAngle := DetectAngle("Raid")
+    WalkToRaidRoom(spawnAngle)
     Sleep (1000)
-    ; Scroll to bottom
-    Loop 10 {
-        Send "{WheelDown}"
-        Sleep 50
-    }
-    FixClick(399, 367) ; Click Raids
-    sleep (1000)
-    FixClick(35, 350) ; Click Teleport to close
-    sleep (1000)
-    LookForRaidAngle()
-    SendInput ("{a down}")
-    SendInput ("{w down}")
-    Sleep(4500)
-    SendInput ("{a up}")
-    SendInput ("{w up}")
-    Sleep(500)
 }
 
 LookForStoryAngle() {
@@ -784,40 +692,54 @@ LookForRaidAngle() {
     }
 }
 
+StartStory(map, act) {
+    AddToLog("Selecting map: " map " and act: " act)
 
-
-StartStory(map) {
-    FixClick(640, 70) ; Closes Player leaderboard
-    Sleep(500)
-    navKeys := GetNavKeys()
-    for key in navKeys {
-        SendInput("{" key "}")
+    ; Get Story map 
+    StoryMap := GetStoryMap(map)
+    if (!StoryMap) {
+        AddToLog("ERROR: Map '" map "' not found. Please tell Ryn")
+        return false
     }
-    Sleep(500)
-
-    leftArrows := 4 ; Go Over To Story
-    Loop leftArrows {
-        SendInput("{Left}")
-        Sleep(200)
-    }
-
-    downArrows := GetStoryDownArrows(map) ; Map selection down arrows
-    Loop downArrows {
-        SendInput("{Down}")
-        Sleep(200)
+    
+    ; Scroll if needed
+    if (StoryMap.scrolls > 0) {
+        AddToLog("Scrolling down " StoryMap.scrolls " for " map)
+        MouseMove(150, 190)
+        SendInput("{WheelDown}")
+        Sleep(250)
     }
 
-    SendInput("{Enter}") ; Select storymode
-    Sleep(500)
-
-    SendInput("{Right}") ; Go to act selection
     Sleep(1000)
     
-    SendInput("{Enter}") ; Select Act
-    Sleep(500)
-    for key in navKeys {
-        SendInput("{" key "}")
+    ; Click on the map
+    FixClick(StoryMap.x, StoryMap.y)
+    Sleep(1000)
+    
+    ; Get act details
+    StoryAct := GetStoryAct(act)
+
+    if (!StoryAct) {
+        AddToLog("Error: Act '" act "' not found. Please tell Ryn")
+        return false
     }
+    
+    ; Scroll if needed for act
+    if (StoryAct.scrolls > 0) {
+        AddToLog("Scrolling down " StoryAct.scrolls " times for " act)
+        MouseMove(300, 240)
+        loop StoryAct.scrolls {
+            SendInput("{WheelDown}")
+            Sleep(250)
+        }
+    }
+    Sleep(1000)
+    
+    ; Click on the act
+    FixClick(StoryAct.x, StoryAct.y)
+    Sleep(1000)
+    
+    return true
 }
 
 StartLegend(map) {
@@ -857,53 +779,58 @@ StartLegend(map) {
     }
 }
 
-StartRaid(map) {
-    FixClick(640, 70) ; Closes Player leaderboard
-    Sleep(500)
-    navKeys := GetNavKeys()
-    for key in navKeys {
-        SendInput("{" key "}")
-    }
-    Sleep(500)
+StartRaid(map, act) {
+    AddToLog("Selecting map: " map " and act: " act)
 
-    downArrows := GetRaidDownArrows(map) ; Map selection down arrows
-    Loop downArrows {
-        SendInput("{Down}")
-        Sleep(200)
-    }
-
-    SendInput("{Enter}") ; Select Raid
-
-    Loop 4 {
-        SendInput("{Up}") ; Makes sure it selects act
-        Sleep(200)
-    }
-
-    SendInput("{Left}") ; Go to act selection
-    Sleep(500)
+    ; Get Story map 
+    RaidMap := GetRaidMap(map)
     
-    SendInput("{Enter}") ; Select Act
-    Sleep(300)
-    for key in navKeys {
-        SendInput("{" key "}")
+    ; Scroll if needed
+    if (RaidMap.scrolls > 0) {
+        AddToLog("Scrolling down " RaidMap.scrolls " times for " map)
+        MouseMove(195, 185)
+        SendInput("{WheelDown}")
+        Sleep(250)
     }
+    Sleep(1000)
+
+    ; Click on the map
+    FixClick(RaidMap.x, RaidMap.y)
+    
+    RaidAct := GetRaidAct(act)
+    
+    ; Scroll if needed
+    if (RaidAct.scrolls > 0) {
+        AddToLog("Scrolling down " RaidAct.scrolls " times for " act)
+        MouseMove(195, 185)
+        SendInput("{WheelDown}")
+        Sleep(250)
+    }
+
+    Sleep(1000)
+    
+    ; Click on the map
+    FixClick(RaidAct.x, RaidAct.y)
+    return true
 }
 
-StartRaidNoUI(map, RaidActDropdown) {
-    FixClick(640, 70) ; Close Leaderboard
-    Sleep(500)
-    raidClickCoords := GetRaidClickCoords(map) ; Coords for Raid Map
-    FixClick(raidClickCoords.x, raidClickCoords.y) ; Choose Raid
-    Sleep(500)
-    actClickCoords := GetRaidActClickCoords(RaidActDropdown) ; Coords for Raid Act
-    FixClick(actClickCoords.x, actClickCoords.y) ; Choose Raid Act
-}
-
-PlayHere() {
-    FixClick(400, 394)
-    Sleep (300)
-    FixClick(400, 394)
-    Sleep (300)
+PlayHere(mode := "Story") {
+    if (mode = "Story") {
+        FixClick(400, 394)
+        Sleep (300)
+        FixClick(400, 394)
+        Sleep (300)
+    }
+    else if (mode = "Raid") {
+        FixClick(399, 413)
+        Sleep (300)
+        FixClick(570, 433)
+    }
+    else if (mode = "Dungeon") {
+        FixClick(301, 421)
+        Sleep (300)
+        FixClick(570, 433)
+    }
 }
 
 GetStoryDownArrows(map) {
@@ -974,17 +901,68 @@ GetStoryActClickCoords(StoryActDropdown) {
     }
 }
 
-GetRaidClickCoords(map) {
+GetRaidMap(map) {
     switch map {
-        case "Marines Fort": return { x: 230, y: 200 }
-        case "Hell City": return { x: 235, y: 220 }
-        case "Snowy Capital": return { x: 235, y: 255 }
-        case "Leaf Village": return { x: 235, y: 280 }
-        case "Wanderniech": return { x: 235, y: 305 }
-        case "Central City": return { x: 235, y: 330 }
-        case "Giants District": return { x: 235, y: 355 }
-        case "Flying Island": return { x: 235, y: 380 }
+        case "Marines Fort": return { x: 185, y: 185, scrolls: 0 }
+        case "Hell City": return { x: 185, y: 225, scrolls: 0 }
+        case "Snowy Capital": return { x: 185, y: 260, scrolls: 0 }
+        case "Leaf Village": return { x: 185, y: 295, scrolls: 0 }
+        case "Wanderniech": return { x: 185, y: 335, scrolls: 0 }
+        case "Central City": return { x: 185, y: 370, scrolls: 0 }
+        case "Giants District": return { x: 185, y: 265, scrolls: 1 }
+        case "Flying Island": return { x: 185, y: 305, scrolls: 1 }
+        case "U-18": return { x: 185, y: 340, scrolls: 1 }
+        case "Flower Garden": return { x: 185, y: 375, scrolls: 1 }
+        case "Ancient Dungeon": return { x: 185, y: 275, scrolls: 2 }
+        case "Shinjuku Crater": return { x: 185, y: 315, scrolls: 2 }
+        case "Valhalla Arena": return { x: 185, y: 350, scrolls: 2 }
+        case "Frozen Planet": return { x: 185, y: 380, scrolls: 2 }
+        case "Blossom Church": return { x: 185, y: 370, scrolls: 3 }
     }
+}
+
+GetRaidAct(act) {
+    baseY := 185
+    spacing := 30
+    x := 270
+
+    ; Extract the act number from the string, e.g., "Act 3" → 3
+    if RegExMatch(act, "Act\s*(\d+)", &match) {
+        actNumber := match[1]
+        y := baseY + spacing * (actNumber - 1)
+        return { x: x, y: y, scrolls: 0 }
+    }
+
+    ; Default return if the input doesn't match expected format
+    return { x: x, y: baseY, scrolls: 0 }
+}
+
+GetStoryMap(map) {
+    switch map {
+        case "Hog Town": return {x: 190, y: 185, scrolls: 0}
+    }
+}
+
+GetStoryAct(act) {
+    baseY := 185
+    spacing := 28
+    baseX := 320
+
+    ; Handle "Infinite" case separately
+    if (act = "Infinite") {
+        x := baseX + spacing * 6  ; Assuming "Infinite" comes after Act 6
+        return { x: x, y: baseY, scrolls: 0 }
+    }
+
+    ; Extract the act number from the string, e.g., "Act 3" → 3
+    if RegExMatch(act, "Act\s*(\d+)", &match) {
+        actNumber := match[1]
+        x := baseX + spacing * (actNumber - 1)
+        return { x: x, y: baseY, scrolls: 0 }
+    }
+
+    ; Default return if the input doesn't match expected format
+    return { x: x, y: baseY, scrolls: 0 }
 }
 
 GetRaidActClickCoords(RaidActDropdown) {
@@ -1003,7 +981,7 @@ Zoom() {
     Sleep 100
 
     ; Zoom in smoothly
-    Loop 10 {
+    Loop 20 {
         Send "{WheelUp}"
         Sleep 50
     }
@@ -1031,6 +1009,13 @@ TpSpawn() {
     Sleep 300
 }
 
+RestartMatch() {
+    FixClick(233, 10) ;click settings
+    Sleep 300
+    FixClick(338, 253) ;click restart match
+    Sleep 3500
+}
+
 CloseChat() {
     if (ok := FindText(&X, &Y, 123, 50, 156, 79, 0, 0, OpenChat)) {
         AddToLog "Closing Chat"
@@ -1053,35 +1038,25 @@ BasicSetup() {
 }
 
 DetectMap() {
-    AddToLog("Determining Movement Necessity on Map...")
-    startTime := A_TickCount
-    
-    Loop {
-        ; Check if we waited more than 5 minute for votestart
-        if (A_TickCount - startTime > 300000) {
-            if (ok := FindText(&X, &Y, 746, 514, 789, 530, 0, 0, AreaText)) {
-                AddToLog("Found in lobby - restarting selected mode")
-                return StartSelectedMode()
-            }
-            AddToLog("Could not detect map after 5 minutes - proceeding without movement")
-            return "no map found"
-        }
-
-        if (ModeDropdown.Text = "Raid") {
-            AddToLog("Map detected: " RaidDropdown.Text)
-            return RaidDropdown.Text
-        }
-
-        ; Check for in-game settings
-        if (ok := FindText(&X, &Y, 15, 321, 97, 345, 0, 0, UnitManager)) {
-            AddToLog("No Map Found or Movement Unnecessary")
-            return "no map found"
-        }
-
-        Sleep 1000
-        Reconnect()
+    AddToLog("Setting map name based on selected mode...")
+    if (ModeDropdown.Text = "Raid") {
+        AddToLog("Map selected: " RaidDropdown.Text)
+        return RaidDropdown.Text
+    } else if (ModeDropdown.Text = "Story") {
+        AddToLog("Map selected: " StoryDropdown.Text)
+        return StoryDropdown.Text
+    } else if (ModeDropdown.Text = "Dungeon") {
+        AddToLog("Map selected: " DungeonDropdown.Text)
+        return DungeonDropdown.Text
+    } else if (ModeDropdown.Text = "Portal") {
+        return PortalDropdown.Text
+    } else {
+        AddToLog("Unknown mode selected - returning 'no map found'")
+        return "no map found"
     }
 }
+
+
 
 HandleMapMovement(MapName) {
     AddToLog("Executing Movement for: " MapName)
@@ -1097,33 +1072,20 @@ MoveForCentralCity() {
     Sleep (5000)
 }
 
-MoveForWinterEvent() {
-    loop {
-        if FindAndClickColor() {
-            break
-        }
-        else {
-            AddToLog("Color not found. Turning again.")
-            SendInput ("{Left up}")
-            Sleep 200
-            SendInput ("{Left down}")
-            Sleep 750
-            SendInput ("{Left up}")
-            KeyWait "Left" ; Wait for key to be fully processed
-            Sleep 200
-        }
-    }
-}
-
     
 RestartStage() {
-    currentMap := DetectMap()
+    global currentMap
+
+    if (currentMap = "" || currentMap = "no map found") {
+        currentMap := DetectMap()
+    }
     
     ; Wait for loading
     CheckLoaded()
 
     ; Do initial setup and map-specific movement during vote timer
     BasicSetup()
+
     if (currentMap != "no map found") {
         HandleMapMovement(currentMap)
     }
@@ -1132,7 +1094,7 @@ RestartStage() {
     StartedGame()
 
     ; Begin unit placement and management
-    PlacingUnits(PlacementPatternDropdown.Text == "Custom" || PlacementPatternDropdown.Text = "Map Specific")
+    StartPlacingUnits(PlacementPatternDropdown.Text == "Custom" || PlacementPatternDropdown.Text = "Map Specific")
     
     ; Monitor stage progress
     MonitorStage()
@@ -1151,48 +1113,57 @@ RestartCustomStage() {
             HandleMapMovement(currentMap)
         }
     }
+
     ; Wait for game to actually start
     StartedGame()
 
     ; Begin unit placement and management
-    PlacingUnits(PlacementPatternDropdown.Text == "Custom" || PlacementPatternDropdown.Text = "Map Specific")
+    StartPlacingUnits(PlacementPatternDropdown.Text == "Custom" || PlacementPatternDropdown.Text = "Map Specific")
     
     ; Monitor stage progress
     MonitorStage()
 }
 
-Reconnect() {   
-    ; Check for Disconnected Screen using FindText
-    if (ok := FindText(&X, &Y, 330, 218, 474, 247, 0, 0, Disconnect)) {
-        AddToLog("Lost Connection! Attempting To Reconnect To Private Server...")
+Reconnect(testing := false) {
+    ; Credit: @Haie
+    color_home := PixelGetColor(10, 10)
+    color_reconnect := PixelGetColor(519, 329)
 
-        psLink := FileExist("Settings\PrivateServer.txt") ? FileRead("Settings\PrivateServer.txt", "UTF-8") : ""
+    if (WinExist(rblxID)) {
+        WinActivate(rblxID)
+    }
 
-        ; Reconnect to Ps
-        if FileExist("Settings\PrivateServer.txt") && (psLink := FileRead("Settings\PrivateServer.txt", "UTF-8")) {
+    if (color_home = 0x121215 || color_reconnect = 0x393B3D || testing) {
+        AddToLog("Disconnected! Attempting to reconnect...")
+        sendDCWebhook()
+
+        ; Use PrivateServerURLBox.Value instead of file
+        psLink := PrivateServerURLBox.Value
+
+        ; Reconnect to PS
+        if (psLink != "") {
             AddToLog("Connecting to private server...")
             Run(psLink)
         } else {
             Run("roblox://placeID=12886143095")
         }
 
-        Sleep(5000)  
+        Sleep 2000
+
+        if WinExist(rblxID) {
+            WinActivate(rblxID)
+            Sleep 1000
+        }
 
         loop {
-            AddToLog("Reconnecting to Roblox...")
-            Sleep(15000)
-
-            if WinExist(rblxID) {
-                forceRobloxSize()
-                moveRobloxWindow()
-                Sleep(1000)
-            }
-            
-            if (ok := FindText(&X, &Y, 746, 514, 789, 530, 0, 0, AreaText)) {
+            FixClick(490, 400)
+            AddToLog("Reconnecting to Anime Last Stand...")
+            Sleep 15000
+            if (ok := FindText(&X, &Y, 7, 590, 37, 618, 0, 0, LobbySettings)) {
                 AddToLog("Reconnected Successfully!")
                 return StartSelectedMode()
             } else {
-                Reconnect() 
+                Reconnect()
             }
         }
     }
@@ -1217,7 +1188,7 @@ PlaceUnit(x, y, slot := 1) {
 MaxUpgrade() {
     Sleep 500
     ; Check for max text
-    if (ok := FindText(&X, &Y, 672-150000, 385-150000, 672+150000, 385+150000, 0, 0, NewMaxUpgaded)) {
+    if (ok := FindText(&X, &Y, 635, 388, 711, 408, 0, 0, MaxUpgradeText)) {
         return true
     }
     return false
@@ -1242,17 +1213,42 @@ WaitForUpgradeText(timeout := 4500) {
     return false  ; Timed out, upgrade text was not found
 }
 
-CheckAbility() {
-    global AutoAbilityBox  ; Reference your checkbox
-    
-    ; Only check ability if checkbox is checked
-    if (AutoAbilityBox.Value) {
-        if (ok := FindText(&X, &Y, 527, 250, 558, 395, 0, 0, AutoOff)) {
-            FixClick(540, 290)
-            AddToLog("Auto Ability Enabled")
+WaitForUpgradeLimitText(upgradeCap, timeout := 4500) {
+    upgradeTexts := [
+        Upgrade0, Upgrade1, Upgrade2, Upgrade3, Upgrade4, Upgrade5, Upgrade6, Upgrade7, Upgrade8, Upgrade9, Upgrade10, Upgrade11, Upgrade12, Upgrade13, Upgrade14
+    ]
+    targetText := upgradeTexts[upgradeCap]
+
+    startTime := A_TickCount
+    while (A_TickCount - startTime < timeout) {
+        if (FindText(&X, &Y, 630, 375, 717, 385, 0, 0, targetText)) {
+            AddToLog("Found Upgrade Cap")
+            return true
+        }
+        Sleep 100
+    }
+    return false  ; Timed out
+}
+
+HandleAutoAbility() {
+    if !AutoAbilityBox.Value
+        return
+
+    pixelChecks := [
+        {color: 0xC22725, x: 539, y: 285},
+        {color: 0xC22725, x: 539, y: 268},
+        {color: 0xC22725, x: 539, y: 303}
+    ]
+
+    for pixel in pixelChecks {
+        if GetPixel(pixel.color, pixel.x, pixel.y, 4, 4, 20) {
+            AddToLog("Enabled Auto Ability")
+            FixClick(pixel.x, pixel.y)
+            Sleep(100)
         }
     }
 }
+
 
 UpgradeUnit(x, y) {
     FixClick(x, y)
@@ -1264,7 +1260,7 @@ UpgradeUnit(x, y) {
 CheckLobby() {
     loop {
         Sleep 1000
-        if (ok := FindText(&X, &Y, 746, 514, 789, 530, 0, 0, AreaText)) {
+        if (ok := FindText(&X, &Y, 7, 590, 37, 618, 0, 0, LobbySettings)) {
             break
         }
         Reconnect()
@@ -1275,12 +1271,12 @@ CheckLobby() {
 
 CheckLoaded() {
     loop {
-        Sleep(1000)
+        Sleep(500)
         
         ; Check for in-game settings
-        if (ok := FindText(&X, &Y, 15, 321, 97, 345, 0.10, 0.10, UnitManager)) {
+        if (ok := FindText(&X, &Y, 17, 322, 100, 373, 0, 0, UnitManager)) {
             AddToLog("Successfully Loaded In")
-            Sleep(1000)
+            Sleep(500)
             break
         }
 
@@ -1289,16 +1285,17 @@ CheckLoaded() {
 }
 
 StartedGame() {
-    Sleep(1000)
+    Sleep(500)
     AddToLog("Game started")
     global stageStartTime := A_TickCount
 }
 
 StartSelectedMode() {
-    FixClick(400,340)
-    FixClick(400,390)
+
+    CloseLobbyPopups()
+
     if (ModeDropdown.Text = "Dungeon") {
-        DungeonMode()
+        Dungeon()
     }
     else if (ModeDropdown.Text = "Story") {
         StoryMode()
@@ -1311,6 +1308,9 @@ StartSelectedMode() {
     }
     else if (ModeDropdown.Text = "Custom") {
         CustomMode()
+    }
+    else if (ModeDropdown.Text = "Portal") {
+        PortalMode()
     }
 }
 
@@ -1341,368 +1341,6 @@ GetNavKeys() {
     return StrSplit(FileExist("Settings\UINavigation.txt") ? FileRead("Settings\UINavigation.txt", "UTF-8") : "\,#,}", ",")
 }
 
-GenerateCustomPoints() {
-    global savedCoords  ; Access the global saved coordinates
-    points := []
-
-    ; Directly use savedCoords without generating new points
-    for coord in savedCoords {
-        points.Push({x: coord.x, y: coord.y})
-    }
-
-    return points
-}
-
-GenerateRandomPoints() {
-    points := []
-    gridSize := 40  ; Minimum spacing between units
-    
-    ; Center point coordinates
-    centerX := 408
-    centerY := 320
-    
-    ; Define placement area boundaries (adjust these as needed)
-    minX := centerX - 180  ; Left boundary
-    maxX := centerX + 180  ; Right boundary
-    minY := centerY - 140  ; Top boundary
-    maxY := centerY + 140  ; Bottom boundary
-    
-    ; Generate 40 random points
-    Loop 40 {
-        ; Generate random coordinates
-        x := Random(minX, maxX)
-        y := Random(minY, maxY)
-        
-        ; Check if point is too close to existing points
-        tooClose := false
-        for existingPoint in points {
-            ; Calculate distance to existing point
-            distance := Sqrt((x - existingPoint.x)**2 + (y - existingPoint.y)**2)
-            if (distance < gridSize) {
-                tooClose := true
-                break
-            }
-        }
-        
-        ; If point is not too close to others, add it
-        if (!tooClose)
-            points.Push({x: x, y: y})
-    }
-    
-    ; Always add center point last (so it's used last)
-    points.Push({x: centerX, y: centerY})
-    
-    return points
-}
-
-GenerateGridPoints() {
-    points := []
-    gridSize := 40  ; Space between points
-    squaresPerSide := 7  ; How many points per row/column (odd number recommended)
-    
-    ; Center point coordinates
-    centerX := 408
-    centerY := 320
-    
-    ; Calculate starting position for top-left point of the grid
-    startX := centerX - ((squaresPerSide - 1) / 2 * gridSize)
-    startY := centerY - ((squaresPerSide - 1) / 2 * gridSize)
-    
-    ; Generate grid points row by row
-    Loop squaresPerSide {
-        currentRow := A_Index
-        y := startY + ((currentRow - 1) * gridSize)
-        
-        ; Generate each point in the current row
-        Loop squaresPerSide {
-            x := startX + ((A_Index - 1) * gridSize)
-            points.Push({x: x, y: y})
-        }
-    }
-    
-    return points
-}
-
-GenerateUpandDownPoints() {
-    points := []
-    gridSize := 40  ; Space between points
-    squaresPerSide := 7  ; How many points per row/column (odd number recommended)
-    
-    ; Center point coordinates
-    centerX := 408
-    centerY := 320
-    
-    ; Calculate starting position for top-left point of the grid
-    startX := centerX - ((squaresPerSide - 1) / 2 * gridSize)
-    startY := centerY - ((squaresPerSide - 1) / 2 * gridSize)
-    
-    ; Generate grid points column by column (left to right)
-    Loop squaresPerSide {
-        currentColumn := A_Index
-        x := startX + ((currentColumn - 1) * gridSize)
-        
-        ; Generate each point in the current column
-        Loop squaresPerSide {
-            y := startY + ((A_Index - 1) * gridSize)
-            points.Push({x: x, y: y})
-        }
-    }
-    
-    return points
-}
-
-; circle coordinates
-GenerateCirclePoints() {
-    points := []
-    
-    ; Define each circle's radius
-    radius1 := 45    ; First circle 
-    radius2 := 90    ; Second circle 
-    radius3 := 135   ; Third circle 
-    radius4 := 180   ; Fourth circle 
-    
-    ; Angles for 8 evenly spaced points (in degrees)
-    angles := [0, 45, 90, 135, 180, 225, 270, 315]
-    
-    ; First circle points
-    for angle in angles {
-        radians := angle * 3.14159 / 180
-        x := centerX + radius1 * Cos(radians)
-        y := centerY + radius1 * Sin(radians)
-        points.Push({ x: Round(x), y: Round(y) })
-    }
-    
-    ; second circle points
-    for angle in angles {
-        radians := angle * 3.14159 / 180
-        x := centerX + radius2 * Cos(radians)
-        y := centerY + radius2 * Sin(radians)
-        points.Push({ x: Round(x), y: Round(y) })
-    }
-    
-    ; third circle points
-    for angle in angles {
-        radians := angle * 3.14159 / 180
-        x := centerX + radius3 * Cos(radians)
-        y := centerY + radius3 * Sin(radians)
-        points.Push({ x: Round(x), y: Round(y) })
-    }
-    
-    ;  fourth circle points
-    for angle in angles {
-        radians := angle * 3.14159 / 180
-        x := centerX + radius4 * Cos(radians)
-        y := centerY + radius4 * Sin(radians)
-        points.Push({ x: Round(x), y: Round(y) })
-    }
-    
-    return points
-}
-
-; Spiral coordinates (restricted to a rectangle)
-GenerateSpiralPoints(rectX := 4, rectY := 123, rectWidth := 795, rectHeight := 433) {
-    points := []
-    
-    ; Calculate center of the rectangle
-    centerX := rectX + rectWidth // 2
-    centerY := rectY + rectHeight // 2
-    
-    ; Angle increment per step (in degrees)
-    angleStep := 30
-    ; Distance increment per step (tighter spacing)
-    radiusStep := 10
-    ; Initial radius
-    radius := 20
-    
-    ; Maximum radius allowed (smallest distance from center to edge)
-    maxRadiusX := (rectWidth // 2) - 1
-    maxRadiusY := (rectHeight // 2) - 1
-    maxRadius := Min(maxRadiusX, maxRadiusY)
-
-    ; Generate spiral points until reaching max boundary
-    Loop {
-        ; Stop if the radius exceeds the max boundary
-        if (radius > maxRadius)
-            break
-        
-        angle := A_Index * angleStep
-        radians := angle * 3.14159 / 180
-        x := centerX + radius * Cos(radians)
-        y := centerY + radius * Sin(radians)
-        
-        ; Check if point is inside the rectangle
-        if (x < rectX || x > rectX + rectWidth || y < rectY || y > rectY + rectHeight)
-            break ; Stop if a point goes out of bounds
-        
-        points.Push({ x: Round(x), y: Round(y) })
-        
-        ; Increase radius for next point
-        radius += radiusStep
-    }
-    
-    return points
-}
-
-UseRecommendedPoints() {
-    if (ModeDropdown.Text = "Raid") {
-        if (RaidDropdown.Text = "Marines Fort") {
-            return GenerateMarineFortPoints()
-        }
-        else if (RaidDropdown.Text = "Hell City") {
-            return GenerateHellCityPoints()
-        }
-        else if (RaidDropdown.Text = "Snowy Capital") {
-            return GenerateSnowyCapitalPoints()
-        }
-        else if (RaidDropdown.Text = "Leaf Village") {
-            return GenerateLeafVillagePoints()
-        }
-        else if (RaidDropdown.Text = "Wanderniech") {
-            return GenerateBleachPoints()
-        }
-        else if (RaidDropdown.Text = "Central City") {
-            return GenerateCentralCityPoints2()
-           ; return GenerateCentralCityPoints()
-        }
-    }
-    if (ModeDropdown.Text = "Dungeon") {
-        return GenerateDungeonPoints()
-    }
-    return GenerateRandomPoints()
-}
-
-Generate3x3GridPoints() {
-    points := []
-    gridSize := 20  ; Space between points
-    gridSizeHalf := gridSize // 2
-    
-    ; Center point coordinates
-    centerX := GetWindowCenter(rblxID).x - 30
-    centerY := GetWindowCenter(rblxID).y - 30
-    
-    ; Define movement directions: right, down, left, up
-    directions := [[1, 0], [0, 1], [-1, 0], [0, -1]]
-    
-    ; Spiral logic for a 3x3 grid
-    x := centerX
-    y := centerY
-    step := 1  ; Number of steps in the current direction
-    dirIndex := 0  ; Current direction index
-    moves := 0  ; Move count to switch direction
-    
-    points.Push({x: x, y: y})  ; Start at center
-    
-    Loop 8 {  ; Fill remaining 8 spots (3x3 grid has 9 total)
-        dx := directions[dirIndex + 1][1] * gridSize
-        dy := directions[dirIndex + 1][2] * gridSize
-        x += dx
-        y += dy
-        points.Push({x: x, y: y})
-        
-        moves++
-        if (moves = step) {  ; Change direction
-            moves := 0
-            dirIndex := Mod(dirIndex + 1, 4)  ; Rotate through 4 directions
-            if (dirIndex = 0 || dirIndex = 2) {
-                step++  ; Increase step size after every two direction changes
-            }
-        }
-    }
-    
-    return points
-}
-
-; raid coordinates
-GenerateMarineFortPoints() {
-    points := []
-
-    points.Push({ x: Round(218), y: Round(264) })
-    points.Push({ x: Round(272), y: Round(244) })
-    points.Push({ x: Round(373), y: Round(244) })
-    
-    return points
-}
-
-GenerateHellCityPoints() {
-    points := []
-
-    points.Push({ x: Round(101), y: Round(242) })
-    points.Push({ x: Round(235), y: Round(202) })
-    points.Push({ x: Round(176), y: Round(197) })
-    
-    return points
-}
-
-GenerateSnowyCapitalPoints() {
-    points := []
-
-    points.Push({ x: 772, y: 252 })
-    points.Push({ x: Round(762), y: Round(457) })
-    points.Push({ x: Round(623), y: Round(366) })
-    
-    return points
-}
-
-GenerateLeafVillagePoints() {
-    points := []
-
-    points.Push({ x: Round(386), y: Round(242) })
-    points.Push({ x: Round(603), y: Round(330) })
-    points.Push({ x: Round(481), y: Round(386) })
-    
-    return points
-}
-
-GenerateCentralCityPoints() {
-    points := []
-    points.Push({ x: Round(413), y: Round(114) })
-    points.Push({ x: Round(419), y: Round(196) })
-    points.Push({ x: Round(404), y: Round(27) })
-    
-    return points
-}
-
-GenerateDungeonPoints() {
-    points := []
-
-    points.Push({ x: 695, y: 460 })
-    points.Push({ x: 662, y: 300 })
-    points.Push({ x: 753, y: 329 })
-    points.Push({ x: 499, y: 268 }) ; Hill
-    
-    return points
-}
-
-
-
-GenerateCentralCityPoints2() {
-    points := []
-    points.Push({ x: Round(258), y: Round(312) }) ; Hill
-    points.Push({ x: Round(167), y: Round(287) })
-    points.Push({ x: Round(167), y: Round(242) })
-    points.Push({ x: Round(147), y: Round(242) })
-    
-    return points
-}
-
-GenerateBleachPoints() {
-    points := []
-
-    points.Push({ x: Round(127), y: Round(580) }) ; Hill Placement
-    points.Push({ x: Round(392), y: Round(507) }) ; Farm
-    points.Push({ x: Round(341), y: Round(509) }) ; DPS Unit
-    
-    return points
-}
-
-CheckEndAndRoute() {
-    if (ok := FindText(&X, &Y, 140, 130, 662, 172, 0, 0, LobbyIcon)) {
-        AddToLog("Found end screen")
-        return MonitorEndScreen()
-    }
-    return false
-}
-
 ClickUntilGone(x, y, searchX1, searchY1, searchX2, searchY2, textToFind, offsetX:=0, offsetY:=0, textToFind2:="") {
     while (ok := FindText(&X, &Y, searchX1, searchY1, searchX2, searchY2, 0, 0, textToFind) || 
            textToFind2 && FindText(&X, &Y, searchX1, searchY1, searchX2, searchY2, 0, 0, textToFind2)) {
@@ -1729,4 +1367,384 @@ ClickReturnToLobby() {
 
 ClickReplay() {
     ClickUntilGone(0, 0, 238, 400, 566, 445, Retry, 0, -25)
+}
+
+SetupForInfinite() {
+    ChangeCameraMode("Follow")
+    Sleep (1000)
+    ZoomIn()
+    Sleep (1000)
+    ZoomOut()
+    ChangeCameraMode("Default (Classic)")
+    Sleep (1000)
+    SendInput ("{a down}")
+    Sleep 2000
+    SendInput ("{a up}")
+    KeyWait "a"
+}
+
+ChangeCameraMode(mode := "") {
+    AddToLog("Changing camera mode to " mode)
+    SendInput("{Escape}") ; Open Roblox Menu
+    Sleep (1000)
+    FixClick(205, 90) ; Click Settings
+    Sleep (1000)
+    loop 2 {
+        FixClick(336, 209) ; Change Camera Mode
+        Sleep (500)
+    }
+    SendInput("{Escape}") ; Open Roblox Menu
+}
+
+ZoomIn() {
+    MouseMove 400, 300
+    Sleep 100
+    FixClick(400, 300)
+    Sleep 100
+
+    ; Zoom in smoothly
+    Loop 12 {
+        Send "{WheelUp}"
+        Sleep 50
+    }
+
+    ; Right-click and drag camera down
+    Sleep 100
+    MouseMove 400, 300  ; Ensure starting point
+    Click "Right Down"
+    Sleep 50
+    MouseMove 400, 400, 20  ; Drag downward over 20ms
+    Sleep 50
+    Click "Right Up"
+    Sleep 100
+}
+
+ZoomOut() {
+    ; Zoom out smoothly
+    Loop 10 {
+        Send "{WheelDown}"
+        Sleep 50
+    }
+
+    ; Move mouse back to center
+    MouseMove 400, 300
+}
+
+DetectAngle(mode := "Story") {
+    switch mode {
+        case "Story":
+            firstAngle := PixelGetColor(408, 98)
+            secondAngle := PixelGetColor(276, 80)
+
+            if (firstAngle = 0xAA7343)
+                return 1
+            if (secondAngle = 0x615A7F)
+                return 2
+
+        case "Raid":
+            firstAngle := PixelGetColor(608, 66)
+            secondAngle := PixelGetColor(345, 96)
+
+            if (firstAngle = 0xA67C3D)  ; Walk Left
+                return 1
+            if (secondAngle = 0xA87249) ; Walk Back then Right
+                return 2
+    }
+    return 0
+}
+
+WalkToStoryRoom(angle) {
+    switch angle {
+        case 1:
+            SendInput("{a down}")
+            Sleep(400)
+            SendInput("{a up}")
+            KeyWait "a"  ; Wait for the key to be fully processed
+            SendInput("{s down}")
+            Sleep(800)
+            SendInput("{s up}")
+            KeyWait "s"  ; Wait for the key to be fully processed
+            SendInput("{a down}")
+            Sleep(400)
+            SendInput("{a up}")
+            KeyWait "a"  ; Wait for the key to be fully processed
+        case 2:
+            SendInput("{d down}")
+            Sleep(800)
+            SendInput("{d up}")
+            KeyWait "d"  ; Wait for the key to be fully processed
+            SendInput("{s down}")
+            Sleep(2000)
+            SendInput("{s up}")
+            KeyWait "s"  ; Wait for the key to be fully processed    
+    }
+}
+
+WalkToRaidRoom(angle) {
+    switch angle {
+        case 1:
+            SendInput("{a down}")
+            Sleep(800)
+            SendInput("{a up}")
+            KeyWait "a"  ; Wait for the key to be fully processed
+            SendInput("{s down}")
+            Sleep(800)
+            SendInput("{s up}")
+            KeyWait "s"  ; Wait for the key to be fully processed
+        case 2:
+            SendInput("{s down}")
+            Sleep(800)
+            SendInput("{s up}")
+            KeyWait "s"  ; Wait for the key to be fully processed
+            SendInput("{d down}")
+            Sleep(2000)
+            SendInput("{d up}")
+            KeyWait "d"  ; Wait for the key to be fully processed    
+    }
+}
+
+TestAllUpgradeFindTexts() {
+    foundCount := 0
+    notFoundCount := 0
+
+    Loop 15 {
+        upgradeCap := A_Index  ; Now 1–15, aligns with AHK v2 arrays
+        result := WaitForUpgradeLimitText(upgradeCap, 500)
+
+        if (result) {
+            AddToLog("Found Upgrade Level: " upgradeCap - 1)
+            foundCount++
+        } else {
+            AddToLog("Did NOT Find Upgrade Level: " upgradeCap - 1)
+            notFoundCount++
+        }
+    }
+
+    AddToLog("Found: " foundCount " | Not Found: " notFoundCount)
+}
+
+UpgradePlacedUnits() {
+    global stage
+    global successfulCoordinates, maxedCoordinates
+    global totalUnits := Map(), upgradedCount := Map()
+
+    for coord in successfulCoordinates {
+        totalUnits[coord.slot] := (totalUnits.Has(coord.slot) ? totalUnits[coord.slot] + 1 : 1)
+        upgradedCount[coord.slot] := upgradedCount.Has(coord.slot) ? upgradedCount[coord.slot] : 0
+    }
+
+    AddToLog("Initiating Single-Pass Unit Upgrades...")
+    stage := "Upgrading"
+
+    if (PriorityUpgrade.Value) {
+        AddToLog("Using priority upgrade system (single pass)")
+        for priorityNum in [1, 2, 3, 4, 5, 6] {
+            for slot in [1, 2, 3, 4, 5, 6] {
+                if (!IsUpgradeEnabled(slot))
+                    continue
+
+                priority := "priority" slot
+                priority := %priority%
+
+                if (priority.Text = priorityNum && HasUnitsInSlot(slot, successfulCoordinates)) {
+                    AddToLog("Processing upgrades for priority " priorityNum " (slot " slot ")")
+                    ProcessUpgrades(slot, priorityNum, true) ; true = single pass
+                }
+            }
+        }
+    } else {
+        seenSlots := Map()
+        for coord in successfulCoordinates {
+            if (!IsUpgradeEnabled(coord.slot))
+                continue
+
+            if (!seenSlots.Has(coord.slot)) {
+                ProcessUpgrades(coord.slot, "", true)
+                seenSlots[coord.slot] := true
+            }
+        }
+    }
+
+    AddToLog("Upgrade attempt completed")
+}
+
+ProcessUpgrades(slot := false, priorityNum := "", singlePass := false) {
+    global successfulCoordinates
+
+    if (singlePass) {
+        for index, coord in successfulCoordinates {
+            if (!slot || coord.slot = slot) {
+                if (StageEndedDuringUpgrades()) {
+                    return HandleStageEnd()
+                }
+
+                UpgradeUnitWithLimit(coord, index)
+
+                if (StageEndedDuringUpgrades()) {
+                    return HandleStageEnd()
+                }
+
+                PostUpgradeChecks()
+
+                if (MaxUpgrade()) {
+                    HandleMaxUpgrade(coord, index)
+                }
+
+                Sleep(200)
+                FixClick(700, 560)
+
+                PostUpgradeChecks()
+            }
+        }
+
+        if (slot)
+            AddToLog("Finished single-pass upgrades for priority " priorityNum)
+
+        return
+    }
+
+    ; Original behavior (full upgrade loop)
+    while (true) {
+        slotDone := true
+
+        for index, coord in successfulCoordinates {
+            if (!slot || coord.slot = slot) {
+                slotDone := false
+
+                if (StageEndedDuringUpgrades()) {
+                    return HandleStageEnd()
+                }
+
+                UpgradeUnitWithLimit(coord, index)
+
+                if (StageEndedDuringUpgrades()) {
+                    return HandleStageEnd()
+                }
+
+                PostUpgradeChecks()
+
+                if (MaxUpgrade()) {
+                    HandleMaxUpgrade(coord, index)
+                    break
+                }
+
+                Sleep(200)
+                FixClick(700, 560)
+
+                PostUpgradeChecks()
+            }
+        }
+
+        if (slot && (slotDone || successfulCoordinates.Length = 0)) {
+            AddToLog("Finished upgrades for priority " priorityNum)
+            break
+        }
+
+        if (!slot)
+            break
+    }
+}
+
+StageEndedDuringUpgrades() {
+    return CheckForXp()
+}
+
+PostUpgradeChecks() {
+    HandleAutoAbility()
+    CheckForPortalSelection()
+    Reconnect()
+}
+
+UpgradeUnitWithLimit(coord, index) {
+
+    upgradeLimitEnabled := "upgradeLimitEnabled" coord.slot
+    upgradeLimitEnabled := %upgradeLimitEnabled%
+
+    upgradeLimit := "upgradeLimit" coord.slot
+    upgradeLimit := %upgradeLimit%
+    upgradeLimit := String(upgradeLimit.Text)
+
+    if (!upgradeLimitEnabled.Value) {
+        UpgradeUnit(coord.x, coord.y)
+    } else {
+        UpgradeUnitLimit(coord, index, upgradeLimit)
+    }
+}
+
+UpgradeUnitLimit(coord, index, upgradeLimit) {
+    FixClick(coord.x, coord.y - 3)
+    if (WaitForUpgradeLimitText(upgradeLimit + 1, 750)) {
+        HandleMaxUpgrade(coord, index)
+    } else {
+        SendInput("T")
+    }
+}
+
+HandleMaxUpgrade(coord, index) {
+    global successfulCoordinates, maxedCoordinates, upgradedCount, totalUnits
+
+    if (IsSet(totalUnits) && IsSet(upgradedCount)) {
+        upgradedCount[coord.slot]++
+        AddToLog("Max upgrade reached for Unit: " coord.slot " (" upgradedCount[coord.slot] "/" totalUnits[coord.slot] ")")
+    } else {
+        AddToLog("Max upgrade reached for Unit: " coord.slot)
+        maxedCoordinates.Push(coord)
+    }
+    maxedCoordinates.Push(coord)
+    successfulCoordinates.RemoveAt(index)
+    FixClick(700, 560) ; Move Click
+}
+
+HandleStageEnd(waveRestart := false) {
+    global challengeStartTime
+    AddToLog("Stage ended during upgrades, proceeding to results")
+    ResetPlacementTracking()
+    if !(waveRestart) {
+        return MonitorStage()
+    } else {
+        return RestartStage()
+    }
+}
+
+ResetPlacementTracking() {
+    global successfulCoordinates, maxedCoordinates
+    successfulCoordinates := []
+    maxedCoordinates := []
+}
+
+HasUnitsInSlot(slot, coordinates) {
+    for coord in coordinates {
+        if (coord.slot = slot)
+            return true
+    }
+    return false
+}
+
+CheckForStartButton() {
+    return FindText(&X, &Y, 319, 536, 396, 558, 0, 0, StartButton)
+}
+
+HandleStartButton() {
+    if (CheckForStartButton()) {
+        AddToLog("Start button found, clicking to start stage")
+        FixClick(355, 515) ; Click the start button
+        Sleep(500)
+    }
+}
+
+IsUpgradeEnabled(slotNum) {
+    setting := "upgradeEnabled" slotNum
+    return %setting%.Value
+}
+
+StartsInLobby(ModeName) {
+    ; Array of maps that need movement
+    static modes := ["Story", "Raid", "Challenge", "Dungeon", "Portal", "Survival"]
+    
+    ; Check if current map is in the array
+    for mode in modes {
+        if (mode = ModeName)
+            return true
+    }
+    return false
 }

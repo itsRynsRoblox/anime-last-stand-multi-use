@@ -14,12 +14,6 @@ setupFilePath() {
 }
 
 readInSettings() {
-    global enabled1, enabled2, enabled3, enabled4, enabled5, enabled6
-    global upgradeEnabled1, upgradeEnabled2, upgradeEnabled3, upgradeEnabled4, upgradeEnabled5, upgradeEnabled6
-    global placement1, placement2, placement3, placement4, placement5, placement6
-    global priority1, priority2, priority3, priority4, priority5, priority6
-    global mode
-    global PlacementPatternDropdown, PlaceSpeed, SkipLobby, ReturnLobbyBox, SeamlessToggle, PriorityUpgrade
     global savedCoords
 
     try {
@@ -33,6 +27,7 @@ readInSettings() {
         
         savedCoords := []  ; Ensure it's initialized
         isReadingCoords := false  ; Track if we are in the [SavedCoordinates] section
+        currentPreset := 0  ; Track the current preset
         
         for line in lines {
             if line = "" {
@@ -49,8 +44,22 @@ readInSettings() {
         
             ; If in [SavedCoordinates] section, parse coordinates
             if (isReadingCoords) {
+                ; Check for a new preset start line (e.g., [Preset 1], [Preset 2], etc.)
+                if (RegExMatch(line, "^\[Preset (\d+)\]$")) {
+                    currentPreset := RegExReplace(line, "^\[Preset (\d+)\]$", "$1")  ; Extract preset number
+                    currentPreset := currentPreset + 0  ; Convert to integer
+        
+                    ; Ensure the correct index exists for the preset in savedCoords
+                    while (savedCoords.Length < currentPreset) {
+                        savedCoords.Push([])  ; Add empty list for new preset if needed
+                    }
+        
+                    continue
+                }
+        
+                ; If we encounter "NoCoordinatesSaved", reset the current preset's coordinates
                 if (line = "NoCoordinatesSaved") {
-                    savedCoords := []  ; Clear the list if no coordinates were saved
+                    savedCoords[currentPreset] := []  ; Clear coordinates for the current preset
                     continue
                 }
         
@@ -58,9 +67,9 @@ readInSettings() {
                 coordParts := StrSplit(line, ", ")
                 x := StrReplace(coordParts[1], "X=")  ; Remove "X="
                 y := StrReplace(coordParts[2], "Y=")  ; Remove "Y="
-                
-                savedCoords.Push({x: x, y: y})  ; Store as an object
-                continue
+        
+                ; Store the coordinates for the current preset
+                savedCoords[currentPreset].Push({x: x, y: y})  ; Push to the correct preset index
             }
         
             ; Normal setting assignments
@@ -78,6 +87,18 @@ readInSettings() {
                 case "UpgradeEnabled4": upgradeEnabled4.Value := parts[2]
                 case "UpgradeEnabled5": upgradeEnabled5.Value := parts[2]
                 case "UpgradeEnabled6": upgradeEnabled6.Value := parts[2]
+                case "UpgradeLimitEnabled1": upgradeLimitEnabled1.Value := parts[2]
+                case "UpgradeLimitEnabled2": upgradeLimitEnabled2.Value := parts[2]
+                case "UpgradeLimitEnabled3": upgradeLimitEnabled3.Value := parts[2]
+                case "UpgradeLimitEnabled4": upgradeLimitEnabled4.Value := parts[2]
+                case "UpgradeLimitEnabled5": upgradeLimitEnabled5.Value := parts[2]
+                case "UpgradeLimitEnabled6": upgradeLimitEnabled6.Value := parts[2]
+                case "UpgradeLimit1": UpgradeLimit1.Text := parts[2]
+                case "UpgradeLimit2": UpgradeLimit2.Text := parts[2]
+                case "UpgradeLimit3": UpgradeLimit3.Text := parts[2]
+                case "UpgradeLimit4": UpgradeLimit4.Text := parts[2]
+                case "UpgradeLimit5": UpgradeLimit5.Text := parts[2]
+                case "UpgradeLimit6": UpgradeLimit6.Text := parts[2]
                 case "Placement1": placement1.Text := parts[2]
                 case "Placement2": placement2.Text := parts[2]
                 case "Placement3": placement3.Text := parts[2]
@@ -91,26 +112,27 @@ readInSettings() {
                 case "Priority5": priority5.Text := parts[2]
                 case "Priority6": priority6.Text := parts[2]
                 case "Speed": PlaceSpeed.Value := parts[2]  ; Set dropdown value
-                case "Logic": PlacementPatternDropdown.Value := parts[2]  ; Set dropdown value
-                case "Upgrade": PriorityUpgrade.Value := parts[2] ; Set the checkbox value
+                case "Pattern": PlacementPatternDropdown.Value := parts[2]  ; Set dropdown value
+                case "Setting": PlacementSelection.Value := parts[2]  ; Set dropdown value
+                case "Profile": PlacementProfiles.Value := parts[2]  ; Set dropdown value
+                case "PriorityUpgrade": PriorityUpgrade.Value := parts[2] ; Set the checkbox value
                 case "Skipping": SkipLobby.Value := parts[2]  ; Set checkbox value
                 case "Lobby": ReturnLobbyBox.Value := parts[2]  ; Set checkbox value
                 case "isSeamless": SeamlessToggle.Value := parts[2] ; Set the checkbox value
+                case "WebhookEnabled": WebhookEnabled.Value := parts[2] ; Set the checkbox value
+                case "WebhookURL": WebhookURLBox.Text := parts[2] ; Set the URL box text
+                case "WebhookLogsEnabled": WebhookLogsEnabled.Value := parts[2] ; Set the checkbox value
+                case "PrivateServerEnabled": PrivateServerEnabled.Value := parts[2] ; Set the checkbox value
+                case "PrivateServerURL": PrivateServerURLBox.Text := parts[2] ; Set the URL box text
             }
         }
-        
-        AddToLog("✅ Settings loaded successfully. " savedCoords.Length " placement(s) successfully loaded!")
+        AddToLog("✅ Loaded settings successfully")
+        InitControlGroups()
     } 
 }
 
 
 SaveSettings(*) {
-    global enabled1, enabled2, enabled3, enabled4, enabled5, enabled6
-    global upgradeEnabled1, upgradeEnabled2, upgradeEnabled3, upgradeEnabled4, upgradeEnabled5, upgradeEnabled6
-    global placement1, placement2, placement3, placement4, placement5, placement6
-    global priority1, priority2, priority3, priority4, priority5, priority6
-    global mode
-    global PlacementPatternDropdown, PlaceSpeed, SkipLobby, ReturnLobbyBox, SeamlessToggle, PriorityUpgrade
     global savedCoords
 
     try {
@@ -119,129 +141,55 @@ SaveSettings(*) {
             FileDelete(settingsFile)
         }
 
-        ; Save mode and map selection
-        content := "Mode=" mode "`n"
-        if (mode = "Story") {
-            content .= "Map=" StoryDropdown.Text
-        } else if (mode = "Raid") {
-            content .= "Map=" RaidDropdown.Text
+        content .= "`n[Unit Settings]"
+
+        for settingType in ["Enabled", "Placement", "Priority", "UpgradeEnabled", "UpgradeLimitEnabled"] {
+            loop 6 {
+                index := A_Index
+                setting := %settingType%%index%
+                content .= "`n" settingType index "=" setting.Value
+            }
         }
-        
-        ; Save settings for each unit
-        content .= "`n`nEnabled1=" enabled1.Value
-        content .= "`nEnabled2=" enabled2.Value
-        content .= "`nEnabled3=" enabled3.Value
-        content .= "`nEnabled4=" enabled4.Value
-        content .= "`nEnabled5=" enabled5.Value
-        content .= "`nEnabled6=" enabled6.Value
 
-        content .= "`n`nUpgradeEnabled1=" upgradeEnabled1.Value
-        content .= "`nUpgradeEnabled2=" upgradeEnabled2.Value
-        content .= "`nUpgradeEnabled3=" upgradeEnabled3.Value
-        content .= "`nUpgradeEnabled4=" upgradeEnabled4.Value
-        content .= "`nUpgradeEnabled5=" upgradeEnabled5.Value
-        content .= "`nUpgradeEnabled6=" upgradeEnabled6.Value
+        content .= "`n`n[PlacementSettings]"
+        content .= "`nSetting=" PlacementSelection.Value
+        content .= "`nPattern=" PlacementPatternDropdown.Value
+        content .= "`nSpeed=" PlaceSpeed.Value
+        content .= "`nProfile=" PlacementProfiles.Value
 
-        content .= "`n`nPlacement1=" placement1.Text
-        content .= "`nPlacement2=" placement2.Text
-        content .= "`nPlacement3=" placement3.Text
-        content .= "`nPlacement4=" placement4.Text
-        content .= "`nPlacement5=" placement5.Text
-        content .= "`nPlacement6=" placement6.Text
+        content .= "`n[General Settings]"
+        content .= "`nSkipping=" SkipLobby.Value
+        content .= "`nLobby=" ReturnLobbyBox.Value
+        content .= "`nisSeamless=" SeamlessToggle.Value
+        content .= "`nPriorityUpgrade=" PriorityUpgrade.Value
 
-        content .= "`nPriority1=" priority1.Text
-        content .= "`nPriority2=" priority2.Text
-        content .= "`nPriority3=" priority3.Text
-        content .= "`nPriority4=" priority4.Text
-        content .= "`nPriority5=" priority5.Text
-        content .= "`nPriority6=" priority6.Text
+        content .= "`n`n[WebhookSettings]"
+        content .= "`nWebhookEnabled=" WebhookEnabled.Value
+        content .= "`nWebhookURL=" WebhookURLBox.Text
+        content .= "`nWebhookLogsEnabled=" WebhookLogsEnabled.Value
 
-        content .= "`n[PlacementLogic]"
-        content .= "`nLogic=" PlacementPatternDropdown.Value "`n"
-
-        content .= "`n[PlaceSpeed]"
-        content .= "`nSpeed=" PlaceSpeed.Value "`n"
-
-        content .= "`n[PriorityUpgrade]"
-        content .= "`nUpgrade=" PriorityUpgrade.Value "`n"
-
-        content .= "`n[SkipLobby]"
-        content .= "`nSkipping=" SkipLobby.Value "`n"
-
-        content .= "`n[ReturnToLobby]"
-        content .= "`nLobby=" ReturnLobbyBox.Value "`n"
-
-        content .= "`n[Seamless]"
-        content .= "`nisSeamless=" SeamlessToggle.Value "`n"
+        content .= "`n`n[PrivateServerSettings]"
+        content .= "`nPrivateServerEnabled=" PrivateServerEnabled.Value
+        content .= "`nPrivateServerURL=" PrivateServerURLBox.Text
 
         ; Save the stored coordinates
-        content .= "`n[SavedCoordinates]`n"
-        if (IsSet(savedCoords) && savedCoords.Length > 0) {
-            for coord in savedCoords {
-                content .= Format("X={1}, Y={2}`n", coord.x, coord.y)
+        content .= "`n`n[SavedCoordinates]`n"
+
+        ; Iterate through each preset in savedCoords
+        for presetIndex, _ in [1, 2, 3, 4, 5, 6, 7, 8, 9, 10] {
+            content .= Format("[Preset {1}]`n", presetIndex)  ; Add preset header
+
+            if (IsSet(savedCoords) && savedCoords.Length >= presetIndex && savedCoords[presetIndex].Length > 0) {
+                for coord in savedCoords[presetIndex] {
+                    content .= Format("X={1}, Y={2}`n", coord.x, coord.y)
+                }
+            } else {
+                content .= "NoCoordinatesSaved`n"
             }
-        } else {
-            content .= "NoCoordinatesSaved`n"
         }
 
         FileAppend(content, settingsFile)
-        AddToLog("✅ Configuration settings saved successfully!")
-    }
-}
-
-LoadSettings() {
-    global UnitData, mode
-    try {
-        settingsFile := A_ScriptDir "\Settings\Configuration.txt"
-        if !FileExist(settingsFile) {
-            return
-        }
-
-        content := FileRead(settingsFile)
-        sections := StrSplit(content, "`n`n")
-        
-        for section in sections {
-            if (InStr(section, "PlacementLogic")) {
-                if RegExMatch(line, "Logic=(\w+)", &match) {
-                    PlacementPatternDropdown.Value := match.1 ; Set the dropdown value
-                }
-            }
-            else if (InStr(section, "PlaceSpeed")) {
-                if RegExMatch(line, "Speed=(\w+)", &match) {
-                    PlaceSpeed.Value := match.1 ; Set the dropdown value
-                }
-            }
-            else if (InStr(section, "SkipLobby")) {
-                if RegExMatch(line, "Skipping=(\w+)", &match) {
-                    SkipLobby.Value := match.1 ; Set the dropdown value
-                }
-            }
-            else if (InStr(section, "ReturnToLobby")) {
-                if RegExMatch(line, "Return=(\w+)", &match) {
-                    ReturnLobbyBox.Value := match.1 ; Set the dropdown value
-                }
-            }
-            else if (InStr(section, "Index=")) {
-                lines := StrSplit(section, "`n")
-                
-                for line in lines {
-                    if line = "" {
-                        continue
-                    }
-                    
-                    parts := StrSplit(line, "=")
-                    if (parts[1] = "Index") {
-                        index := parts[2]
-                    } else if (index && UnitData.Has(Integer(index))) {
-                        switch parts[1] {
-                            case "Enabled": UnitData[index].Enabled.Value := parts[2]
-                            case "Placement": UnitData[index].PlacementBox.Value := parts[2]
-                        }
-                    }
-                }
-            }
-        }
-        AddToLog("Auto settings loaded successfully")
+        AddToLog("✅ Saved settings successfully")
     }
 }
 

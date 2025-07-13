@@ -19,19 +19,14 @@ SaveUINavSettings(*) {
     
     FileAppend(UINavBox.Value, "Settings\UINavigation.txt", "UTF-8")
 }
-
-;Opens discord Link
-OpenDiscordLink() {
-    Run("https://discord.gg/mistdomain")
- }
  
  ;Minimizes the UI
  minimizeUI(*){
-    aaMainUI.Minimize()
+    MainUI.Minimize()
  }
  
  Destroy(*){
-    aaMainUI.Destroy()
+    MainUI.Destroy()
     ExitApp
  }
 
@@ -56,32 +51,31 @@ getCurrentTime() {
 
 
  OnModeChange(*) {
-    global mode
     selected := ModeDropdown.Text
     
     ; Hide all dropdowns first
     StoryDropdown.Visible := false
+    StoryActDropdown.Visible := false
     LegendDropDown.Visible := false
     RaidDropdown.Visible := false
     RaidActDropdown.Visible := false
-    NextLevelBox.Visible := false
+    DungeonDropdown.Visible := false
+    PortalDropdown.Visible := false
     
     if (selected = "Story") {
         StoryDropdown.Visible := true
-        mode := "Story"
     } else if (selected = "Legend") {
         LegendDropDown.Visible := true
-        mode := "Legend"
     } else if (selected = "Raid") {
         RaidDropdown.Visible := true
         RaidActDropdown.Visible := true
-        NextLevelBox.Visible := true
-        mode := "Raid"
     } else if (selected = "Custom") {
-        mode := "Custom"
-        NextLevelBox.Visible := true
+        
     } else if (selected = "Dungeon") {
-        mode := "Dungeon"
+        DungeonDropdown.Visible := true
+    }
+    else if (selected = "Portal") {
+        PortalDropdown.Visible := true
     }
 }
 
@@ -154,6 +148,8 @@ OnConfirmClick(*) {
     LegendDropDown.Visible := false
     RaidDropdown.Visible := false
     RaidActDropdown.Visible := false
+    DungeonDropdown.Visible := false
+    PortalDropdown.Visible := false
     ConfirmButton.Visible := false
     modeSelectionGroup.Visible := false
     Hotkeytext.Visible := true
@@ -168,22 +164,6 @@ FixClick(x, y, LR := "Left") {
     MouseMove(1, 0, , "R")
     MouseClick(LR, -1, 0, , , , "R")
     Sleep(50)
-}
-
-TogglePriorityDropdowns(*) {
-    global PriorityUpgrade, priority1, priority2, priority3, priority4, priority5, priority6
-    shouldShow := PriorityUpgrade.Value
-
-    priority1.Visible := shouldShow
-    priority2.Visible := shouldShow
-    priority3.Visible := shouldShow
-    priority4.Visible := shouldShow
-    priority5.Visible := shouldShow
-    priority6.Visible := shouldShow
-
-    for unit in UnitData {
-        unit.PriorityText.Visible := shouldShow
-    }
 }
 
 GetWindowCenter(WinTitle) {
@@ -245,4 +225,120 @@ OpenGithub() {
 
 OpenDiscord() {
     Run("https://discord.gg/6DWgB9XMTV")
+}
+
+StringJoin(array, delimiter := ", ") {
+    result := ""
+    ; Convert the array to an Object to make it enumerable
+    for index, value in array {
+        if (index > 1)
+            result .= delimiter
+        result .= value
+    }
+    return result
+}
+
+CopyMouseCoords(withColor := false) {
+    MouseGetPos(&x, &y)
+    color := PixelGetColor(x, y, "RGB")  ; Correct usage in AHK v2
+
+    A_Clipboard := ""  ; Clear clipboard
+    ClipWait(0.5)
+
+    if (withColor) {
+        A_Clipboard := x ", " y " | Color: " color
+    } else {
+        A_Clipboard := x ", " y
+    }
+
+    ClipWait(0.5)
+
+    ; Check if the clipboard content matches the expected format
+
+    if (withColor) {
+        if (A_Clipboard = x ", " y " | Color: " color) {
+            AddToLog("Copied: " x ", " y " | Color: " color)
+        }
+    } 
+    else {
+        if (A_Clipboard = x ", " y) {
+            AddToLog("Copied: " x ", " y)
+        }
+    }
+}
+
+CalculateElapsedTime(startTime) {
+    elapsedTimeMs := A_TickCount - startTime
+    elapsedTimeSec := Floor(elapsedTimeMs / 1000)
+    elapsedHours := Floor(elapsedTimeSec / 3600)
+    elapsedMinutes := Floor(Mod(elapsedTimeSec, 3600) / 60)
+    elapsedSeconds := Mod(elapsedTimeSec, 60)
+    return Format("{:02}:{:02}:{:02}", elapsedHours, elapsedMinutes, elapsedSeconds)
+}
+
+GetPixel(color, x1, y1, extraX, extraY, variation) {
+    global foundX, foundY
+    try {
+        if PixelSearch(&foundX, &foundY, x1, y1, x1 + extraX, y1 + extraY, color, variation) {
+            return [foundX, foundY] AND true
+        }
+        return false
+    }
+}
+
+Teleport(mode := "") {
+    FixClick(33, 340) ; Open teleport menu
+    Sleep 500
+    switch mode {
+        case "Dungeon":
+            FixClick(407, 382) ; Click on Dungeon
+        case "Story":
+            FixClick(393, 329) ; Click on Story
+        case "Raid":
+            FixClick(531, 206) ; Move mouse to scroll down
+            Sleep (500)
+            Scroll(20, 'WheelDown', 5)
+            Sleep 1000
+            FixClick(407, 382)
+        default:
+            AddToLog("Invalid teleport mode specified")
+    }
+    Sleep 500
+    FixClick(33, 340) ; Close the teleport menu
+    Sleep(1000)
+}
+
+Scroll(times, direction, delay) {
+    if (times < 1) {
+        AddToLog("Invalid number of times")
+        return
+    }
+    if (direction != "WheelUp" and direction != "WheelDown") {
+        AddToLog("Invalid direction")
+        return
+    }
+    if (delay < 0) {
+        AddToLog("Invalid delay")
+        return
+    }
+    loop times {
+        Send("{" direction "}")
+        Sleep(delay)
+    }
+}
+
+RotateCameraAngle() {
+    Send("{Right down}")
+    Sleep 800
+    Send("{Right up}")
+}
+
+CloseLobbyPopups() {
+    Send("{Tab}") ; Close any open popups
+    FixClick(623, 147) ; Update UI
+    Sleep(500)
+    FixClick(400,340)
+    Sleep(500)
+    FixClick(400,390)
+
 }
