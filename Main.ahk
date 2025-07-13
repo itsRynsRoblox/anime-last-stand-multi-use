@@ -15,6 +15,7 @@ SendMode "Event"
 #Include %A_ScriptDir%/lib/Modes/Challenges.ahk
 #Include %A_ScriptDir%/lib/Modes/Dungeon.ahk
 #Include %A_ScriptDir%/lib/Modes/Portal.ahk
+#Include %A_ScriptDir%/lib/Modes/Story.ahk
 #Include %A_ScriptDir%/lib/Modes/Survival.ahk
 #Include %A_ScriptDir%/lib/WebhookSettings.ahk
 #Include %A_ScriptDir%/lib/PlacementPatterns.ahk

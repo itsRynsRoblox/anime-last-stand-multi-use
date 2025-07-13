@@ -140,8 +140,6 @@ OnConfirmClick(*) {
         AddToLog("Selected " ModeDropdown.Text " mode")
     }
 
-    AddToLog("Don't forget to enable Click to Move! (I forget sometimes too!)")
-
     ; Hide all controls if validation passes
     ModeDropdown.Visible := false
     StoryDropdown.Visible := false

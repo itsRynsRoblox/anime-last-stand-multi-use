@@ -387,7 +387,7 @@ UpgradeUnits() {
                 }
             }
         }
-        AddToLog("Priority upgrading completed")
+        AddToLog("All units maxed, proceeding to monitor stage")
     } else {
         while (successfulCoordinates.Length > 0) {
             ProcessUpgrades(false, "")
@@ -405,54 +405,6 @@ ChallengeMode() {
     while !(ok := FindText(&X, &Y, 325, 520, 489, 587, 0, 0, Story)) {
         ChallengeMovement()
     }
-
-    RestartStage()
-}
-
-StoryMode() {
-    
-    ; Get current map and act
-    currentStoryMap := StoryDropdown.Text
-    currentStoryAct := StoryActDropdown.Text
-        
-    ; Execute the movement pattern
-    AddToLog("Moving to position for " currentStoryMap)
-    StoryMovement()
-    
-    ; Start stage
-    while !(ok:=FindText(&X, &Y, 352, 431, 451, 458, 0, 0, StorySelectButton)) {
-        StoryMovement()
-    }
-
-    AddToLog("Starting " currentStoryMap " - " currentStoryAct)
-    StartStory(currentStoryMap, currentStoryAct)
-
-    ; Handle play mode selection
-    PlayHere()
-    RestartStage()
-}
-
-
-LegendMode() {
-    global SkipLobby
-    global LegendDropdown
-    
-    ; Get current map and act
-    currentLegendMap := LegendDropdown.Text
-    
-    ; Execute the movement pattern
-    AddToLog("Moving to position for " currentLegendMap)
-    StoryMovement()
-    
-    ; Start stage
-    while !(ok := FindText(&X, &Y, 325, 520, 489, 587, 0, 0, Story)) {
-        StoryMovement()
-    }
-    AddToLog("Starting " currentLegendMap)
-    StartLegend(currentLegendMap)
-
-    ; Handle play mode selection
-    PlayHere()
 
     RestartStage()
 }
@@ -481,7 +433,7 @@ RaidMode() {
 
 CustomMode() {
     AddToLog("Starting Custom Mode")
-    RestartCustomStage()
+    RestartStage()
 }
 
 HandleEndScreen(isVictory := true) {
@@ -532,7 +484,7 @@ HandleCustomEnd() {
         if (lastResult = "win") {
             AddToLog("Next level")
             ClickUntilGone(0, 0, 80, 85, 739, 224, LobbyIcon, +260, -35)
-            return RestartCustomStage()
+            return RestartStage()
         }
     } else {
         AddToLog("Replaying")
@@ -627,18 +579,6 @@ CheckForWave100() {
     return false
 }
 
-StoryMovement() {
-    FixClick(35, 350) ; Click Teleport
-    Sleep (1000)
-    FixClick(392, 333) ; Click Story & Infinite
-    Sleep (1000)
-    FixClick(35, 350) ; Click Teleport to close
-    Sleep (1000)
-
-    spawnAngle := DetectAngle()
-    WalkToStoryRoom(spawnAngle)
-}
-
 ChallengeMovement() {
     FixClick(765, 475)
     Sleep (500)
@@ -656,162 +596,56 @@ RaidMovement() {
     Sleep (1000)
 }
 
-LookForStoryAngle() {
-    loop {
-        if FindText(&X, &Y, 301, 61, 529, 168, 0, 0, StoryPillar) {
-            AddToLog("Correct Angle")
-            break
-        }
-        else {
-            AddToLog("Incorrect Angle. Turning again.")
-            SendInput ("{Left up}")
-            Sleep 200
-            SendInput ("{Left down}")
-            Sleep 750
-            SendInput ("{Left up}")
-            KeyWait "Left" ; Wait for key to be fully processed
-        }
-    }
-}
-
-LookForRaidAngle() {
-    loop {
-        if FindText(&X, &Y, 360, 47, 457, 86, 0, 0, RaidPillar) {
-            AddToLog("Correct Angle")
-            break
-        }
-        else {
-            AddToLog("Incorrect Angle. Turning again.")
-            SendInput ("{Left up}")
-            Sleep 200
-            SendInput ("{Left down}")
-            Sleep 750
-            SendInput ("{Left up}")
-            KeyWait "Left" ; Wait for key to be fully processed
-        }
-    }
-}
-
-StartStory(map, act) {
+StartContent(map, act, getMapFunc, getActFunc, mapScrollMousePos, actScrollMousePos) {
     AddToLog("Selecting map: " map " and act: " act)
 
-    ; Get Story map 
-    StoryMap := GetStoryMap(map)
-    if (!StoryMap) {
-        AddToLog("ERROR: Map '" map "' not found. Please tell Ryn")
+    ; Get the map
+    Map := getMapFunc.Call(map)
+    if !Map {
+        AddToLog("Error: Map '" map "' not found.")
         return false
     }
-    
-    ; Scroll if needed
-    if (StoryMap.scrolls > 0) {
-        AddToLog("Scrolling down " StoryMap.scrolls " for " map)
-        MouseMove(150, 190)
-        SendInput("{WheelDown}")
-        Sleep(250)
-    }
 
-    Sleep(1000)
-    
-    ; Click on the map
-    FixClick(StoryMap.x, StoryMap.y)
-    Sleep(1000)
-    
-    ; Get act details
-    StoryAct := GetStoryAct(act)
-
-    if (!StoryAct) {
-        AddToLog("Error: Act '" act "' not found. Please tell Ryn")
-        return false
-    }
-    
-    ; Scroll if needed for act
-    if (StoryAct.scrolls > 0) {
-        AddToLog("Scrolling down " StoryAct.scrolls " times for " act)
-        MouseMove(300, 240)
-        loop StoryAct.scrolls {
-            SendInput("{WheelDown}")
+    ; Scroll map if needed
+    if Map.scrolls > 0 {
+        AddToLog("Scrolling down " Map.scrolls " times for " map)
+        MouseMove(mapScrollMousePos.x, mapScrollMousePos.y)
+        Loop Map.scrolls {
+            Send("{WheelDown}")
             Sleep(250)
         }
     }
+
     Sleep(1000)
-    
-    ; Click on the act
-    FixClick(StoryAct.x, StoryAct.y)
+    FixClick(Map.x, Map.y)
     Sleep(1000)
-    
+
+    ; Get the act
+    Act := getActFunc.Call(act)
+    if !Act {
+        AddToLog("ERROR: Act '" act "' not found.")
+        return false
+    }
+
+    ; Scroll act if needed
+    if Act.scrolls > 0 {
+        AddToLog("Scrolling down " Act.scrolls " times for " act)
+        MouseMove(actScrollMousePos.x, actScrollMousePos.y)
+        Loop Act.scrolls {
+            Send("{WheelDown}")
+            Sleep(250)
+        }
+    }
+
+    Sleep(1000)
+    FixClick(Act.x, Act.y)
+    Sleep(1000)
+
     return true
-}
-
-StartLegend(map) {
-    
-    FixClick(640, 70) ; Closes Player leaderboard
-    Sleep(500)
-    navKeys := GetNavKeys()
-    for key in navKeys {
-        SendInput("{" key "}")
-    }
-    Sleep(500)
-    SendInput("{Down}")
-    Sleep(500)
-    SendInput("{Enter}") ; Opens Legend Stage
-
-    downArrows := GetLegendDownArrows(map) ; Map selection down arrows
-    Loop downArrows {
-        SendInput("{Down}")
-        Sleep(200)
-    }
-    
-    SendInput("{Enter}") ; Select LegendStage
-    Sleep(500)
-
-    Loop 4 {
-        SendInput("{Up}") ; Makes sure it selects act
-        Sleep(200)
-    }
-
-    SendInput("{Left}") ; Go to act selection
-    Sleep(1000)
-
-    SendInput("{Enter}") ; Select Act
-    Sleep(500)
-    for key in navKeys {
-        SendInput("{" key "}")
-    }
 }
 
 StartRaid(map, act) {
-    AddToLog("Selecting map: " map " and act: " act)
-
-    ; Get Story map 
-    RaidMap := GetRaidMap(map)
-    
-    ; Scroll if needed
-    if (RaidMap.scrolls > 0) {
-        AddToLog("Scrolling down " RaidMap.scrolls " times for " map)
-        MouseMove(195, 185)
-        SendInput("{WheelDown}")
-        Sleep(250)
-    }
-    Sleep(1000)
-
-    ; Click on the map
-    FixClick(RaidMap.x, RaidMap.y)
-    
-    RaidAct := GetRaidAct(act)
-    
-    ; Scroll if needed
-    if (RaidAct.scrolls > 0) {
-        AddToLog("Scrolling down " RaidAct.scrolls " times for " act)
-        MouseMove(195, 185)
-        SendInput("{WheelDown}")
-        Sleep(250)
-    }
-
-    Sleep(1000)
-    
-    ; Click on the map
-    FixClick(RaidAct.x, RaidAct.y)
-    return true
+    return StartContent(map, act, GetRaidMap, GetRaidAct, { x: 195, y: 185 }, { x: 195, y: 185 })
 }
 
 PlayHere(mode := "Story") {
@@ -830,74 +664,6 @@ PlayHere(mode := "Story") {
         FixClick(301, 421)
         Sleep (300)
         FixClick(570, 433)
-    }
-}
-
-GetStoryDownArrows(map) {
-    switch map {
-        case "Planet Greenie": return 0
-    }
-}
-
-GetStoryActDownArrows(StoryActDropdown) {
-    switch StoryActDropdown {
-        case "Act 1": return 0
-        case "Act 2": return 1
-        case "Act 3": return 2
-        case "Act 4": return 3
-        case "Act 5": return 4
-        case "Act 6": return 5
-        case "Infinity": return 6
-    }
-}
-
-
-GetLegendDownArrows(map) {
-    switch map {
-        case "Magic Hills": return 1
-    }
-}
-
-GetLegendActDownArrows(LegendActDropdown) {
-    switch LegendActDropdown {
-        case "Act 1": return 1
-    }
-}
-
-GetRaidDownArrows(map) {
-    switch map {
-        case "The Spider": return 1
-    }
-}
-
-GetRaidActDownArrows(RaidActDropdown) {
-    switch RaidActDropdown {
-        case "Act 1": return 1
-        case "Act 2": return 2
-        case "Act 3": return 3
-        case "Act 4": return 4
-        case "Act 5": return 5
-    }
-}
-
-GetStoryClickCoords(map) {
-    switch map {
-        case "Large Village": return { x: 235, y: 240 }
-        case "Hollow Land": return { x: 235, y: 295 }
-        case "Monster City": return { x: 235, y: 350 }
-        case "Academy Demon": return { x: 235, y: 400 }
-    }
-}
-
-GetStoryActClickCoords(StoryActDropdown) {
-    switch StoryActDropdown {
-        case "Act 1": return { x: 380, y: 230 }
-        case "Act 2": return { x: 380, y: 260 }
-        case "Act 3": return { x: 380, y: 290 }
-        case "Act 4": return { x: 380, y: 320 }
-        case "Act 5": return { x: 380, y: 350 }
-        case "Act 6": return { x: 380, y: 380 }
-        case "Infinity": return { x: 380, y: 405 }
     }
 }
 
@@ -937,45 +703,6 @@ GetRaidAct(act) {
     return { x: x, y: baseY, scrolls: 0 }
 }
 
-GetStoryMap(map) {
-    switch map {
-        case "Hog Town": return {x: 190, y: 185, scrolls: 0}
-    }
-}
-
-GetStoryAct(act) {
-    baseY := 185
-    spacing := 28
-    baseX := 320
-
-    ; Handle "Infinite" case separately
-    if (act = "Infinite") {
-        x := baseX + spacing * 6  ; Assuming "Infinite" comes after Act 6
-        return { x: x, y: baseY, scrolls: 0 }
-    }
-
-    ; Extract the act number from the string, e.g., "Act 3" → 3
-    if RegExMatch(act, "Act\s*(\d+)", &match) {
-        actNumber := match[1]
-        x := baseX + spacing * (actNumber - 1)
-        return { x: x, y: baseY, scrolls: 0 }
-    }
-
-    ; Default return if the input doesn't match expected format
-    return { x: x, y: baseY, scrolls: 0 }
-}
-
-GetRaidActClickCoords(RaidActDropdown) {
-    switch RaidActDropdown {
-        case "Act 1": return { x: 315, y: 200 }
-        case "Act 2": return { x: 315, y: 230 }
-        case "Act 3": return { x: 315, y: 260 }
-        case "Act 4": return { x: 315, y: 290 }
-        case "Act 5": return { x: 315, y: 320 }
-        case "Act 6": return { x: 315, y: 350 }
-    }
-}
-
 Zoom() {
     MouseMove(400, 300)
     Sleep 100
@@ -1000,7 +727,7 @@ Zoom() {
     MouseMove(400, 300)
 }
 
-TpSpawn() {
+TeleportToSpawn() {
     FixClick(233, 10) ;click settings
     Sleep 300
     FixClick(464, 219) ;click tp to spawn
@@ -1024,21 +751,41 @@ CloseChat() {
 }
 
 BasicSetup() {
-    SendInput("{Tab}") ; Closes Player leaderboard
+    global firstStartup
+
+    ; Skip setup entirely if Seamless is enabled
+    if (SeamlessToggle.Value) {
+        if (!firstStartup) {
+            AddToLog("Seamless mode enabled. Skipping setup.")
+            return
+        }
+    }
+
+    ; Close various UI elements
+    ;SendInput("{Tab}") ; Closes Player leaderboard
+    Sleep 500
+
+    FixClick(487, 72) ; Closes Player leaderboard
     Sleep 300
-    FixClick(487, 71) ; Closes Player leaderboard
-    Sleep 300
+
     CloseChat()
     Sleep 300
-    if !(ModeDropdown.Text = "Dungeon") {
-        Zoom()
+
+    if (ModeDropdown.Text = "Custom" && SeamlessToggle.Value) {
+        return
     }
-    Sleep 300
-    TpSpawn()
+
+    Zoom()
+
+    ; Teleport to spawn
+    TeleportToSpawn()
+
+    if (SeamlessToggle.Value) {
+        firstStartup := false
+    }
 }
 
 DetectMap() {
-    AddToLog("Setting map name based on selected mode...")
     if (ModeDropdown.Text = "Raid") {
         AddToLog("Map selected: " RaidDropdown.Text)
         return RaidDropdown.Text
@@ -1051,12 +798,9 @@ DetectMap() {
     } else if (ModeDropdown.Text = "Portal") {
         return PortalDropdown.Text
     } else {
-        AddToLog("Unknown mode selected - returning 'no map found'")
         return "no map found"
     }
 }
-
-
 
 HandleMapMovement(MapName) {
     AddToLog("Executing Movement for: " MapName)
@@ -1076,14 +820,13 @@ MoveForCentralCity() {
 RestartStage() {
     global currentMap
 
-    if (currentMap = "" || currentMap = "no map found") {
+    if (currentMap = "" || currentMap = "no map found" || ModeDropdown.Text != "Custom") {
         currentMap := DetectMap()
     }
     
     ; Wait for loading
     CheckLoaded()
 
-    ; Do initial setup and map-specific movement during vote timer
     BasicSetup()
 
     if (currentMap != "no map found") {
@@ -1249,12 +992,14 @@ HandleAutoAbility() {
     }
 }
 
-
 UpgradeUnit(x, y) {
     FixClick(x, y)
     SendInput ("{T}")
+    Sleep (50)
     SendInput ("{T}")
+    Sleep (50)
     SendInput ("{T}")
+    Sleep (50)
 }
 
 CheckLobby() {
@@ -1292,16 +1037,15 @@ StartedGame() {
 
 StartSelectedMode() {
 
-    CloseLobbyPopups()
+    if (ModeDropdown.Text != "Custom") {
+        CloseLobbyPopups()
+    }
 
     if (ModeDropdown.Text = "Dungeon") {
         Dungeon()
     }
     else if (ModeDropdown.Text = "Story") {
-        StoryMode()
-    }
-    else if (ModeDropdown.Text = "Legend") {
-        LegendMode()
+        StartStoryMode()
     }
     else if (ModeDropdown.Text = "Raid") {
         RaidMode()
@@ -1528,9 +1272,21 @@ UpgradePlacedUnits() {
     global successfulCoordinates, maxedCoordinates
     global totalUnits := Map(), upgradedCount := Map()
 
+    hasUpgradeableUnits := false
+
+    ; Check if there are any units eligible for upgrading
     for coord in successfulCoordinates {
         totalUnits[coord.slot] := (totalUnits.Has(coord.slot) ? totalUnits[coord.slot] + 1 : 1)
         upgradedCount[coord.slot] := upgradedCount.Has(coord.slot) ? upgradedCount[coord.slot] : 0
+
+        if (IsUpgradeEnabled(coord.slot) && !maxedCoordinates.Has(coord)) {
+            hasUpgradeableUnits := true
+        }
+    }
+
+    ; If no upgradeable units found, skip the rest
+    if (!hasUpgradeableUnits) {
+        return
     }
 
     AddToLog("Initiating Single-Pass Unit Upgrades...")
@@ -1699,11 +1455,7 @@ HandleStageEnd(waveRestart := false) {
     global challengeStartTime
     AddToLog("Stage ended during upgrades, proceeding to results")
     ResetPlacementTracking()
-    if !(waveRestart) {
-        return MonitorStage()
-    } else {
-        return RestartStage()
-    }
+    return MonitorStage()
 }
 
 ResetPlacementTracking() {
