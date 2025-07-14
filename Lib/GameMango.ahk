@@ -597,7 +597,7 @@ RaidMovement() {
 }
 
 StartContent(map, act, getMapFunc, getActFunc, mapScrollMousePos, actScrollMousePos) {
-    AddToLog("Selecting map: " map " and act: " act)
+    AddToLog("Selecting : " map " - " act)
 
     ; Get the map
     Map := getMapFunc.Call(map)
@@ -610,10 +610,7 @@ StartContent(map, act, getMapFunc, getActFunc, mapScrollMousePos, actScrollMouse
     if Map.scrolls > 0 {
         AddToLog("Scrolling down " Map.scrolls " times for " map)
         MouseMove(mapScrollMousePos.x, mapScrollMousePos.y)
-        Loop Map.scrolls {
-            Send("{WheelDown}")
-            Sleep(250)
-        }
+        Scroll(Map.scrolls, 'WheelDown', 250)
     }
 
     Sleep(1000)
@@ -631,10 +628,7 @@ StartContent(map, act, getMapFunc, getActFunc, mapScrollMousePos, actScrollMouse
     if Act.scrolls > 0 {
         AddToLog("Scrolling down " Act.scrolls " times for " act)
         MouseMove(actScrollMousePos.x, actScrollMousePos.y)
-        Loop Act.scrolls {
-            Send("{WheelDown}")
-            Sleep(250)
-        }
+        Scroll(Act.scrolls, 'WheelDown', 250)
     }
 
     Sleep(1000)
@@ -708,20 +702,14 @@ Zoom() {
     Sleep 100
 
     ; Zoom in smoothly
-    Loop 20 {
-        Send "{WheelUp}"
-        Sleep 50
-    }
+    Scroll(20, "WheelUp", 50)
 
     ; Look down
     Click
     MouseMove(400, 400)  ; Move mouse down to angle camera down
     
     ; Zoom back out smoothly
-    Loop 20 {
-        Send "{WheelDown}"
-        Sleep 50
-    }
+    Scroll(Integer(ZoomBox.Value), "WheelDown", 50)
     
     ; Move mouse back to center
     MouseMove(400, 300)
@@ -964,7 +952,12 @@ WaitForUpgradeLimitText(upgradeCap, timeout := 4500) {
 
     startTime := A_TickCount
     while (A_TickCount - startTime < timeout) {
-        if (FindText(&X, &Y, 630, 375, 717, 385, 0, 0, targetText)) {
+        if (LeftSideUnitManager.Value) {
+            if (FindText(&X, &Y, 103, 373, 165, 386, 0, 0, targetText)) {
+                AddToLog("Found Upgrade Cap")
+                return true
+            }
+        } else if (FindText(&X, &Y, 630, 375, 717, 385, 0, 0, targetText)) {
             AddToLog("Found Upgrade Cap")
             return true
         }
@@ -977,10 +970,14 @@ HandleAutoAbility() {
     if !AutoAbilityBox.Value
         return
 
+    wiggle()
+
     pixelChecks := [
         {color: 0xC22725, x: 539, y: 285},
         {color: 0xC22725, x: 539, y: 268},
-        {color: 0xC22725, x: 539, y: 303}
+        {color: 0xC22725, x: 539, y: 303},
+
+        {color: 0xC22725, x: 326, y: 284} ; Left Side
     ]
 
     for pixel in pixelChecks {
@@ -990,6 +987,12 @@ HandleAutoAbility() {
             Sleep(100)
         }
     }
+}
+
+wiggle() {
+    MouseMove(1, 1, 5, "R")
+    Sleep(30)
+    MouseMove(-1, -1, 5, "R")
 }
 
 UpgradeUnit(x, y) {
@@ -1018,11 +1021,18 @@ CheckLoaded() {
     loop {
         Sleep(500)
         
-        ; Check for in-game settings
-        if (ok := FindText(&X, &Y, 17, 322, 100, 373, 0, 0, UnitManager)) {
-            AddToLog("Successfully Loaded In")
-            Sleep(500)
-            break
+        if (LeftSideUnitManager.Value) {
+            if (ok := FindText(&X, &Y, 710, 337, 786, 356, 0, 0, UnitManager)) {
+                AddToLog("Successfully Loaded In")
+                Sleep(500)
+                break
+            }
+        } else {
+            if (ok := FindText(&X, &Y, 17, 322, 100, 373, 0, 0, UnitManager)) {
+                AddToLog("Successfully Loaded In")
+                Sleep(500)
+                break
+            }
         }
 
         Reconnect()
@@ -1428,7 +1438,7 @@ UpgradeUnitWithLimit(coord, index) {
 }
 
 UpgradeUnitLimit(coord, index, upgradeLimit) {
-    FixClick(coord.x, coord.y - 3)
+    FixClick(coord.x, coord.y)
     if (WaitForUpgradeLimitText(upgradeLimit + 1, 750)) {
         HandleMaxUpgrade(coord, index)
     } else {

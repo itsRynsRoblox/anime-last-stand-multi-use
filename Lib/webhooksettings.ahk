@@ -3,13 +3,12 @@
 
 global DiscordUserIDFile := "Settings\DiscordUSERID.txt"
 global SendActivityLogsFile := "Settings\SendActivityLogs.txt"
-global WebhookURL := WebhookURLBox.Value  
+global WebhookURL := WebhookURLBox.Text  
 global webhook := ""
 global currentStreak := 0
 global lastResult := "none"
 global Wins := 0
 global loss := 0
-global mode := ""
 global StartTime := A_TickCount 
 global stageStartTime := A_TickCount
 global macroStartTime := A_TickCount
@@ -149,7 +148,7 @@ SendWebhookWithTime(isWin, stageLength) {
     sessionData := "⌛ Macro Runtime: " macroLength "`n"
     . "⏱️ Stage Length: " stageLength "`n"
     . "🔄 Current Streak: " (currentStreak > 0 ? currentStreak " Win Streak" : Abs(currentStreak) " Loss Streak") "`n"
-    . ":video_game: Current Mode: " mode "`n"
+    . ":video_game: Current Mode: " (ModeDropdown.Text = "" ? "No Mode Selected" : ModeDropdown.Text) "`n"
     . ":white_check_mark: Successful Runs: " Wins "`n"
     . "❌ Failed Runs: " loss "`n"
     . ":bar_chart: Total Runs: " (loss+Wins) "`n"
@@ -256,7 +255,7 @@ WebhookLog() {
 ;Discord webhooks, above
 
 WebhookScreenshot(title, description, color := 0x0dffff, status := "") {
-    global webhook, WebhookURL, DiscordUserID, wins, loss, currentStreak, stageStartTime
+    global webhook, WebhookURL, wins, loss, currentStreak, stageStartTime
     ; Yap message
 
     footerMessages := Map(
@@ -271,7 +270,6 @@ WebhookScreenshot(title, description, color := 0x0dffff, status := "") {
     )
 
     global webhook := WebHookBuilder(WebhookURL)
-    global DiscordUserID := FileRead(DiscordUserIDFile, "UTF-8")
     global wins, loss, currentStreak, stageStartTime
 
     if (!IsSet(stageStartTime)) {
@@ -304,7 +302,7 @@ WebhookScreenshot(title, description, color := 0x0dffff, status := "") {
     }
 
     ; Rest of your existing WebhookScreenshot code...
-    UserIDSent := (DiscordUserID = "") ? "" : "<@" DiscordUserID ">"
+    UserIDSent := ""
 
     ; Initialize GDI+
     pToken := Gdip_Startup()
@@ -321,7 +319,7 @@ WebhookScreenshot(title, description, color := 0x0dffff, status := "") {
         return
     }
 
-    pCroppedBitmap := CropImage(pBitmap, 0, 0, 1366, 633)
+    pCroppedBitmap := CropImage(pBitmap, 0, 0, 1366, 700)
     if !pCroppedBitmap {
         MsgBox("Failed to crop the bitmap")
         Gdip_DisposeImage(pBitmap)

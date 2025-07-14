@@ -5,7 +5,7 @@
 
 ; Basic Application Info
 global aaTitle := "Ryn's Anime Last Stand Macro "
-global version := "v1.5.1"
+global version := "v1.5.2"
 global rblxID := "ahk_exe RobloxPlayerBeta.exe"
 ;Coordinate and Positioning Variables
 global targetWidth := 816
@@ -193,7 +193,7 @@ global guideBtn := MainUI.Add("Button", "x908 y5 w90 h20", "Guide")
 guideBtn.OnEvent("Click", OpenGuide)
 
 global unitsButton := MainUI.Add("Button", "x1008 y5 w90 h20", "Unit Config")
-;unitsButton.OnEvent("Click", (*) => ToggleControlGroup("Unit"))
+unitsButton.OnEvent("Click", (*) => ToggleControlGroup("Unit"))
 
 global modeButton := MainUI.Add("Button", "x1108 y5 w90 h20", "Mode Config")
 ;modeButton.OnEvent("Click", (*) => ToggleControlGroup("Mode"))
@@ -255,9 +255,10 @@ global PrivateServerEnabled := MainUI.Add("CheckBox", "x825 y175 Hidden cffffff"
 global PrivateServerURLBox := MainUI.Add("Edit", "x1050 y173 w160 h20 Hidden c" uiTheme[6], "")
 PrivateServerTestButton := MainUI.Add("Button", "x1225 y173 w80 h20 Hidden", "Test Link")
 PrivateServerTestButton.OnEvent("Click", (*) => Reconnect(true))
+;global PrivateSettingsBorderBottom := MainUI.Add("GroupBox", "x808 y205 w550 h176 Hidden c" uiTheme[1], "")
 
 ; HotKeys
-global KeybindBorder := MainUI.Add("GroupBox", "x808 y205 w550 h180 +Center c" uiTheme[1], "Keybinds")
+global KeybindBorder := MainUI.Add("GroupBox", "x808 y205 w195 h176 +Center Hidden c" uiTheme[1], "Keybind Settings")
 global F1Text := MainUI.Add("Text", "x825 y230 Hidden c" uiTheme[1], "Position Roblox:")
 global F1Box := MainUI.Add("Edit", "x950 y228 w30 h20 Hidden c" uiTheme[6], F1Key)
 global F2Text := MainUI.Add("Text", "x825 y260 Hidden c" uiTheme[1], "Start Macro:")
@@ -267,8 +268,18 @@ global F3Box := MainUI.Add("Edit", "x950 y288 w30 h20 Hidden c" uiTheme[6], F3Ke
 global F4Text := MainUI.Add("Text", "x825 y320 Hidden c" uiTheme[1], "Pause Macro:")
 global F4Box := MainUI.Add("Edit", "x950 y318 w30 h20 Hidden c" uiTheme[6], F4Key)
 
-keybindSaveBtn := MainUI.Add("Button", "x850 y350 w50 h20 Hidden", "Save")
+keybindSaveBtn := MainUI.Add("Button", "x880 y350 w50 h20 Hidden", "Save")
 keybindSaveBtn.OnEvent("Click", SaveKeybindSettings)
+
+global UnitBorder := MainUI.Add("GroupBox", "x808 y85 w550 h296 +Center Hidden c" uiTheme[1], "Unit Settings")
+global LeftSideUnitManager := MainUI.Add("CheckBox", "x825 y110 Hidden cffffff", "Use Left-Side Unit Manager (Anime Last Stand's Default)")
+
+global ZoomSettingsBorder := MainUI.Add("GroupBox", "x1000 y205 w165 h176 +Center Hidden c" uiTheme[1], "Zoom Settings")
+global ZoomText := MainUI.Add("Text", "x1018 y230 Hidden c" uiTheme[1], "Zoom Level:")
+global ZoomBox := MainUI.Add("Edit", "x1115 y228 w30 h20 Hidden c" uiTheme[6], "20")
+ZoomBox.OnEvent("Change", (*) => ValidateEditBox(ZoomBox))
+
+global MiscSettingsBorder := MainUI.Add("GroupBox", "x1163 y205 w195 h176 +Center Hidden c" uiTheme[1], "")
 
 GithubButton.OnEvent("Click", (*) => OpenGithub())
 DiscordButton.OnEvent("Click", (*) => OpenDiscord())
@@ -697,7 +708,13 @@ InitControlGroups() {
     ControlGroups["Settings"] := [
         WebhookBorder, WebhookEnabled, WebhookLogsEnabled, WebhookURLBox,
         PrivateSettingsBorder, PrivateServerEnabled, PrivateServerURLBox, PrivateServerTestButton,
-        F1Text, F1Box, F2Text, F2Box, F3Text, F3Box, F4Text, F4Box, keybindSaveBtn
+        KeybindBorder, F1Text, F1Box, F2Text, F2Box, F3Text, F3Box, F4Text, F4Box, keybindSaveBtn,
+        ZoomSettingsBorder, ZoomText, ZoomBox,
+        MiscSettingsBorder, 
+    ]
+
+    ControlGroups["Unit"] := [
+        UnitBorder, LeftSideUnitManager
     ]
 }
 
@@ -774,4 +791,22 @@ ValidateWebhook() {
         MsgBox("Invalid Webhook URL! Please ensure it follows the correct format.", "Invalid URL", "+0x1000")
         return
     }
+}
+
+ValidateEditBox(ctrl) {
+    val := Trim(ctrl.Value)
+    ; If the input is not a number, reset to 0
+    if !IsInteger(val)
+    {
+        ctrl.Value := "0"
+        return
+    }
+
+    ; Convert to integer
+    num := Integer(val)
+    if (num < 0)
+        ctrl.Value := "0"
+
+    if (num > 20)
+        ctrl.Value := "20"  ; Limit to a maximum of 20
 }

@@ -156,12 +156,14 @@ OnConfirmClick(*) {
     global confirmClicked := true
 }
 
-
-FixClick(x, y, LR := "Left") {
+FixClick(x, y, LR := "Left", shouldWiggle := false) {
     MouseMove(x, y)
     MouseMove(1, 0, , "R")
-    MouseClick(LR, -1, 0, , , , "R")
     Sleep(50)
+    if (shouldWiggle) {
+        wiggle()
+    }
+    MouseClick(LR, -1, 0, , , , "R")
 }
 
 GetWindowCenter(WinTitle) {
@@ -308,15 +310,21 @@ Teleport(mode := "") {
 
 Scroll(times, direction, delay) {
     if (times < 1) {
-        AddToLog("Invalid number of times")
+        if (debugMessages) {
+            AddToLog("Invalid number of times")
+        }
         return
     }
     if (direction != "WheelUp" and direction != "WheelDown") {
-        AddToLog("Invalid direction")
+        if (debugMessages) {
+            AddToLog("Invalid scroll direction: " direction)
+        }
         return
     }
     if (delay < 0) {
-        AddToLog("Invalid delay")
+        if (debugMessages) {
+            AddToLog("Invalid delay: " delay)
+        }
         return
     }
     loop times {

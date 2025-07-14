@@ -41,6 +41,7 @@ Skipping=0
 Lobby=1
 isSeamless=1
 PriorityUpgrade=1
+AutoAbility=1
 
 [WebhookSettings]
 WebhookEnabled=0
@@ -50,6 +51,12 @@ WebhookLogsEnabled=0
 [PrivateServerSettings]
 PrivateServerEnabled=0
 PrivateServerURL=
+
+[MiscSettings]
+UnitManagerLeft=0
+
+[ZoomSettings]
+ZoomLevel=20
 
 [SavedCoordinates]
 [Preset 1]

@@ -118,12 +118,16 @@ readInSettings() {
                 case "PriorityUpgrade": PriorityUpgrade.Value := parts[2] ; Set the checkbox value
                 case "Skipping": SkipLobby.Value := parts[2]  ; Set checkbox value
                 case "Lobby": ReturnLobbyBox.Value := parts[2]  ; Set checkbox value
+                case "AutoAbility": AutoAbilityBox.Value := parts[2] ; Set the checkbox value
                 case "isSeamless": SeamlessToggle.Value := parts[2] ; Set the checkbox value
                 case "WebhookEnabled": WebhookEnabled.Value := parts[2] ; Set the checkbox value
                 case "WebhookURL": WebhookURLBox.Text := parts[2] ; Set the URL box text
                 case "WebhookLogsEnabled": WebhookLogsEnabled.Value := parts[2] ; Set the checkbox value
                 case "PrivateServerEnabled": PrivateServerEnabled.Value := parts[2] ; Set the checkbox value
                 case "PrivateServerURL": PrivateServerURLBox.Text := parts[2] ; Set the URL box text
+                case "UnitManagerLeft": LeftSideUnitManager.Value := parts[2] ; Set the checkbox value
+                case "ZoomLevel": ZoomBox.Text := parts[2] ; Set the zoom level
+
             }
         }
         AddToLog("✅ Loaded settings successfully")
@@ -162,6 +166,7 @@ SaveSettings(*) {
         content .= "`nLobby=" ReturnLobbyBox.Value
         content .= "`nisSeamless=" SeamlessToggle.Value
         content .= "`nPriorityUpgrade=" PriorityUpgrade.Value
+        content .= "`nAutoAbility=" AutoAbilityBox.Value
 
         content .= "`n`n[WebhookSettings]"
         content .= "`nWebhookEnabled=" WebhookEnabled.Value
@@ -171,6 +176,12 @@ SaveSettings(*) {
         content .= "`n`n[PrivateServerSettings]"
         content .= "`nPrivateServerEnabled=" PrivateServerEnabled.Value
         content .= "`nPrivateServerURL=" PrivateServerURLBox.Text
+
+        content .= "`n`n[MiscSettings]"
+        content .= "`nUnitManagerLeft=" LeftSideUnitManager.Value
+
+        content .= "`n`n[ZoomSettings]"
+        content .= "`nZoomLevel=" ZoomBox.Value
 
         ; Save the stored coordinates
         content .= "`n`n[SavedCoordinates]`n"
