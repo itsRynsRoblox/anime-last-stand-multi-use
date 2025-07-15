@@ -147,13 +147,14 @@ SaveSettings(*) {
             FileDelete(settingsFile)
         }
 
-        content .= "`n[Unit Settings]"
+        content .= "[Unit Settings]"
 
-        for settingType in ["Enabled", "Placement", "Priority", "UpgradeEnabled", "UpgradeLimitEnabled"] {
+        for settingType in ["Enabled", "Placement", "Priority", "UpgradeEnabled", "UpgradeLimit", "UpgradeLimitEnabled"] {
             loop 6 {
                 index := A_Index
                 setting := %settingType%%index%
-                content .= "`n" settingType index "=" setting.Value
+                value := (settingType = "UpgradeLimit") ? setting.Text : setting.Value
+                content .= "`n" settingType index "=" value
             }
         }
 
@@ -167,8 +168,8 @@ SaveSettings(*) {
         content .= "`nSkipping=" SkipLobby.Value
         content .= "`nLobby=" ReturnLobbyBox.Value
         content .= "`nisSeamless=" SeamlessToggle.Value
-        content .= "`nPriorityUpgrade=" PriorityUpgrade.Value
         content .= "`nAutoAbility=" AutoAbilityBox.Value
+        content .= "`nAutoAbilityTimer=" AutoAbilityTimer.Text
 
         content .= "`n`n[WebhookSettings]"
         content .= "`nWebhookEnabled=" WebhookEnabled.Value
@@ -188,7 +189,7 @@ SaveSettings(*) {
         content .= "`n`n[Upgrade Settings]"
         content .= "`nUnitManagerAutoUpgrade=" UnitManagerAutoUpgrade.Value
         content .= "`nUnitManagerUpgradeSystem=" UnitManagerUpgradeSystem.Value
-        content .= "`nAutoAbilityTimer=" AutoAbilityTimer.Text
+        content .= "`nPriorityUpgrade=" PriorityUpgrade.Value
 
         ; Save the stored coordinates
         content .= "`n`n[SavedCoordinates]`n"

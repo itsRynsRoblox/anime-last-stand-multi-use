@@ -4,8 +4,8 @@
 #Include Functions.ahk
 
 ; Basic Application Info
-global aaTitle := "Ryn's Anime Last Stand Macro "
-global version := "v1.5.4"
+global GameTitle := "Ryn's Anime Last Stand Macro "
+global version := "v1.5.5"
 global rblxID := "ahk_exe RobloxPlayerBeta.exe"
 ;Coordinate and Positioning Variables
 global targetWidth := 816
@@ -94,7 +94,7 @@ exitButton.OnEvent("Click", (*) => Destroy()) ;Exit button
 global minimizeButton := MainUI.Add("Picture", "x1305 y3 w27 h27 +Background" uiTheme[2], Minimize) ;Minimize gui
 minimizeButton.OnEvent("Click", (*) => minimizeUI()) ;Minimize gui
 MainUI.SetFont("Bold s16 c" uiTheme[1], "Verdana") ;Font
-global windowTitle := MainUI.Add("Text", "x10 y3 w1200 h29 +BackgroundTrans", aaTitle "" . "" version) ;Title
+global windowTitle := MainUI.Add("Text", "x10 y3 w1200 h29 +BackgroundTrans", GameTitle "" . "" version) ;Title
 
 MainUI.Add("Text", "x805 y501 w558 h25 +Center +BackgroundTrans", "Console") ;Process header
 uiBorders.Push(MainUI.Add("Text", "x803 y499 w560 h1 +Background" uiTheme[3])) ;Process Top
@@ -192,8 +192,8 @@ DebugButton.OnEvent("Click", (*) => "")
 global guideBtn := MainUI.Add("Button", "x908 y5 w90 h20", "Guide")
 guideBtn.OnEvent("Click", OpenGuide)
 
-global unitsButton := MainUI.Add("Button", "x1008 y5 w90 h20", "Unit Config")
-unitsButton.OnEvent("Click", (*) => ToggleControlGroup("Unit"))
+global unitsButton := MainUI.Add("Button", "x1008 y5 w90 h20", "Upgrades")
+unitsButton.OnEvent("Click", (*) => ToggleControlGroup("Upgrades"))
 
 global modeButton := MainUI.Add("Button", "x1108 y5 w90 h20", "Mode Config")
 ;modeButton.OnEvent("Click", (*) => ToggleControlGroup("Mode"))
@@ -209,9 +209,12 @@ MainUI.SetFont("s9")
 global NextLevelBox := MainUI.Add("Checkbox", "x900 y451 cffffff", "Next Level")
 global SkipLobby := MainUI.Add("Checkbox", "x900 y451 cffffff", "Skip Lobby")
 global ReturnLobbyBox := MainUI.Add("Checkbox", "x1150 y476 cffffff Checked", "Return To Lobby")
+
 global AutoAbilityBox := MainUI.Add("CheckBox", "x1005 y451 cffffff Checked", "Auto Ability")
+global AutoAbilityText := MainUI.Add("Text", "x1125 y451 c" uiTheme[1], "Auto Ability Timer:")
+global AutoAbilityTimer := MainUI.Add("Edit", "x1255 y449 w30 h20 cBlack Number", "60")
+
 global SeamlessToggle := MainUI.Add("CheckBox", "x900 y476 cffffff", "Seamless Replay Enabled")
-global PriorityUpgrade := MainUI.Add("CheckBox", "x1105 y476 cffffff", "Priority Upgrade")
 
 PlacementPatternText := MainUI.Add("Text", "x815 y390 w125 h20", "Placement Pattern")
 global PlacementPatternDropdown := MainUI.Add("DropDownList", "x825 y410 w100 h180 Choose2 +Center", ["Circle", "Custom", "Grid", "3x3 Grid", "Spiral", "Up and Down", "Random"])
@@ -271,12 +274,13 @@ global F4Box := MainUI.Add("Edit", "x950 y318 w30 h20 Hidden c" uiTheme[6], F4Ke
 keybindSaveBtn := MainUI.Add("Button", "x880 y350 w50 h20 Hidden", "Save")
 keybindSaveBtn.OnEvent("Click", SaveKeybindSettings)
 
-global UnitBorder := MainUI.Add("GroupBox", "x808 y85 w550 h296 +Center Hidden c" uiTheme[1], "Unit Settings")
-global LeftSideUnitManager := MainUI.Add("CheckBox", "x825 y110 Hidden cffffff", "Using Left-Side Unit Manager (Anime Last Stand's Default)")
+global UpgradeBorder := MainUI.Add("GroupBox", "x808 y85 w550 h296 +Center Hidden c" uiTheme[1], "Upgrade Settings")
+global LeftSideUnitManager := MainUI.Add("CheckBox", "x825 y110 Hidden cffffff", "Using Left-Side Unit Selection (Anime Last Stand's Default)")
 global UnitManagerUpgradeSystem := MainUI.Add("CheckBox", "x825 y130 Hidden cffffff", "Use the Unit Manager to upgrade your units")
-global UnitManagerAutoUpgrade := MainUI.Add("CheckBox", "x825 y150 Hidden cffffff", "Use the Unit Manager to Auto Upgrade your units")
-global AutoAbilityText := MainUI.Add("Text", "x825 y170 Hidden c" uiTheme[1], "Check For Auto Ability Timer:")
-global AutoAbilityTimer := MainUI.Add("Edit", "x1035 y168 w30 h20 Hidden cBlack Number", "60")
+global PriorityUpgrade := MainUI.Add("CheckBox", "x825 y150 cffffff", "Use Unit Priority while Upgrading/Auto Upgrading")
+
+global AutoUpgradeBorder := MainUI.Add("GroupBox", "x808 y170 w550 h210 +Center Hidden c" uiTheme[1], "Auto-Upgrade Settings")
+global UnitManagerAutoUpgrade := MainUI.Add("CheckBox", "x825 y197 Hidden cffffff", "Enable Auto-Upgrading (Via the Unit Manager)")
 
 global ZoomSettingsBorder := MainUI.Add("GroupBox", "x1000 y205 w165 h176 +Center Hidden c" uiTheme[1], "Zoom Settings")
 global ZoomText := MainUI.Add("Text", "x1018 y230 Hidden c" uiTheme[1], "Zoom Level:")
@@ -384,9 +388,6 @@ upgradeLimitEnabled6 := MainUI.Add("CheckBox", "x1210 y355 w15 h15", "")
 
 MainUI.SetFont("s8 c" uiTheme[6])
 
-; Mode selection dropdown
-PlacementSelection.OnEvent("Change", ToggleMode)
-
 ; Placement dropdowns
 Placement1 := MainUI.Add("DropDownList", "x908 y105 w60 h180 Choose1 +Center", ["1","2","3","4","5","6"])
 Placement2 := MainUI.Add("DropDownList", "x908 y155 w60 h180 Choose1 +Center", ["1","2","3","4","5","6"])
@@ -416,14 +417,6 @@ UpgradeLimit3 := MainUI.Add("DropDownList", "x1310 y205 w45 h180 Choose1 +Center
 UpgradeLimit4 := MainUI.Add("DropDownList", "x1310 y255 w45 h180 Choose1 +Center", ["0","1","2","3","4","5","6","7","8","9","10","11","12","13","14"])
 UpgradeLimit5 := MainUI.Add("DropDownList", "x1310 y305 w45 h180 Choose1 +Center", ["0","1","2","3","4","5","6","7","8","9","10","11","12","13","14"])
 UpgradeLimit6 := MainUI.Add("DropDownList", "x1310 y355 w45 h180 Choose1 +Center", ["0","1","2","3","4","5","6","7","8","9","10","11","12","13","14"])
-
-ToggleMode(*) {
-    mode := PlacementSelection.Text
-    Loop 6 {
-        Placement%A_Index%.Visible := true
-        Priority%A_Index%.Visible := PriorityUpgrade.Value
-    }
-}
 
 readInSettings()
 MainUI.Show("w1366 h700")
@@ -717,8 +710,9 @@ InitControlGroups() {
         MiscSettingsBorder, 
     ]
 
-    ControlGroups["Unit"] := [
-        UnitBorder, LeftSideUnitManager, UnitManagerUpgradeSystem, UnitManagerAutoUpgrade, AutoAbilityText, AutoAbilityTimer
+    ControlGroups["Upgrades"] := [
+        UpgradeBorder, LeftSideUnitManager, UnitManagerUpgradeSystem,
+        AutoUpgradeBorder, UnitManagerAutoUpgrade
     ]
 }
 

@@ -32,7 +32,7 @@ SaveUINavSettings(*) {
 
  ;Login Text
  setupOutputFile() {
-     content := "`n==" aaTitle "" version "==`n  Start Time: [" currentTime "]`n"
+     content := "`n==" GameTitle "" version "==`n  Start Time: [" currentTime "]`n"
      FileAppend(content, currentOutputFile)
  }
  
@@ -350,8 +350,8 @@ CloseLobbyPopups() {
 }
 
 SetAutoUpgrade(slot, totalUnits) {
-    baseX := 611         ; X of first (leftmost) slot
-    baseY := 185         ; Y of top row
+    baseX := 610         ; X of first (leftmost) slot
+    baseY := 215         ; Y of top row
     colSpacing := 80     ; Horizontal space between units
     rowSpacing := 115    ; Vertical space between rows
 
@@ -391,7 +391,7 @@ SetAutoUpgrade(slot, totalUnits) {
 
     clickY := baseY + (row * rowSpacing)
 
-    if (priority < 4) {
+    if (priority > 4) {
         priority := 4
     }
 
@@ -404,7 +404,7 @@ SetAutoUpgrade(slot, totalUnits) {
 ; === ClickUnit unchanged but passed totalUnits explicitly ===
 ClickUnit(slot, totalUnits) {
     baseX := 585
-    baseY := 145
+    baseY := 175
     colSpacing := 80
     rowSpacing := 115
     maxCols := 3

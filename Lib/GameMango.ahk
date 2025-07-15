@@ -366,7 +366,7 @@ UpgradeUnits() {
     global successfulCoordinates, maxedCoordinates
     global totalUnits := Map(), upgradedCount := Map()
 
-    ; Build totalUnits and upgradedCount as before
+    ; Build totalUnits and upgradedCount
     for coord in successfulCoordinates {
         totalUnits[coord.slot] := (totalUnits.Has(coord.slot) ? totalUnits[coord.slot] + 1 : 1)
         upgradedCount[coord.slot] := upgradedCount.Has(coord.slot) ? upgradedCount[coord.slot] : 0
@@ -381,35 +381,59 @@ UpgradeUnits() {
     }
 
     if (UnitManagerAutoUpgrade.Value) {
-        for slot, total in totalUnits {
-            SetAutoUpgrade(slot, totalUnits)
+        if (PriorityUpgrade.Value) {
+            FixClick(580, 125) ; Swap to old manager
+            for slot, total in totalUnits {
+                SetAutoUpgrade(slot, totalUnits)
+            }
+        } else {
+            FixClick(648, 123) ; Clicks upgrade all
         }
-
-        SetTimer(CheckAutoAbility, GetAutoAbilityTimer())
+        if (AutoAbilityBox.Value) {
+            SetTimer(CheckAutoAbility, GetAutoAbilityTimer())
+        }
         AddToLog("All units have been set to Auto Upgrade, proceeding to monitor stage")
         return MonitorStage()
     }
 
-    if (UnitManagerUpgradeSystem.Value && !UnitManagerAutoUpgrade.Value) {
-        SendInput("{F}") ; Open unit manager
-    }
-
     if (PriorityUpgrade.Value) {
         AddToLog("Using priority upgrade system")
-        for priorityNum in [1, 2, 3, 4, 5, 6] {
-            for slot in [1, 2, 3, 4, 5, 6] {
-                priority := "priority" slot
-                priority := %priority%
 
-                if (priority.Text = priorityNum && HasUnitsInSlot(slot, successfulCoordinates)) {
-                    AddToLog("Starting upgrades for priority " priorityNum " (slot " slot ")")
-                    ProcessUpgrades(slot, priorityNum)
+        if (UnitManagerUpgradeSystem) {
+            FixClick(580, 125) ; Swap to old manager
+            ; Upgrade in slot order 1-6 when using UnitManagerUpgradeSystem
+            for slot in [1, 2, 3, 4, 5, 6] {
+                for priorityNum in [1, 2, 3, 4, 5, 6] {
+                    priority := "priority" slot
+                    priority := %priority%
+
+                    if (priority.Text = priorityNum && HasUnitsInSlot(slot, successfulCoordinates)) {
+                        AddToLog("Upgrading slot " slot " with priority " priorityNum)
+                        ProcessUpgrades(slot, priorityNum)
+                    }
+                }
+            }
+        } else {
+            ; Default behavior: loop through priorities first
+            for priorityNum in [1, 2, 3, 4, 5, 6] {
+                for slot in [1, 2, 3, 4, 5, 6] {
+                    priority := "priority" slot
+                    priority := %priority%
+
+                    if (priority.Text = priorityNum && HasUnitsInSlot(slot, successfulCoordinates)) {
+                        AddToLog("Starting upgrades for priority " priorityNum " (slot " slot ")")
+                        ProcessUpgrades(slot, priorityNum)
+                    }
                 }
             }
         }
+
         AddToLog("All units maxed, proceeding to monitor stage")
     } else {
-        while (successfulCoordinates.Length > 0) {
+        if (UnitManagerUpgradeSystem) {
+            FixClick(580, 125) ; Swap to old manager
+        }
+        while (successfulCoordinates.Length > 0) { ; if no priority is enabled
             ProcessUpgrades(false, "")
         }
         AddToLog("All units maxed, proceeding to monitor stage")
@@ -417,6 +441,7 @@ UpgradeUnits() {
 
     return MonitorStage()
 }
+
 
 ChallengeMode() {    
     AddToLog("Moving to Challenge mode")
@@ -539,7 +564,9 @@ MonitorStage() {
         if (!CheckForXp())
             continue
 
-        SetTimer(CheckAutoAbility, 0)
+        if (AutoAbilityBox.Value) {
+            SetTimer(CheckAutoAbility, 0)
+        }
 
         if (ShouldOpenUnitManager()) {
             SendInput("{F}") ; Open unit manager
@@ -587,7 +614,9 @@ ClickThroughDrops() {
 
 CheckForPortalSelection() {
     if (ok:=FindText(&X, &Y, 348, 429, 454, 459, 0, 0, PortalSelection) or (ok:=FindText(&X, &Y, 348, 429, 454, 459, 0, 0, PortalSelection))) {
-        SetTimer(CheckAutoAbility, 0)
+        if (AutoAbilityBox.Value) {
+            SetTimer(CheckAutoAbility, 0)
+        }
         FixClick(399, 299)
         Sleep (500)
         FixClick(402, 414)
@@ -1018,6 +1047,38 @@ HandleAutoAbility() {
     }
 }
 
+HandleAutoAbilityUnitManager() {
+    if !AutoAbilityBox.Value
+        return
+
+    wiggle()
+
+    ; Grid configuration
+    baseX    := 675            ; Left column starting X
+    xOffset  := 95             ; Distance between columns
+    baseY    := 130            ; Top row starting Y
+    yStep    := 60             ; Vertical gap between rows
+    numRows  := 8              ; Total rows to scan
+    numCols  := 2              ; Columns per row
+    color    := 0xC22725       ; Target pixel color
+
+    ; Scan grid
+    Loop numRows {
+        rowIndex := A_Index - 1
+        rowY := baseY + rowIndex * yStep
+
+        Loop numCols {
+            colIndex := A_Index - 1
+            colX := baseX + colIndex * xOffset
+
+            if GetPixel(color, colX, rowY, 4, 4, 20) {
+                FixClick(colX, rowY)
+                Sleep(100)
+            }
+        }
+    }
+}
+
 wiggle() {
     MouseMove(1, 1, 5, "R")
     Sleep(30)
@@ -1051,7 +1112,7 @@ CheckLoaded() {
         Sleep(500)
         
         if (LeftSideUnitManager.Value) {
-            if (ok := FindText(&X, &Y, 706, 319, 791, 374, 0, 0, UnitManager)) {
+            if (ok := FindText(&X, &Y, 711, 312, 783, 380, 0, 0, UnitManager)) {
                 AddToLog("Successfully Loaded In")
                 Sleep(500)
                 break
@@ -1553,17 +1614,21 @@ CheckAutoAbility() {
     global successfulCoordinates
     global totalUnits
 
+    AddToLog("Checking for unactive abilities...")
+    SendInput("Z")
+    Sleep (1000)
+
     if (CheckForXP()) {
+        AddToLog("Stopping auto ability check because the game ended")
+        SendInput("Z")
         SetTimer(CheckAutoAbility, 0)  ; Stop the timer
         return
     }
 
-    ; Build totalUnits and upgradedCount as before
-    for coord in successfulCoordinates {
-        ClickUnit(coord.slot, totalUnits)
-        Sleep(1000)
-        HandleAutoAbility()
-    }
+    HandleAutoAbilityUnitManager()
+    Sleep (1000)
+    SendInput("Z")
+    AddToLog("Finished looking for abilities")
 }
 
 UnitManagerUpgrade(slot) {
