@@ -12,12 +12,12 @@ Placement3=1
 Placement4=1
 Placement5=1
 Placement6=1
-Priority1=1
-Priority2=2
-Priority3=3
-Priority4=4
-Priority5=5
-Priority6=6
+Priority1=2
+Priority2=1
+Priority3=1
+Priority4=3
+Priority5=3
+Priority6=4
 UpgradeEnabled1=0
 UpgradeEnabled2=0
 UpgradeEnabled3=0
@@ -29,23 +29,24 @@ UpgradeLimitEnabled2=0
 UpgradeLimitEnabled3=0
 UpgradeLimitEnabled4=0
 UpgradeLimitEnabled5=0
-UpgradeLimitEnabled6=0
+UpgradeLimitEnabled6=1
 
 [PlacementSettings]
-Setting=1
-Pattern=1
+Setting=2
+Pattern=2
 Speed=3
 Profile=1
+
 [General Settings]
 Skipping=0
 Lobby=1
-isSeamless=1
+isSeamless=0
 PriorityUpgrade=1
 AutoAbility=1
 
 [WebhookSettings]
-WebhookEnabled=0
-WebhookURL=
+WebhookEnabled=1
+WebhookURL=https://discord.com/api/webhooks/1359179134626037904/FXb0IXAUjXTKriMaTv3zz5h7qN0C1XSr9xRvHPOs5GWZ9BiM_CHqx_6_XAKAp6_80MOu
 WebhookLogsEnabled=0
 
 [PrivateServerSettings]
@@ -53,14 +54,24 @@ PrivateServerEnabled=0
 PrivateServerURL=
 
 [MiscSettings]
-UnitManagerLeft=0
+UnitManagerLeft=1
 
 [ZoomSettings]
-ZoomLevel=20
+ZoomLevel=15
+
+[Upgrade Settings]
+UnitManagerAutoUpgrade=0
+UnitManagerUpgradeSystem=1
+AutoAbilityTimer=60
 
 [SavedCoordinates]
 [Preset 1]
-NoCoordinatesSaved
+X=499, Y=192
+X=503, Y=146
+X=538, Y=154
+X=533, Y=185
+X=492, Y=224
+X=429, Y=224
 [Preset 2]
 NoCoordinatesSaved
 [Preset 3]

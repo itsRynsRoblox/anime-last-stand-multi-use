@@ -140,7 +140,7 @@ StartPlacingUnits(untilSuccessful := true) {
                             placedCounts[slotNum] += 1
                             AddToLog("Placed Unit " slotNum " (" placedCounts[slotNum] "/" placements ")")
                             HandleAutoAbility()
-                            FixClick(700, 560) ; Move Click
+                            SendInput("X")
                             ;AttemptUpgrade()
                             UpgradePlacedUnits()
                         } else {
@@ -156,7 +156,7 @@ StartPlacingUnits(untilSuccessful := true) {
                             placedCounts[slotNum] += 1
                             AddToLog("Placed Unit " slotNum " (" placedCounts[slotNum] "/" placements ")")
                             HandleAutoAbility()
-                            FixClick(700, 560) ; Move Click
+                            SendInput("X")
                             ;AttemptUpgrade()
                             UpgradePlacedUnits()
                             break ; Move to the next placement spot
@@ -364,9 +364,9 @@ CheckForXp() {
 UpgradeUnits() {
     global stage
     global successfulCoordinates, maxedCoordinates
-
     global totalUnits := Map(), upgradedCount := Map()
 
+    ; Build totalUnits and upgradedCount as before
     for coord in successfulCoordinates {
         totalUnits[coord.slot] := (totalUnits.Has(coord.slot) ? totalUnits[coord.slot] + 1 : 1)
         upgradedCount[coord.slot] := upgradedCount.Has(coord.slot) ? upgradedCount[coord.slot] : 0
@@ -374,6 +374,26 @@ UpgradeUnits() {
 
     AddToLog("Initiating Unit Upgrades...")
     stage := "Upgrading"
+
+    if (ShouldOpenUnitManager()) {
+        SendInput("{F}") ; Open unit manager
+        Sleep(500)
+    }
+
+    if (UnitManagerAutoUpgrade.Value) {
+        for slot, total in totalUnits {
+            SetAutoUpgrade(slot, totalUnits)
+        }
+
+        SetTimer(CheckAutoAbility, GetAutoAbilityTimer())
+        AddToLog("All units have been set to Auto Upgrade, proceeding to monitor stage")
+        return MonitorStage()
+    }
+
+    if (UnitManagerUpgradeSystem.Value && !UnitManagerAutoUpgrade.Value) {
+        SendInput("{F}") ; Open unit manager
+    }
+
     if (PriorityUpgrade.Value) {
         AddToLog("Using priority upgrade system")
         for priorityNum in [1, 2, 3, 4, 5, 6] {
@@ -511,7 +531,6 @@ MonitorStage() {
 
         ; --- Check for progression or special cases ---
         CheckForPortalSelection()
-        CheckForWave100()
 
         ; --- Fallback if disconnected ---
         Reconnect()
@@ -519,6 +538,13 @@ MonitorStage() {
         ; --- Wait for XP/Results screen ---
         if (!CheckForXp())
             continue
+
+        SetTimer(CheckAutoAbility, 0)
+
+        if (ShouldOpenUnitManager()) {
+            SendInput("{F}") ; Open unit manager
+            Sleep(500)
+        }
 
         AddToLog("Checking win/loss status")
         stageEndTime := A_TickCount
@@ -561,6 +587,7 @@ ClickThroughDrops() {
 
 CheckForPortalSelection() {
     if (ok:=FindText(&X, &Y, 348, 429, 454, 459, 0, 0, PortalSelection) or (ok:=FindText(&X, &Y, 348, 429, 454, 459, 0, 0, PortalSelection))) {
+        SetTimer(CheckAutoAbility, 0)
         FixClick(399, 299)
         Sleep (500)
         FixClick(402, 414)
@@ -738,7 +765,7 @@ CloseChat() {
     }
 }
 
-BasicSetup() {
+BasicSetup(usedButton := false) {
     global firstStartup
 
     ; Skip setup entirely if Seamless is enabled
@@ -750,16 +777,13 @@ BasicSetup() {
     }
 
     ; Close various UI elements
-    ;SendInput("{Tab}") ; Closes Player leaderboard
-    Sleep 500
-
     FixClick(487, 72) ; Closes Player leaderboard
     Sleep 300
 
     CloseChat()
     Sleep 300
 
-    if (ModeDropdown.Text = "Custom" && SeamlessToggle.Value) {
+    if (ModeDropdown.Text = "Custom" && SeamlessToggle.Value && !usedButton) {
         return
     }
 
@@ -768,7 +792,7 @@ BasicSetup() {
     ; Teleport to spawn
     TeleportToSpawn()
 
-    if (SeamlessToggle.Value) {
+    if (SeamlessToggle.Value && !usedButton) {
         firstStartup := false
     }
 }
@@ -919,7 +943,12 @@ PlaceUnit(x, y, slot := 1) {
 MaxUpgrade() {
     Sleep 500
     ; Check for max text
-    if (ok := FindText(&X, &Y, 635, 388, 711, 408, 0, 0, MaxUpgradeText)) {
+    if (LeftSideUnitManager.Value) {
+        if (ok := FindText(&X, &Y, 95, 386, 170, 407, 0, 0, MaxUpgradeText)) {
+            return true
+        }
+    }
+    else if (ok := FindText(&X, &Y, 635, 388, 711, 408, 0, 0, MaxUpgradeText)) {
         return true
     }
     return false
@@ -1022,7 +1051,7 @@ CheckLoaded() {
         Sleep(500)
         
         if (LeftSideUnitManager.Value) {
-            if (ok := FindText(&X, &Y, 710, 337, 786, 356, 0, 0, UnitManager)) {
+            if (ok := FindText(&X, &Y, 706, 319, 791, 374, 0, 0, UnitManager)) {
                 AddToLog("Successfully Loaded In")
                 Sleep(500)
                 break
@@ -1335,7 +1364,7 @@ UpgradePlacedUnits() {
 }
 
 ProcessUpgrades(slot := false, priorityNum := "", singlePass := false) {
-    global successfulCoordinates
+    global successfulCoordinates, totalUnits
 
     if (singlePass) {
         for index, coord in successfulCoordinates {
@@ -1356,8 +1385,9 @@ ProcessUpgrades(slot := false, priorityNum := "", singlePass := false) {
                     HandleMaxUpgrade(coord, index)
                 }
 
-                Sleep(200)
-                FixClick(700, 560)
+                if (!UnitManagerUpgradeSystem.Value) {
+                    SendInput("X")
+                }
 
                 PostUpgradeChecks()
             }
@@ -1372,7 +1402,6 @@ ProcessUpgrades(slot := false, priorityNum := "", singlePass := false) {
     ; Original behavior (full upgrade loop)
     while (true) {
         slotDone := true
-
         for index, coord in successfulCoordinates {
             if (!slot || coord.slot = slot) {
                 slotDone := false
@@ -1394,8 +1423,9 @@ ProcessUpgrades(slot := false, priorityNum := "", singlePass := false) {
                     break
                 }
 
-                Sleep(200)
-                FixClick(700, 560)
+                if (!UnitManagerUpgradeSystem.Value) {
+                    SendInput("X") ; Close unit menu
+                }
 
                 PostUpgradeChecks()
             }
@@ -1431,9 +1461,17 @@ UpgradeUnitWithLimit(coord, index) {
     upgradeLimit := String(upgradeLimit.Text)
 
     if (!upgradeLimitEnabled.Value) {
-        UpgradeUnit(coord.x, coord.y)
+        if (UnitManagerUpgradeSystem.Value) {
+            UnitManagerUpgrade(coord.slot)
+        } else {
+            UpgradeUnit(coord.x, coord.y)
+        }
     } else {
-        UpgradeUnitLimit(coord, index, upgradeLimit)
+        if (UnitManagerUpgradeSystem.Value) {
+            UnitManagerUpgradeWithLimit(coord, index, upgradeLimit)
+        } else {
+            UpgradeUnitLimit(coord, index, upgradeLimit)
+        }
     }
 }
 
@@ -1458,7 +1496,7 @@ HandleMaxUpgrade(coord, index) {
     }
     maxedCoordinates.Push(coord)
     successfulCoordinates.RemoveAt(index)
-    FixClick(700, 560) ; Move Click
+    SendInput("X")
 }
 
 HandleStageEnd(waveRestart := false) {
@@ -1509,4 +1547,52 @@ StartsInLobby(ModeName) {
             return true
     }
     return false
+}
+
+CheckAutoAbility() {
+    global successfulCoordinates
+    global totalUnits
+
+    if (CheckForXP()) {
+        SetTimer(CheckAutoAbility, 0)  ; Stop the timer
+        return
+    }
+
+    ; Build totalUnits and upgradedCount as before
+    for coord in successfulCoordinates {
+        ClickUnit(coord.slot, totalUnits)
+        Sleep(1000)
+        HandleAutoAbility()
+    }
+}
+
+UnitManagerUpgrade(slot) {
+    global totalUnits
+    if !(GetPixel(0x1643C5, 77, 357, 4, 4, 2)) {
+        ClickUnit(slot, totalUnits)
+        Sleep(500)
+    }
+    Loop 3 {
+        SendInput("T")
+    }
+}
+
+UnitManagerUpgradeWithLimit(coord, index, upgradeLimit) {
+    global totalUnits
+    if !(GetPixel(0x1643C5, 77, 357, 4, 4, 2)) {
+        ClickUnit(coord.slot, totalUnits)
+        Sleep(500)
+    }
+    if (WaitForUpgradeLimitText(upgradeLimit + 1, 750)) {
+        HandleMaxUpgrade(coord, index)
+    } else {
+        SendInput("T")
+    }
+    
+}
+
+ShouldOpenUnitManager() {
+    if (UnitManagerAutoUpgrade.Value || UnitManagerUpgradeSystem.Value) {
+        return true
+    }
 }

@@ -5,7 +5,7 @@
 
 ; Basic Application Info
 global aaTitle := "Ryn's Anime Last Stand Macro "
-global version := "v1.5.2"
+global version := "v1.5.4"
 global rblxID := "ahk_exe RobloxPlayerBeta.exe"
 ;Coordinate and Positioning Variables
 global targetWidth := 816
@@ -242,7 +242,7 @@ customPlacementClearButton.OnEvent("Click", (*) => DeleteCoordsForPreset(Placeme
 
 fixCameraText := MainUI.Add("Text", "x505 y642 w60 h20 +Left", "Camera")
 fixCameraButton := MainUI.Add("Button", "x490 y662 w80 h20", "Fix")
-fixCameraButton.OnEvent("Click", (*) => BasicSetup())
+fixCameraButton.OnEvent("Click", (*) => BasicSetup(true))
 
 global WebhookBorder := MainUI.Add("GroupBox", "x808 y85 w550 h296 +Center Hidden c" uiTheme[1], "Webhook Settings")
 global WebhookEnabled := MainUI.Add("CheckBox", "x825 y110 Hidden cffffff", "Webhook Enabled")
@@ -272,11 +272,15 @@ keybindSaveBtn := MainUI.Add("Button", "x880 y350 w50 h20 Hidden", "Save")
 keybindSaveBtn.OnEvent("Click", SaveKeybindSettings)
 
 global UnitBorder := MainUI.Add("GroupBox", "x808 y85 w550 h296 +Center Hidden c" uiTheme[1], "Unit Settings")
-global LeftSideUnitManager := MainUI.Add("CheckBox", "x825 y110 Hidden cffffff", "Use Left-Side Unit Manager (Anime Last Stand's Default)")
+global LeftSideUnitManager := MainUI.Add("CheckBox", "x825 y110 Hidden cffffff", "Using Left-Side Unit Manager (Anime Last Stand's Default)")
+global UnitManagerUpgradeSystem := MainUI.Add("CheckBox", "x825 y130 Hidden cffffff", "Use the Unit Manager to upgrade your units")
+global UnitManagerAutoUpgrade := MainUI.Add("CheckBox", "x825 y150 Hidden cffffff", "Use the Unit Manager to Auto Upgrade your units")
+global AutoAbilityText := MainUI.Add("Text", "x825 y170 Hidden c" uiTheme[1], "Check For Auto Ability Timer:")
+global AutoAbilityTimer := MainUI.Add("Edit", "x1035 y168 w30 h20 Hidden cBlack Number", "60")
 
 global ZoomSettingsBorder := MainUI.Add("GroupBox", "x1000 y205 w165 h176 +Center Hidden c" uiTheme[1], "Zoom Settings")
 global ZoomText := MainUI.Add("Text", "x1018 y230 Hidden c" uiTheme[1], "Zoom Level:")
-global ZoomBox := MainUI.Add("Edit", "x1115 y228 w30 h20 Hidden c" uiTheme[6], "20")
+global ZoomBox := MainUI.Add("Edit", "x1115 y228 w30 h20 Hidden cBlack Number", "20")
 ZoomBox.OnEvent("Change", (*) => ValidateEditBox(ZoomBox))
 
 global MiscSettingsBorder := MainUI.Add("GroupBox", "x1163 y205 w195 h176 +Center Hidden c" uiTheme[1], "")
@@ -714,7 +718,7 @@ InitControlGroups() {
     ]
 
     ControlGroups["Unit"] := [
-        UnitBorder, LeftSideUnitManager
+        UnitBorder, LeftSideUnitManager, UnitManagerUpgradeSystem, UnitManagerAutoUpgrade, AutoAbilityText, AutoAbilityTimer
     ]
 }
 

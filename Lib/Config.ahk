@@ -127,7 +127,9 @@ readInSettings() {
                 case "PrivateServerURL": PrivateServerURLBox.Text := parts[2] ; Set the URL box text
                 case "UnitManagerLeft": LeftSideUnitManager.Value := parts[2] ; Set the checkbox value
                 case "ZoomLevel": ZoomBox.Text := parts[2] ; Set the zoom level
-
+                case "UnitManagerAutoUpgrade": UnitManagerAutoUpgrade.Value := parts[2]
+                case "UnitManagerUpgradeSystem": UnitManagerUpgradeSystem.Value := parts[2]
+                case "AutoAbilityTimer": AutoAbilityTimer.Text := parts[2] ; Set the zoom level
             }
         }
         AddToLog("✅ Loaded settings successfully")
@@ -161,7 +163,7 @@ SaveSettings(*) {
         content .= "`nSpeed=" PlaceSpeed.Value
         content .= "`nProfile=" PlacementProfiles.Value
 
-        content .= "`n[General Settings]"
+        content .= "`n`n[General Settings]"
         content .= "`nSkipping=" SkipLobby.Value
         content .= "`nLobby=" ReturnLobbyBox.Value
         content .= "`nisSeamless=" SeamlessToggle.Value
@@ -182,6 +184,11 @@ SaveSettings(*) {
 
         content .= "`n`n[ZoomSettings]"
         content .= "`nZoomLevel=" ZoomBox.Value
+
+        content .= "`n`n[Upgrade Settings]"
+        content .= "`nUnitManagerAutoUpgrade=" UnitManagerAutoUpgrade.Value
+        content .= "`nUnitManagerUpgradeSystem=" UnitManagerUpgradeSystem.Value
+        content .= "`nAutoAbilityTimer=" AutoAbilityTimer.Text
 
         ; Save the stored coordinates
         content .= "`n`n[SavedCoordinates]`n"

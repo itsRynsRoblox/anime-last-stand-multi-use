@@ -3113,3 +3113,23 @@ WinGetRect( hwnd, &x:="", &y:="", &w:="", &h:="" ) {
 	w := NumGet(winRect,  8, "UInt") - x
 	h := NumGet(winRect, 12, "UInt") - y
 }
+
+GdipSetSmoothingMode(pGraphics, smoothingMode) {
+    return DllCall("gdiplus\GdipSetSmoothingMode", "ptr", pGraphics, "int", smoothingMode)
+}
+
+GdipSetInterpolationMode(pGraphics, interpolationMode) {
+    return DllCall("gdiplus\GdipSetInterpolationMode", "ptr", pGraphics, "int", interpolationMode)
+}
+
+GdipSetCompositingQuality(pGraphics, quality) {
+    return DllCall("gdiplus\GdipSetCompositingQuality", "ptr", pGraphics, "int", quality)
+}
+
+GdipSetPixelOffsetMode(pGraphics, offsetMode) {
+    return DllCall("gdiplus\GdipSetPixelOffsetMode", "ptr", pGraphics, "int", offsetMode)
+}
+
+Gdip_SetPixelOffsetMode(pGraphics, PixelOffsetMode) {
+    return DllCall("gdiplus\GdipSetPixelOffsetMode", "ptr", pGraphics, "int", PixelOffsetMode)
+}
