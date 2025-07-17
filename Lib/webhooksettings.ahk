@@ -298,7 +298,7 @@ WebhookScreenshot(title, description, color := 0x0dffff, status := "") {
 
     ; If no special message was set, use a random regular message
     if (footerText = "") {
-        footerText := "Ryn's Anime Last Stand Macro " version
+        footerText := GameTitle . version
     }
 
     ; Rest of your existing WebhookScreenshot code...

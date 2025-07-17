@@ -1,0 +1,21 @@
+[SavedCoordinates]
+[Preset 1]
+NoCoordinatesSaved
+[Preset 2]
+NoCoordinatesSaved
+[Preset 3]
+NoCoordinatesSaved
+[Preset 4]
+NoCoordinatesSaved
+[Preset 5]
+NoCoordinatesSaved
+[Preset 6]
+NoCoordinatesSaved
+[Preset 7]
+NoCoordinatesSaved
+[Preset 8]
+NoCoordinatesSaved
+[Preset 9]
+NoCoordinatesSaved
+[Preset 10]
+NoCoordinatesSaved

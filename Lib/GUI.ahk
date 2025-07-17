@@ -3,9 +3,9 @@
 #Include Image.ahk
 #Include Functions.ahk
 
-; Basic Application Info
+; Application Info
 global GameTitle := "Ryn's Anime Last Stand Macro "
-global version := "v1.5.5"
+global version := "v1.5.7"
 global rblxID := "ahk_exe RobloxPlayerBeta.exe"
 ;Coordinate and Positioning Variables
 global targetWidth := 816
@@ -17,9 +17,6 @@ global WM_SIZE := 0x0005
 global centerX := 408
 global centerY := 320
 global successfulCoordinates := []
-;State Variables
-global enabledUnits := Map()  
-global placementValues := Map()  
 ;Statistics Tracking
 global Wins := 0
 global loss := 0
@@ -193,28 +190,27 @@ global guideBtn := MainUI.Add("Button", "x908 y5 w90 h20", "Guide")
 guideBtn.OnEvent("Click", OpenGuide)
 
 global unitsButton := MainUI.Add("Button", "x1008 y5 w90 h20", "Upgrades")
-unitsButton.OnEvent("Click", (*) => ToggleControlGroup("Upgrades"))
+unitsButton.OnEvent("Click", (*) => ToggleControlGroup("Upgrade"))
 
 global modeButton := MainUI.Add("Button", "x1108 y5 w90 h20", "Mode Config")
-;modeButton.OnEvent("Click", (*) => ToggleControlGroup("Mode"))
+modeButton.OnEvent("Click", (*) => ToggleControlGroup("Mode"))
 
 global settingsBtn := MainUI.Add("Button", "x1208 y5 w90 h20", "Settings")
 settingsBtn.OnEvent("Click", (*) => ToggleControlGroup("Settings"))
 
 placementSaveBtn := MainUI.Add("Button", "x807 y471 w80 h20", "Save")
-placementSaveBtn.OnEvent("Click", SaveSettings)
+placementSaveBtn.OnEvent("Click", SaveSettingsForMode)
 
 MainUI.SetFont("s9")
 
 global NextLevelBox := MainUI.Add("Checkbox", "x900 y451 cffffff", "Next Level")
-global SkipLobby := MainUI.Add("Checkbox", "x900 y451 cffffff", "Skip Lobby")
 global ReturnLobbyBox := MainUI.Add("Checkbox", "x1150 y476 cffffff Checked", "Return To Lobby")
 
 global AutoAbilityBox := MainUI.Add("CheckBox", "x1005 y451 cffffff Checked", "Auto Ability")
 global AutoAbilityText := MainUI.Add("Text", "x1125 y451 c" uiTheme[1], "Auto Ability Timer:")
-global AutoAbilityTimer := MainUI.Add("Edit", "x1255 y449 w30 h20 cBlack Number", "60")
+global AutoAbilityTimer := MainUI.Add("Edit", "x1255 y449 w45 h20 cBlack Number", "60")
 
-global SeamlessToggle := MainUI.Add("CheckBox", "x900 y476 cffffff", "Seamless Replay Enabled")
+global SeamlessToggle := MainUI.Add("CheckBox", "x900 y476 cffffff", "Using Seamless Replay")
 
 PlacementPatternText := MainUI.Add("Text", "x815 y390 w125 h20", "Placement Pattern")
 global PlacementPatternDropdown := MainUI.Add("DropDownList", "x825 y410 w100 h180 Choose2 +Center", ["Circle", "Custom", "Grid", "3x3 Grid", "Spiral", "Up and Down", "Random"])
@@ -258,7 +254,6 @@ global PrivateServerEnabled := MainUI.Add("CheckBox", "x825 y175 Hidden cffffff"
 global PrivateServerURLBox := MainUI.Add("Edit", "x1050 y173 w160 h20 Hidden c" uiTheme[6], "")
 PrivateServerTestButton := MainUI.Add("Button", "x1225 y173 w80 h20 Hidden", "Test Link")
 PrivateServerTestButton.OnEvent("Click", (*) => Reconnect(true))
-;global PrivateSettingsBorderBottom := MainUI.Add("GroupBox", "x808 y205 w550 h176 Hidden c" uiTheme[1], "")
 
 ; HotKeys
 global KeybindBorder := MainUI.Add("GroupBox", "x808 y205 w195 h176 +Center Hidden c" uiTheme[1], "Keybind Settings")
@@ -277,7 +272,7 @@ keybindSaveBtn.OnEvent("Click", SaveKeybindSettings)
 global UpgradeBorder := MainUI.Add("GroupBox", "x808 y85 w550 h296 +Center Hidden c" uiTheme[1], "Upgrade Settings")
 global LeftSideUnitManager := MainUI.Add("CheckBox", "x825 y110 Hidden cffffff", "Using Left-Side Unit Selection (Anime Last Stand's Default)")
 global UnitManagerUpgradeSystem := MainUI.Add("CheckBox", "x825 y130 Hidden cffffff", "Use the Unit Manager to upgrade your units")
-global PriorityUpgrade := MainUI.Add("CheckBox", "x825 y150 cffffff", "Use Unit Priority while Upgrading/Auto Upgrading")
+global PriorityUpgrade := MainUI.Add("CheckBox", "x825 y150 cffffff Hidden", "Use Unit Priority while Upgrading/Auto Upgrading")
 
 global AutoUpgradeBorder := MainUI.Add("GroupBox", "x808 y170 w550 h210 +Center Hidden c" uiTheme[1], "Auto-Upgrade Settings")
 global UnitManagerAutoUpgrade := MainUI.Add("CheckBox", "x825 y197 Hidden cffffff", "Enable Auto-Upgrading (Via the Unit Manager)")
@@ -289,13 +284,19 @@ ZoomBox.OnEvent("Change", (*) => ValidateEditBox(ZoomBox))
 
 global MiscSettingsBorder := MainUI.Add("GroupBox", "x1163 y205 w195 h176 +Center Hidden c" uiTheme[1], "")
 
+global ModeBorder := MainUI.Add("GroupBox", "x808 y85 w550 h296 +Center Hidden c" uiTheme[1], "Mode Configuration")
+global ModeConfigurations := MainUI.Add("CheckBox", "x825 y110 Hidden cffffff", "Enable Per-Mode Unit Settings")
+
+global StoryBorder := MainUI.Add("GroupBox", "x808 y170 w550 h210 +Center Hidden c" uiTheme[1], "Story Settings")
+global NightmareDifficulty := MainUI.Add("CheckBox", "x825 y197 Hidden cffffff", "Nightmare Difficulty")
+
 GithubButton.OnEvent("Click", (*) => OpenGithub())
 DiscordButton.OnEvent("Click", (*) => OpenDiscord())
 ;--------------SETTINGS;--------------SETTINGS;--------------SETTINGS;--------------SETTINGS;--------------SETTINGS;--------------SETTINGS;--------------SETTINGS
 global modeSelectionGroup := MainUI.Add("GroupBox", "x808 y38 w500 h45 +Center Background" uiTheme[2], "Game Mode Selection")
 MainUI.SetFont("s10 c" uiTheme[6])
-global ModeDropdown := MainUI.Add("DropDownList", "x818 y53 w140 h180 Choose0 +Center", ["Dungeon", "Portal", "Raid", "Custom"])
-global StoryDropdown := MainUI.Add("DropDownList", "x968 y53 w150 h180 Choose0 +Center Hidden", ["Story #1"])
+global ModeDropdown := MainUI.Add("DropDownList", "x818 y53 w140 h180 Choose0 +Center", ["Story", "Dungeon", "Portal", "Raid", "Custom"])
+global StoryDropdown := MainUI.Add("DropDownList", "x968 y53 w150 h180 Choose0 +Center Hidden", ["Hog Town", "Hollow Night Palace", "Firefighters Base", "Demon Skull Village", "Shibuya", "Abandoned Cathedral", "Moriah", "Soul Society", "Thrilled Bark", "Dragon Heaven", "Ryuudou Temple", "Snowy Village", "Rain Village", "Giant's District", "Oni Island", "Unknown Planet", "Oasis", "Harge Forest", "Babylon", "Destroyed Shinjuku", "Train Station", "Swordsmith Village", "Sacrifical Realm"])
 global StoryActDropdown := MainUI.Add("DropDownList", "x1128 y53 w80 h180 Choose0 +Center Hidden", ["Act 1", "Act 2", "Act 3", "Act 4", "Act 5", "Act 6", "Infinite"])
 global LegendDropDown := MainUI.Add("DropDownlist", "x968 y53 w150 h180 Choose0 +Center", ["Legend Stage #1"] )
 ;global LegendActDropdown := MainUI.Add("DropDownList", "x1128 y53 w80 h180 Choose0 +Center", ["Act 1", "Act 2", "Act 3"])
@@ -310,7 +311,6 @@ LegendDropDown.Visible := false
 ;LegendActDropdown.Visible := false
 RaidDropdown.Visible := false
 RaidActDropdown.Visible := false
-SkipLobby.Visible := false
 ReturnLobbyBox.Visible := false
 Hotkeytext.Visible := false
 Hotkeytext2.Visible := false
@@ -418,7 +418,7 @@ UpgradeLimit4 := MainUI.Add("DropDownList", "x1310 y255 w45 h180 Choose1 +Center
 UpgradeLimit5 := MainUI.Add("DropDownList", "x1310 y305 w45 h180 Choose1 +Center", ["0","1","2","3","4","5","6","7","8","9","10","11","12","13","14"])
 UpgradeLimit6 := MainUI.Add("DropDownList", "x1310 y355 w45 h180 Choose1 +Center", ["0","1","2","3","4","5","6","7","8","9","10","11","12","13","14"])
 
-readInSettings()
+LoadUnitSettingsByMode()
 MainUI.Show("w1366 h700")
 WinMove(0, 0,,, "ahk_id " MainUIHwnd)
 forceRobloxSize()  ; Initial force size and position
@@ -710,9 +710,14 @@ InitControlGroups() {
         MiscSettingsBorder, 
     ]
 
-    ControlGroups["Upgrades"] := [
-        UpgradeBorder, LeftSideUnitManager, UnitManagerUpgradeSystem,
+    ControlGroups["Upgrade"] := [
+        UpgradeBorder, LeftSideUnitManager, UnitManagerUpgradeSystem, PriorityUpgrade,
         AutoUpgradeBorder, UnitManagerAutoUpgrade
+    ]
+
+    ControlGroups["Mode"] := [
+        ModeBorder, ModeConfigurations,
+        StoryBorder, NightmareDifficulty
     ]
 }
 

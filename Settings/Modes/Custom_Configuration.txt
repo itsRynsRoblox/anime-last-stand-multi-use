@@ -1,0 +1,50 @@
+[Unit Settings]
+Enabled1=1
+Enabled2=1
+Enabled3=1
+Enabled4=1
+Enabled5=1
+Enabled6=1
+Placement1=1
+Placement2=1
+Placement3=1
+Placement4=1
+Placement5=1
+Placement6=1
+Priority1=1
+Priority2=2
+Priority3=3
+Priority4=4
+Priority5=5
+Priority6=6
+UpgradeEnabled1=0
+UpgradeEnabled2=0
+UpgradeEnabled3=0
+UpgradeEnabled4=0
+UpgradeEnabled5=0
+UpgradeEnabled6=0
+UpgradeLimit1=0
+UpgradeLimit2=0
+UpgradeLimit3=0
+UpgradeLimit4=0
+UpgradeLimit5=0
+UpgradeLimit6=0
+UpgradeLimitEnabled1=0
+UpgradeLimitEnabled2=0
+UpgradeLimitEnabled3=0
+UpgradeLimitEnabled4=0
+UpgradeLimitEnabled5=0
+UpgradeLimitEnabled6=0
+
+[Auto Ability Settings]
+AutoAbility=1
+AutoAbilityTimer=120
+
+[Zoom Settings]
+ZoomLevel=15
+
+[Upgrade Settings]
+UnitManagerLeft=1
+UnitManagerAutoUpgrade=1
+UnitManagerUpgradeSystem=1
+PriorityUpgrade=0

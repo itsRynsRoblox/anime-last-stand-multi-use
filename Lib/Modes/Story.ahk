@@ -11,12 +11,14 @@ StartStoryMode() {
     StoryMovement()
     
     ; Start stage
-    while !(ok:=FindText(&X, &Y, 352, 431, 451, 458, 0, 0, StorySelectButton)) {
+    while !(ok := isMenuOpen("Story")) {
         StoryMovement()
     }
 
     AddToLog("Starting " currentStoryMap " - " currentStoryAct)
     StartStory(currentStoryMap, currentStoryAct)
+
+    SelectDifficulty("Nightmare")
 
     ; Handle play mode selection
     PlayHere()
@@ -24,7 +26,7 @@ StartStoryMode() {
 }
 
 StartStory(map, act) {
-    return StartContent(map, act, GetStoryMap, GetStoryAct, { x: 150, y: 190 }, { x: 300, y: 240 })
+    return StartContent(map, act, GetStoryMap, GetStoryAct, { x: 190, y: 185 }, { x: 300, y: 240 })
 }
 
 StoryMovement() {
@@ -42,6 +44,33 @@ StoryMovement() {
 GetStoryMap(map) {
     switch map {
         case "Hog Town": return {x: 190, y: 185, scrolls: 0}
+        case "Hollow Night Palace": return {x: 190, y: 225, scrolls: 0}
+        case "Firefighters Base": return {x: 190, y: 260, scrolls: 0}
+        case "Demon Skull Village": return {x: 190, y: 295, scrolls: 0}
+        case "Shibuya": return {x: 190, y: 335, scrolls: 0}
+        case "Abandoned Cathedral": return {x: 190, y: 375, scrolls: 0}
+
+        case "Moriah": return {x: 190, y: 265, scrolls: 1}
+        case "Soul Society": return {x: 190, y: 300, scrolls: 1}
+        case "Thrilled Bark": return {x: 190, y: 340, scrolls: 1}
+        case "Dragon Heaven": return {x: 190, y: 375, scrolls: 1}
+
+        case "Ryuudou Temple": return {x: 190, y: 275, scrolls: 2}
+        case "Snowy Village": return {x: 190, y: 310, scrolls: 2}
+        case "Rain Village": return {x: 190, y: 345, scrolls: 2}
+        case "Giant's District": return {x: 190, y: 380, scrolls: 2}
+
+        case "Oni Island": return {x: 190, y: 280, scrolls: 3}
+        case "Unknown Planet": return {x: 190, y: 315, scrolls: 3}
+        case "Oasis": return {x: 190, y: 350, scrolls: 3}
+        case "Harge Forest": return {x: 190, y: 380, scrolls: 3}
+
+        case "Babylon": return {x: 190, y: 285, scrolls: 4}
+        case "Destroyed Shinjuku": return {x: 190, y: 320, scrolls: 4}
+        case "Train Station": return {x: 190, y: 360, scrolls: 4}
+
+        case "Swordsmith Village": return {x: 190, y: 335, scrolls: 5}
+        case "Sacrifical Realm": return {x: 190, y: 370, scrolls: 5}
     }
 }
 
@@ -65,4 +94,14 @@ GetStoryAct(act) {
 
     ; Default return if the input doesn't match expected format
     return { x: x, y: baseY, scrolls: 0 }
+}
+
+SelectDifficulty(name := "") {
+    switch name {
+        case "Normal":
+            FixClick(270, 185)
+        case "Nightmare":
+            FixClick(270, 220)    
+    }
+    Sleep(1000)
 }

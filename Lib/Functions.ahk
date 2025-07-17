@@ -50,40 +50,51 @@ getCurrentTime() {
 }
 
 
- OnModeChange(*) {
+OnModeChange(*) {
     selected := ModeDropdown.Text
-    
-    ; Hide all dropdowns first
-    StoryDropdown.Visible := false
-    StoryActDropdown.Visible := false
-    LegendDropDown.Visible := false
-    RaidDropdown.Visible := false
-    RaidActDropdown.Visible := false
-    DungeonDropdown.Visible := false
-    PortalDropdown.Visible := false
-    
-    if (selected = "Story") {
-        StoryDropdown.Visible := true
-    } else if (selected = "Legend") {
-        LegendDropDown.Visible := true
-    } else if (selected = "Raid") {
-        RaidDropdown.Visible := true
-        RaidActDropdown.Visible := true
-    } else if (selected = "Custom") {
-        
-    } else if (selected = "Dungeon") {
-        DungeonDropdown.Visible := true
+
+    ; Array of all dropdowns to hide
+    dropdowns := [
+        StoryDropdown,
+        StoryActDropdown,
+        LegendDropDown,
+        RaidDropdown,
+        RaidActDropdown,
+        DungeonDropdown,
+        PortalDropdown
+    ]
+
+    ; Hide all
+    for ctrl in dropdowns
+        ctrl.Visible := false
+
+    ; Show based on selection
+    switch selected {
+        case "Story":
+            StoryDropdown.Visible := true
+        case "Legend":
+            LegendDropDown.Visible := true
+        case "Raid":
+            RaidDropdown.Visible := true
+            RaidActDropdown.Visible := true
+        case "Dungeon":
+            DungeonDropdown.Visible := true
+        case "Portal":
+            PortalDropdown.Visible := true
+        case "Custom":
+            ; Add handling if needed
     }
-    else if (selected = "Portal") {
-        PortalDropdown.Visible := true
+
+    if (ModeConfigurations.Value) {
+        LoadUnitSettingsByMode()
     }
 }
 
 OnStoryChange(*) {
     if (StoryDropdown.Text != "") {
-
+        StoryActDropdown.Visible := true
     } else {
-
+        StoryActDropdown.Visible := false
     }
 }
 
@@ -143,6 +154,7 @@ OnConfirmClick(*) {
     ; Hide all controls if validation passes
     ModeDropdown.Visible := false
     StoryDropdown.Visible := false
+    StoryActDropdown.Visible := false
     LegendDropDown.Visible := false
     RaidDropdown.Visible := false
     RaidActDropdown.Visible := false

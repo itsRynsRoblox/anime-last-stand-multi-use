@@ -1,0 +1,15 @@
+[Universal Settings]
+Next Level=0
+Return To Lobby=1
+Seamless Replay=0
+Using Mode Configurations=0
+
+[Webhook Settings]
+Webhook Enabled=0
+Webhook URL=
+Webhook Logs Enabled=0
+
+[Private Server Settings]
+Private Server Enabled=0
+Private Server URL=[Story Settings]
+Nightmare Difficulty=0

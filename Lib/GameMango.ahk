@@ -144,7 +144,7 @@ StartPlacingUnits(untilSuccessful := true) {
                             ;AttemptUpgrade()
                             UpgradePlacedUnits()
                         } else {
-                            HandleStartButton() ; Check for start button if placement failed
+                            PostPlacementChecks()
                         }
                     }
                 }
@@ -162,17 +162,7 @@ StartPlacingUnits(untilSuccessful := true) {
                             break ; Move to the next placement spot
                         }
                         UpgradePlacedUnits()
-                        ;AttemptUpgrade()
-                        if CheckForXp()
-                            return MonitorStage()
-
-                        if (CheckForStartButton()) {
-                            AddToLog("Start button found, clicking to start stage")
-                            FixClick(355, 515) ; Click the start button
-                            Sleep(500)
-                        }
-
-                        Reconnect()
+                        PostPlacementChecks()
                         Sleep(500) ; Prevents spamming clicks too fast
                     }
                 }
@@ -376,7 +366,7 @@ UpgradeUnits() {
     stage := "Upgrading"
 
     if (ShouldOpenUnitManager()) {
-        SendInput("{F}") ; Open unit manager
+        ToggleMenu("Unit Manager")
         Sleep(500)
     }
 
@@ -388,11 +378,13 @@ UpgradeUnits() {
             }
         } else {
             FixClick(648, 123) ; Clicks upgrade all
+            Sleep(1000)
         }
         if (AutoAbilityBox.Value) {
             SetTimer(CheckAutoAbility, GetAutoAbilityTimer())
         }
-        AddToLog("All units have been set to Auto Upgrade, proceeding to monitor stage")
+        AddToLog("Auto-upgrade enabled for all units. Entering monitoring stage.")
+        CloseMenu("Unit Manager")
         return MonitorStage()
     }
 
@@ -548,9 +540,8 @@ MonitorStage() {
         Sleep(1000)
 
         ; --- Anti-AFK ---
-        if ((A_TickCount - lastClickTime) >= 30000) {
-            AddToLog("Performing anti-AFK click")
-            FixClick(560, 560)
+        if ((A_TickCount - lastClickTime) >= 10000) {
+            FixClick(380, 505)
             lastClickTime := A_TickCount
         }
 
@@ -568,10 +559,8 @@ MonitorStage() {
             SetTimer(CheckAutoAbility, 0)
         }
 
-        if (ShouldOpenUnitManager()) {
-            SendInput("{F}") ; Open unit manager
-            Sleep(500)
-        }
+        CloseMenu("Unit Manager")
+        CloseMenu("Ability Manager")
 
         AddToLog("Checking win/loss status")
         stageEndTime := A_TickCount
@@ -615,18 +604,10 @@ ClickThroughDrops() {
 CheckForPortalSelection() {
     if (ok:=FindText(&X, &Y, 348, 429, 454, 459, 0, 0, PortalSelection) or (ok:=FindText(&X, &Y, 348, 429, 454, 459, 0, 0, PortalSelection))) {
         if (AutoAbilityBox.Value) {
+            CloseMenu("Ability Manager")
             SetTimer(CheckAutoAbility, 0)
         }
-        FixClick(399, 299)
-        Sleep (500)
-        FixClick(402, 414)
-        return true
-    }
-    return false
-}
-
-CheckForWave100() {
-    if (ok:=FindText(&X, &Y, 258, 36, 293, 52, 0, 0, Wave100)) {
+        CloseMenu("Unit Manager")
         FixClick(399, 299)
         Sleep (500)
         FixClick(402, 414)
@@ -652,19 +633,19 @@ RaidMovement() {
     Sleep (1000)
 }
 
-StartContent(map, act, getMapFunc, getActFunc, mapScrollMousePos, actScrollMousePos) {
-    AddToLog("Selecting : " map " - " act)
+StartContent(mapName, actName, getMapFunc, getActFunc, mapScrollMousePos, actScrollMousePos) {
+    ;AddToLog("Selecting : " mapName " - " actName)
 
     ; Get the map
-    Map := getMapFunc.Call(map)
+    Map := getMapFunc.Call(mapName)
     if !Map {
-        AddToLog("Error: Map '" map "' not found.")
+        AddToLog("Error: Map '" mapName "' not found.")
         return false
     }
 
     ; Scroll map if needed
     if Map.scrolls > 0 {
-        AddToLog("Scrolling down " Map.scrolls " times for " map)
+        AddToLog(Format("Scrolling down {} times for {}", Map.scrolls, mapName))
         MouseMove(mapScrollMousePos.x, mapScrollMousePos.y)
         Scroll(Map.scrolls, 'WheelDown', 250)
     }
@@ -674,15 +655,15 @@ StartContent(map, act, getMapFunc, getActFunc, mapScrollMousePos, actScrollMouse
     Sleep(1000)
 
     ; Get the act
-    Act := getActFunc.Call(act)
+    Act := getActFunc.Call(actName)
     if !Act {
-        AddToLog("ERROR: Act '" act "' not found.")
+        AddToLog("ERROR: Act '" actName "' not found.")
         return false
     }
 
     ; Scroll act if needed
     if Act.scrolls > 0 {
-        AddToLog("Scrolling down " Act.scrolls " times for " act)
+        AddToLog(Format("Scrolling down {} times for {}", Act.scrolls, actName))
         MouseMove(actScrollMousePos.x, actScrollMousePos.y)
         Scroll(Act.scrolls, 'WheelDown', 250)
     }
@@ -694,15 +675,16 @@ StartContent(map, act, getMapFunc, getActFunc, mapScrollMousePos, actScrollMouse
     return true
 }
 
+
 StartRaid(map, act) {
     return StartContent(map, act, GetRaidMap, GetRaidAct, { x: 195, y: 185 }, { x: 195, y: 185 })
 }
 
 PlayHere(mode := "Story") {
     if (mode = "Story") {
-        FixClick(400, 394)
+        FixClick(400, 415)
         Sleep (300)
-        FixClick(400, 394)
+        FixClick(570, 405)
         Sleep (300)
     }
     else if (mode = "Raid") {
@@ -954,18 +936,27 @@ Reconnect(testing := false) {
 }
 
 PlaceUnit(x, y, slot := 1) {
+    ; Select the unit slot
     SendInput(slot)
-    Sleep 500 ; Updated from 50
+    Sleep 300  ; Slightly reduced for responsiveness
+
+    ; First click to prepare placement
     FixClick(x, y)
-    Sleep 50
+    Sleep 75
+
+    ; Confirm placement with 'x' key
     SendInput("x")
-    Sleep 500
+    Sleep 300
+
+    ; Second click to confirm the placement location
     FixClick(x, y)
-    Sleep 50
-    if UnitPlaced() {
-        Sleep 15
+    Sleep 75
+
+    ; Check if the unit was successfully placed
+    if (UnitPlaced()) {
         return true
     }
+
     return false
 }
 
@@ -1098,7 +1089,7 @@ UpgradeUnit(x, y) {
 CheckLobby() {
     loop {
         Sleep 1000
-        if (ok := FindText(&X, &Y, 7, 590, 37, 618, 0, 0, LobbySettings)) {
+        if (ok := FindText(&X, &Y, 8, 589, 37, 619, 0, 0, LobbySettings)) {
             break
         }
         Reconnect()
@@ -1107,22 +1098,18 @@ CheckLobby() {
     return StartSelectedMode()
 }
 
+CheckForLobby() {
+    return FindText(&X, &Y, 8, 589, 37, 619, 0, 0, LobbySettings)
+}
+
 CheckLoaded() {
     loop {
         Sleep(500)
         
-        if (LeftSideUnitManager.Value) {
-            if (ok := FindText(&X, &Y, 711, 312, 783, 380, 0, 0, UnitManager)) {
-                AddToLog("Successfully Loaded In")
-                Sleep(500)
-                break
-            }
-        } else {
-            if (ok := FindText(&X, &Y, 17, 322, 100, 373, 0, 0, UnitManager)) {
-                AddToLog("Successfully Loaded In")
-                Sleep(500)
-                break
-            }
+        if (ok := FindText(&X, &Y, 18, 600, 42, 614, 0, 0, IngameQuests)) {
+            AddToLog("Successfully Loaded In")
+            Sleep(500)
+            break
         }
 
         Reconnect()
@@ -1277,22 +1264,22 @@ ZoomOut() {
 DetectAngle(mode := "Story") {
     switch mode {
         case "Story":
-            firstAngle := PixelGetColor(408, 98)
-            secondAngle := PixelGetColor(276, 80)
+            firstAngle := GetPixel(0xAC7841, 407, 92, 2, 2, 2)
 
-            if (firstAngle = 0xAA7343)
+            if (firstAngle) {
                 return 1
-            if (secondAngle = 0x615A7F)
+            } else {
                 return 2
+            }
 
         case "Raid":
-            firstAngle := PixelGetColor(608, 66)
-            secondAngle := PixelGetColor(345, 96)
+            firstAngle := GetPixel(0x6F4746, 414, 49, 2, 2, 2)
 
-            if (firstAngle = 0xA67C3D)  ; Walk Left
+            if (firstAngle) {
                 return 1
-            if (secondAngle = 0xA87249) ; Walk Back then Right
+            } else {
                 return 2
+            }
     }
     return 0
 }
@@ -1312,15 +1299,18 @@ WalkToStoryRoom(angle) {
             Sleep(400)
             SendInput("{a up}")
             KeyWait "a"  ; Wait for the key to be fully processed
+            Sleep (1000)
         case 2:
             SendInput("{d down}")
-            Sleep(800)
+            Sleep(1000)
             SendInput("{d up}")
             KeyWait "d"  ; Wait for the key to be fully processed
+            Sleep (250)
             SendInput("{s down}")
             Sleep(2000)
             SendInput("{s up}")
-            KeyWait "s"  ; Wait for the key to be fully processed    
+            KeyWait "s"  ; Wait for the key to be fully processed   
+            Sleep (1000) 
     }
 }
 
@@ -1512,6 +1502,24 @@ PostUpgradeChecks() {
     Reconnect()
 }
 
+PostPlacementChecks() {
+    HandleStartButton()
+
+    if (CheckForLobby()) {
+        AddToLog("Found in lobby, restarting mode if possible")
+        return CheckLobby()
+    }
+
+    if CheckForXp() {
+        return MonitorStage()
+    }
+
+    CheckForPortalSelection()
+
+    Reconnect()
+
+}
+
 UpgradeUnitWithLimit(coord, index) {
 
     upgradeLimitEnabled := "upgradeLimitEnabled" coord.slot
@@ -1615,19 +1623,19 @@ CheckAutoAbility() {
     global totalUnits
 
     AddToLog("Checking for unactive abilities...")
-    SendInput("Z")
+    OpenMenu("Ability Manager")
     Sleep (1000)
 
     if (CheckForXP()) {
         AddToLog("Stopping auto ability check because the game ended")
-        SendInput("Z")
+        CloseMenu("Ability Manager")
         SetTimer(CheckAutoAbility, 0)  ; Stop the timer
         return
     }
 
     HandleAutoAbilityUnitManager()
     Sleep (1000)
-    SendInput("Z")
+    CloseMenu("Ability Manager")
     AddToLog("Finished looking for abilities")
 }
 
@@ -1659,5 +1667,81 @@ UnitManagerUpgradeWithLimit(coord, index, upgradeLimit) {
 ShouldOpenUnitManager() {
     if (UnitManagerAutoUpgrade.Value || UnitManagerUpgradeSystem.Value) {
         return true
+    }
+}
+
+isMenuOpen(name := "") {
+    if (name = "Unit Manager") {
+        return FindText(&X, &Y, 700, 142, 789, 166, 0, 0, UnitManager)
+    }
+    else if (name = "Ability Manager") {
+        return FindText(&X, &Y, 675, 594, 785, 616, 0, 0, AbilityManager)
+    }
+    else if (name = "Story") {
+        return FindText(&X, &Y, 352, 431, 451, 458, 0, 0, StorySelectButton)
+    }
+}
+
+ToggleMenu(name := "") {
+    if (!name)
+        return
+
+    key := ""
+    if (name = "Unit Manager")
+        key := "F"
+    else if (name = "Ability Manager")
+        key := "Z"
+
+    if (!key)
+        return
+
+    if (isMenuOpen(name)) {
+        AddToLog("Closing " name)
+        Send(key)
+        Sleep(300)
+    } else {
+        Send(key)
+        AddToLog("Opening " name)
+        Sleep(300)
+    }
+}
+
+CloseMenu(name := "") {
+    if (!name)
+        return
+
+    key := ""
+    if (name = "Unit Manager")
+        key := "F"
+    else if (name = "Ability Manager")
+        key := "Z"
+
+    if (!key)
+        return
+
+    if (isMenuOpen(name)) {
+        AddToLog("Closing " name)
+        Send(key)  ; Close menu if it's open
+        Sleep(300)
+    }
+}
+
+OpenMenu(name := "") {
+    if (!name)
+        return
+
+    key := ""
+    if (name = "Unit Manager")
+        key := "F"
+    else if (name = "Ability Manager")
+        key := "Z"
+
+    if (!key)
+        return  ; Unknown menu name
+
+    if (!isMenuOpen(name)) {
+        AddToLog("Opening " name)
+        Send(key)
+        Sleep(1000)
     }
 }
