@@ -5,7 +5,7 @@
 
 ; Application Info
 global GameTitle := "Ryn's Anime Last Stand Macro "
-global version := "v1.5.7"
+global version := "v1.5.8"
 global rblxID := "ahk_exe RobloxPlayerBeta.exe"
 ;Coordinate and Positioning Variables
 global targetWidth := 816
@@ -52,10 +52,9 @@ uiTheme.Push("0xffffff")    ; Border color
 uiTheme.Push("0c000a")  ; Accent color
 uiTheme.Push("0x3d3c36")   ; Trans color
 uiTheme.Push("000000")    ; Textbox color
-uiTheme.Push("00ffb3") ; HighLight
+;uiTheme.Push("00ffb3") ; HighLight
+uiTheme.Push("00a2ff") ; HighLight
 ;Logs/Save settings
-global settingsGuiOpen := false
-global SettingsGUI := ""
 global currentOutputFile := A_ScriptDir "\Logs\LogFile.txt"
 ;Custom Pictures
 GithubImage := "Images\github-logo.png"
@@ -70,95 +69,85 @@ if !DirExist(A_ScriptDir "\Settings") {
 
 setupOutputFile()
 
-;------MAIN UI------MAIN UI------MAIN UI------MAIN UI------MAIN UI------MAIN UI------MAIN UI------MAIN UI------MAIN UI------MAIN UI------MAIN UI------MAIN UI------MAIN UI------
-MainUI.BackColor := uiTheme[2]
-global Webhookdiverter := MainUI.Add("Edit", "x0 y0 w1 h1 +Hidden", "") ; diversion
-uiBorders.Push(MainUI.Add("Text", "x0 y0 w1364 h1 +Background" uiTheme[3]))  ;Top line
-uiBorders.Push(MainUI.Add("Text", "x0 y0 w1 h697 +Background" uiTheme[3]))   ;Left line
-uiBorders.Push(MainUI.Add("Text", "x1363 y0 w1 h630 +Background" uiTheme[3])) ;Right line
-uiBorders.Push(MainUI.Add("Text", "x1363 y0 w1 h697 +Background" uiTheme[3])) ;Second Right line
-uiBackgrounds.Push(MainUI.Add("Text", "x3 y3 w1360 h27 +Background" uiTheme[2])) ;Title Top
-uiBorders.Push(MainUI.Add("Text", "x0 y30 w1363 h1 +Background" uiTheme[3])) ;Title bottom
-uiBorders.Push(MainUI.Add("Text", "x803 y443 w560 h1 +Background" uiTheme[3])) ;Placement bottom
-uiBorders.Push(MainUI.Add("Text", "x803 y527 w560 h1 +Background" uiTheme[3])) ;Process bottom
-uiBorders.Push(MainUI.Add("Text", "x802 y30 w1 h667 +Background" uiTheme[3])) ;Roblox Right
-uiBorders.Push(MainUI.Add("Text", "x0 y697 w1364 h1 +Background" uiTheme[3], "")) ;Roblox second bottom
-uiBorders.Push(MainUI.Add("Text", "x0 y630 w802.5 h1 +Background" uiTheme[3], "")) ;Roblox game bottom
+; ========== Constants and Theme Setup ==========
+mainWidth := 1364
+mainHeight := 697
+robloxWidth := 802
+uiColors := Map(
+    "Primary", uiTheme[1],
+    "Background", uiTheme[2],
+    "Border", uiTheme[3],
+    "RobloxBox", uiTheme[5],
+    "ProcessHighlight", uiTheme[7]
+)
 
-global robloxHolder := MainUI.Add("Text", "x3 y33 w797 h597 +Background" uiTheme[5], "") ;Roblox window box
-global exitButton := MainUI.Add("Picture", "x1330 y1 w32 h32 +BackgroundTrans", Exitbutton) ;Exit image
-exitButton.OnEvent("Click", (*) => Destroy()) ;Exit button
-global minimizeButton := MainUI.Add("Picture", "x1305 y3 w27 h27 +Background" uiTheme[2], Minimize) ;Minimize gui
-minimizeButton.OnEvent("Click", (*) => minimizeUI()) ;Minimize gui
-MainUI.SetFont("Bold s16 c" uiTheme[1], "Verdana") ;Font
-global windowTitle := MainUI.Add("Text", "x10 y3 w1200 h29 +BackgroundTrans", GameTitle "" . "" version) ;Title
+; ========== Helper Functions ==========
 
-MainUI.Add("Text", "x805 y501 w558 h25 +Center +BackgroundTrans", "Console") ;Process header
-uiBorders.Push(MainUI.Add("Text", "x803 y499 w560 h1 +Background" uiTheme[3])) ;Process Top
-MainUI.SetFont("norm s11 c" uiTheme[1]) ;Font
-global process1 := MainUI.Add("Text", "x810 y536 w538 h18 +BackgroundTrans c" uiTheme[7], "➤ Original Creator: Ryn (@TheRealTension)") ;Processes
-global process2 := MainUI.Add("Text", "xp yp+22 w538 h18 +BackgroundTrans", "") ;Processes 
-global process3 := MainUI.Add("Text", "xp yp+22 w538 h18 +BackgroundTrans", "") 
-global process4 := MainUI.Add("Text", "xp yp+22 w538 h18 +BackgroundTrans", "") 
-global process5 := MainUI.Add("Text", "xp yp+22 w538 h18 +BackgroundTrans", "") 
-global process6 := MainUI.Add("Text", "xp yp+22 w538 h18 +BackgroundTrans", "") 
-global process7 := MainUI.Add("Text", "xp yp+22 w538 h18 +BackgroundTrans", "") 
-WinSetTransColor(uiTheme[5], MainUI) ;Roblox window box
-
-;--------------SETTINGS;--------------SETTINGS;--------------SETTINGS;--------------SETTINGS;--------------SETTINGS;--------------SETTINGS;--------------SETTINGS
-ShowSettingsGUI(*) {
-    global settingsGuiOpen, SettingsGUI
-    
-    ; Check if settings window already exists
-    if (SettingsGUI && WinExist("ahk_id " . SettingsGUI.Hwnd)) {
-        WinActivate("ahk_id " . SettingsGUI.Hwnd)
-        return
-    }
-    
-    if (settingsGuiOpen) {
-        return
-    }
-    
-    settingsGuiOpen := true
-    SettingsGUI := Gui("-MinimizeBox +Owner" MainUIHwnd)  
-    SettingsGui.Title := "Settings"
-    SettingsGUI.OnEvent("Close", OnSettingsGuiClose)
-    SettingsGUI.BackColor := uiTheme[2]
-    
-    ; Window border
-    SettingsGUI.Add("Text", "x0 y0 w1 h300 +Background" uiTheme[3])     ; Left
-    SettingsGUI.Add("Text", "x599 y0 w1 h300 +Background" uiTheme[3])   ; Right
-    SettingsGUI.Add("Text", "x0 y281 w600 h1 +Background" uiTheme[3])   ; Bottom
-    
-    ; Right side sections
-    SettingsGUI.SetFont("s9", "Verdana")
-
-    ; Private Server section
-    SettingsGUI.Add("GroupBox", "x310 y175 w280 h100 Center c" uiTheme[1], "Private Server")  ; Box
-
-    SettingsGUI.Add("Text", "x320 y195 c" uiTheme[1], "Private Server Link (optional)")  ; Ps text
-    global PsLinkBox := SettingsGUI.Add("Edit", "x320 y215 w260 h20 c" uiTheme[6])  ;  ecit box
-
-    SettingsGUI.Add("GroupBox", "x10 y10 w115 h70 c" uiTheme[1], "UI Navigation")
-    SettingsGUI.Add("Text", "x20 y30 c" uiTheme[1], "Navigation Key")
-    global UINavBox := SettingsGUI.Add("Edit", "x20 y50 w20 h20 c" uiTheme[6], "\")
-
-    PsSaveBtn := SettingsGUI.Add("Button", "x460 y240 w120 h25", "Save PsLink")
-    PsSaveBtn.OnEvent("Click", (*) => SavePsSettings())
-
-    UINavSaveBtn := SettingsGUI.Add("Button", "x50 y50 w60 h20", "Save")
-    UINavSaveBtn.OnEvent("Click", (*) => SaveUINavSettings())
-
-    ; Loadsettings
-    if FileExist("Settings\PrivateServer.txt")
-        PsLinkBox.Value := FileRead("Settings\PrivateServer.txt", "UTF-8")
-    if FileExist("Settings\UINavigation.txt")
-        UINavBox.Value := FileRead("Settings\UINavigation.txt", "UTF-8")
-
-    ; Show the settings window
-    SettingsGUI.Show("w600 h285")
-    Webhookdiverter.Focus()
+AddUI(type, options, text := "", onClickFunc := unset) {
+    ctrl := MainUI.Add(type, options, text)
+    if IsSet(onClickFunc)
+        ctrl.OnEvent("Click", onClickFunc)
+    return ctrl
 }
+
+AddBorder(x, y, w, h) {
+    return MainUI.Add("Text", Format("x{} y{} w{} h{} +Background{}", x, y, w, h, uiColors["Border"]))
+}
+
+; ========== GUI Initialization ==========
+
+MainUI.BackColor := uiColors["Background"]
+global Webhookdiverter := AddUI("Edit", "x0 y0 w1 h1 +Hidden")
+
+; ========== Borders ==========
+uiBorders.Push(AddBorder(0, 0, mainWidth, 1))                          ; Top
+uiBorders.Push(AddBorder(0, 0, 1, mainHeight))                         ; Left
+uiBorders.Push(AddBorder(mainWidth - 1, 0, 1, 630))                    ; Right
+uiBorders.Push(AddBorder(mainWidth - 1, 0, 1, mainHeight))            ; Full Right
+uiBorders.Push(AddBorder(0, 30, mainWidth - 1, 1))                     ; Under Title
+uiBorders.Push(AddBorder(803, 443, 560, 1))                            ; Placement Bottom
+uiBorders.Push(AddBorder(803, 527, 560, 1))                            ; Process Bottom
+uiBorders.Push(AddBorder(802, 30, 1, 667))                             ; Roblox Right
+uiBorders.Push(AddBorder(0, mainHeight - 1, mainWidth, 1))            ; Bottom Line
+uiBorders.Push(AddBorder(0, 630, robloxWidth + 0.5, 1))               ; Game Bottom
+
+; ========== Backgrounds ==========
+uiBackgrounds.Push(MainUI.Add("Text", Format("x3 y3 w{} h27 +Background{}", mainWidth - 4, uiColors["Background"])))
+
+; ========== Roblox Window Area ==========
+global robloxHolder := MainUI.Add("Text", Format("x3 y33 w797 h597 +Background{}", uiColors["RobloxBox"]), "")
+
+; ========== Exit and Minimize Buttons ==========
+global exitButton := AddUI("Picture", "x1330 y1 w32 h32 +BackgroundTrans", Exitbutton, (*) => Destroy())
+global minimizeButton := AddUI("Picture", "x1305 y3 w27 h27 +Background" uiColors["Background"], Minimize, (*) => minimizeUI())
+
+; ========== Title ==========
+MainUI.SetFont("Bold s16 c" uiColors["Primary"], "Verdana")
+global windowTitle := MainUI.Add("Text", "x10 y3 w1200 h29 +BackgroundTrans", GameTitle "" . "" version)
+
+; ========== Console Label ==========
+MainUI.Add("Text", "x805 y501 w558 h25 +Center +BackgroundTrans", "Console")
+uiBorders.Push(AddBorder(803, 499, 560, 1)) ; Console Top Border
+
+; ========== Process Text Lines ==========
+MainUI.SetFont("norm s11 c" uiColors["Primary"])
+global processList := []
+baseY := 536
+
+loop 7 {
+    yOffset := (A_Index - 1) * 22
+    text := ""
+    color := uiColors["Primary"]
+    if A_Index = 1 {
+        text := "➤ Original Creator: Ryn (@TheRealTension)"
+        color := uiColors["ProcessHighlight"]
+    }
+    process := MainUI.Add("Text", Format("x810 y{} w538 h18 +BackgroundTrans c{}", baseY + yOffset, color), text)
+    processList.Push(process)
+}
+
+; ========== Transparency ==========
+WinSetTransColor(uiColors["RobloxBox"], MainUI)
 
 OpenGuide(*) {
     GuideGUI := Gui("+AlwaysOnTop")
@@ -292,7 +281,7 @@ global NightmareDifficulty := MainUI.Add("CheckBox", "x825 y197 Hidden cffffff",
 
 GithubButton.OnEvent("Click", (*) => OpenGithub())
 DiscordButton.OnEvent("Click", (*) => OpenDiscord())
-;--------------SETTINGS;--------------SETTINGS;--------------SETTINGS;--------------SETTINGS;--------------SETTINGS;--------------SETTINGS;--------------SETTINGS
+;--------------SETTINGS--------------;
 global modeSelectionGroup := MainUI.Add("GroupBox", "x808 y38 w500 h45 +Center Background" uiTheme[2], "Game Mode Selection")
 MainUI.SetFont("s10 c" uiTheme[6])
 global ModeDropdown := MainUI.Add("DropDownList", "x818 y53 w140 h180 Choose0 +Center", ["Story", "Dungeon", "Portal", "Raid", "Custom"])
@@ -308,7 +297,6 @@ global ConfirmButton := MainUI.Add("Button", "x1218 y53 w80 h25", "Confirm")
 
 
 LegendDropDown.Visible := false
-;LegendActDropdown.Visible := false
 RaidDropdown.Visible := false
 RaidActDropdown.Visible := false
 ReturnLobbyBox.Visible := false
@@ -320,7 +308,8 @@ StoryDropdown.OnEvent("Change", OnStoryChange)
 LegendDropDown.OnEvent("Change", OnLegendChange)
 RaidDropdown.OnEvent("Change", OnRaidChange)
 ConfirmButton.OnEvent("Click", OnConfirmClick)
-;------MAIN UI------MAIN UI------MAIN UI------MAIN UI------MAIN UI------MAIN UI------MAIN UI------MAIN UI------MAIN UI------MAIN UI------MAIN UI------MAIN UI
+;------MAIN UI------;
+
 ;------UNIT CONFIGURATION------UNIT CONFIGURATION------UNIT CONFIGURATION/------UNIT CONFIGURATION/------UNIT CONFIGURATION/------UNIT CONFIGURATION/
 
 AddUnitCard(MainUI, index, x, y) {
@@ -423,34 +412,31 @@ MainUI.Show("w1366 h700")
 WinMove(0, 0,,, "ahk_id " MainUIHwnd)
 forceRobloxSize()  ; Initial force size and position
 SetTimer(checkRobloxSize, 600000)  ; Check every 10 minutes
-;------UNIT CONFIGURATION ;------UNIT CONFIGURATION ;------UNIT CONFIGURATION ;------UNIT CONFIGURATION ;------UNIT CONFIGURATION ;------UNIT CONFIGURATION ;------UNIT CONFIGURATION
-;------FUNCTIONS;------FUNCTIONS;------FUNCTIONS;------FUNCTIONS;------FUNCTIONS;------FUNCTIONS;------FUNCTIONS;------FUNCTIONS;------FUNCTIONS;------FUNCTIONS;------FUNCTIONS
+;------FUNCTIONS------;
 
-;Process text
-AddToLog(current) { 
-    global process1, process2, process3, process4, process5, process6, process7, currentOutputFile, lastlog
+AddToLog(current) {
+    global processList, currentOutputFile, lastlog
+    global WebhookLogsEnabled, WebhookEnabled
 
-    ; Remove arrow from all lines first
-    process7.Value := StrReplace(process6.Value, "➤ ", "")
-    process6.Value := StrReplace(process5.Value, "➤ ", "")
-    process5.Value := StrReplace(process4.Value, "➤ ", "")
-    process4.Value := StrReplace(process3.Value, "➤ ", "")
-    process3.Value := StrReplace(process2.Value, "➤ ", "")
-    process2.Value := StrReplace(process1.Value, "➤ ", "")
-    
-    ; Add arrow only to newest process
-    process1.Value := "➤ " . current
-    
+    ; Shift values downward and remove arrows
+    loop processList.Length {
+        i := processList.Length - A_Index + 1
+        if (i > 1)
+            processList[i].Value := StrReplace(processList[i - 1].Value, "➤ ", "")
+    }
+
+    ; Add new entry to the top
+    processList[1].Value := "➤ " . current
+
+    ; Optional: Log to file
     elapsedTime := getElapsedTime()
     Sleep(50)
     FileAppend(current . " " . elapsedTime . "`n", currentOutputFile)
 
-    ; Add webhook logging
+    ; Store last log and optionally send webhook
     lastlog := current
-
-    if (WebhookLogsEnabled.Value && WebhookEnabled.Value) {
+    if (WebhookLogsEnabled.Value && WebhookEnabled.Value)
         WebhookLog()
-    }
 }
 
 ;Timer
@@ -466,26 +452,26 @@ getElapsedTime() {
 
 sizeDown() {
     global rblxID
-    
     if !WinExist(rblxID)
         return
 
+    WinActivate(rblxID)
     WinGetPos(&X, &Y, &OutWidth, &OutHeight, rblxID)
-    
-    ; Exit fullscreen if needed
+
     if (OutWidth >= A_ScreenWidth && OutHeight >= A_ScreenHeight) {
         Send "{F11}"
-        Sleep(100)
+        Sleep(150)
     }
 
-    ; Force the window size and retry if needed
     Loop 3 {
         WinMove(X, Y, targetWidth, targetHeight, rblxID)
         Sleep(100)
         WinGetPos(&X, &Y, &OutWidth, &OutHeight, rblxID)
         if (OutWidth == targetWidth && OutHeight == targetHeight)
-            break
+            return
     }
+
+    AddToLog("Failed to resize Roblox window")
 }
 
 moveRobloxWindow() {
@@ -538,16 +524,6 @@ checkRobloxSize() {
             sizeDown()
             moveRobloxWindow()
         }
-    }
-}
-;Basically the code to move roblox, Above
-
-OnSettingsGuiClose(*) {
-    global settingsGuiOpen, SettingsGUI
-    settingsGuiOpen := false
-    if SettingsGUI {
-        SettingsGUI.Destroy()
-        SettingsGUI := ""  ; Clear the GUI reference
     }
 }
 
@@ -698,7 +674,7 @@ InitControlGroups() {
             if IsSet(%varName%)  ; Check if the variable exists
                 ControlGroups["Default"].Push(%varName%)
             else
-                MsgBox("Variable " . varName . " does not exist!")
+                AddToLog("Variable " . varName . " does not exist!")
         }
     }
 
@@ -744,12 +720,12 @@ ToggleControlGroup(groupName) {
         ShowOnlyControlGroup("Default")
         ActiveControlGroup := ""
         AddToLog("Displaying: Default UI")
-        ShowUnitCards()
+        SetUnitCardVisibility(true)
     } else {
         ShowOnlyControlGroup(groupName)
         ActiveControlGroup := groupName
-        AddToLog("Displaying: " groupName " Settings UI")
-        HideUnitCards()
+        AddToLog("Displaying: " (groupName = "Settings" ? "Settings UI" : groupName " Settings UI"))
+        SetUnitCardVisibility(false)
     }
 }
 
@@ -768,14 +744,6 @@ SetUnitCardVisibility(visible) {
                 ctrl.Visible := visible
         }
     }
-}
-
-HideUnitCards() {
-    SetUnitCardVisibility(false)
-}
-
-ShowUnitCards() {
-    SetUnitCardVisibility(true)
 }
 
 ValidateWebhook() {

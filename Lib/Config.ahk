@@ -47,7 +47,13 @@ SaveSettingsForMode(*) {
             DirCreate(settingsDir)
 
         ; Use ModeDropdown.Text to determine the filename
-        gameMode := ModeDropdown.Text
+
+        if (!ModeConfigurations.Value) {
+            gameMode := "Default"
+        } else {
+            gameMode := ModeDropdown.Text
+        }
+
         if !gameMode {
             gameMode := "Default"
         }
@@ -221,8 +227,6 @@ LoadCustomPlacements() {
         ; Ensure the directory exists
         if !DirExist(A_ScriptDir "\Settings")
             DirCreate(A_ScriptDir "\Settings")
-
-        FileAppend("[SavedCoordinates]`n", placementFile)
         SaveCustomPlacements()
     }
 
@@ -291,6 +295,10 @@ LoadUniversalSettings() {
             case "Private Server Enabled": PrivateServerEnabled.Value := value
             case "Private Server URL": PrivateServerURLBox.Text := value
             case "Nightmare Difficulty": NightmareDifficulty.Value := value
+            case "Placement Pattern": PlacementPatternDropdown.Value := value
+            case "Placement Order": PlacementSelection.Value := value
+            case "Placement Profile": PlacementProfiles.Value := value
+            case "Placement Speed": PlaceSpeed.Value := value
         }
     }
 }
@@ -319,6 +327,12 @@ SaveUniversalSettings() {
 
         content .= "[Story Settings]"
         content .= "`nNightmare Difficulty=" NightmareDifficulty.Value
+
+        content .= "[Placement Settings]"
+        content .= "`nPlacement Pattern=" PlacementPatternDropdown.Value
+        content .= "`nPlacement Order=" PlacementSelection.Value
+        content .= "`nPlacement Profile=" PlacementProfiles.Value
+        content .= "`nPlacement Speed=" PlaceSpeed.Value
 
         FileAppend(content, universalFile)
     }

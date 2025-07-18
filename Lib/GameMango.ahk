@@ -343,13 +343,8 @@ AttemptUpgrade() {
 }
 
 CheckForXp() {
-    ; Check for lobby text
-    if (ok := FindText(&X, &Y, 225, 217, 356, 246, 0.20, 0.20, Results)) {
-        return true
-    }
-    return false
+    return FindText(&X, &Y, 225, 217, 356, 246, 0.20, 0.20, Results)
 }
-
 
 UpgradeUnits() {
     global stage
@@ -366,7 +361,7 @@ UpgradeUnits() {
     stage := "Upgrading"
 
     if (ShouldOpenUnitManager()) {
-        ToggleMenu("Unit Manager")
+        OpenMenu("Unit Manager")
         Sleep(500)
     }
 
@@ -946,7 +941,7 @@ PlaceUnit(x, y, slot := 1) {
 
     ; Confirm placement with 'x' key
     SendInput("x")
-    Sleep 300
+    Sleep 500
 
     ; Second click to confirm the placement location
     FixClick(x, y)
@@ -985,7 +980,7 @@ UnitPlaced() {
 WaitForUpgradeText(timeout := 4500) {
     startTime := A_TickCount
     while (A_TickCount - startTime < timeout) {
-        if (ok := FindText(&X, &Y, 662-150000, 365-150000, 662+150000, 365+150000, 0, 0, NewUpgrade)) {
+        if (ok := GetPixel(0x1034AC, 78, 362, 2, 2, 2)) {
             return true
         }
         Sleep 100  ; Check every 100ms
@@ -1033,7 +1028,7 @@ HandleAutoAbility() {
         if GetPixel(pixel.color, pixel.x, pixel.y, 4, 4, 20) {
             AddToLog("Enabled Auto Ability")
             FixClick(pixel.x, pixel.y)
-            Sleep(100)
+            Sleep(500)
         }
     }
 }
@@ -1282,36 +1277,6 @@ DetectAngle(mode := "Story") {
             }
     }
     return 0
-}
-
-WalkToStoryRoom(angle) {
-    switch angle {
-        case 1:
-            SendInput("{a down}")
-            Sleep(400)
-            SendInput("{a up}")
-            KeyWait "a"  ; Wait for the key to be fully processed
-            SendInput("{s down}")
-            Sleep(800)
-            SendInput("{s up}")
-            KeyWait "s"  ; Wait for the key to be fully processed
-            SendInput("{a down}")
-            Sleep(400)
-            SendInput("{a up}")
-            KeyWait "a"  ; Wait for the key to be fully processed
-            Sleep (1000)
-        case 2:
-            SendInput("{d down}")
-            Sleep(1000)
-            SendInput("{d up}")
-            KeyWait "d"  ; Wait for the key to be fully processed
-            Sleep (250)
-            SendInput("{s down}")
-            Sleep(2000)
-            SendInput("{s up}")
-            KeyWait "s"  ; Wait for the key to be fully processed   
-            Sleep (1000) 
-    }
 }
 
 WalkToRaidRoom(angle) {
@@ -1618,27 +1583,6 @@ StartsInLobby(ModeName) {
     return false
 }
 
-CheckAutoAbility() {
-    global successfulCoordinates
-    global totalUnits
-
-    AddToLog("Checking for unactive abilities...")
-    OpenMenu("Ability Manager")
-    Sleep (1000)
-
-    if (CheckForXP()) {
-        AddToLog("Stopping auto ability check because the game ended")
-        CloseMenu("Ability Manager")
-        SetTimer(CheckAutoAbility, 0)  ; Stop the timer
-        return
-    }
-
-    HandleAutoAbilityUnitManager()
-    Sleep (1000)
-    CloseMenu("Ability Manager")
-    AddToLog("Finished looking for abilities")
-}
-
 UnitManagerUpgrade(slot) {
     global totalUnits
     if !(GetPixel(0x1643C5, 77, 357, 4, 4, 2)) {
@@ -1679,69 +1623,5 @@ isMenuOpen(name := "") {
     }
     else if (name = "Story") {
         return FindText(&X, &Y, 352, 431, 451, 458, 0, 0, StorySelectButton)
-    }
-}
-
-ToggleMenu(name := "") {
-    if (!name)
-        return
-
-    key := ""
-    if (name = "Unit Manager")
-        key := "F"
-    else if (name = "Ability Manager")
-        key := "Z"
-
-    if (!key)
-        return
-
-    if (isMenuOpen(name)) {
-        AddToLog("Closing " name)
-        Send(key)
-        Sleep(300)
-    } else {
-        Send(key)
-        AddToLog("Opening " name)
-        Sleep(300)
-    }
-}
-
-CloseMenu(name := "") {
-    if (!name)
-        return
-
-    key := ""
-    if (name = "Unit Manager")
-        key := "F"
-    else if (name = "Ability Manager")
-        key := "Z"
-
-    if (!key)
-        return
-
-    if (isMenuOpen(name)) {
-        AddToLog("Closing " name)
-        Send(key)  ; Close menu if it's open
-        Sleep(300)
-    }
-}
-
-OpenMenu(name := "") {
-    if (!name)
-        return
-
-    key := ""
-    if (name = "Unit Manager")
-        key := "F"
-    else if (name = "Ability Manager")
-        key := "Z"
-
-    if (!key)
-        return  ; Unknown menu name
-
-    if (!isMenuOpen(name)) {
-        AddToLog("Opening " name)
-        Send(key)
-        Sleep(1000)
     }
 }

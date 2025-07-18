@@ -44,7 +44,7 @@ AutoAbilityTimer=60
 ZoomLevel=20
 
 [Upgrade Settings]
-UnitManagerLeft=0
-UnitManagerAutoUpgrade=0
-UnitManagerUpgradeSystem=0
+UnitManagerLeft=1
+UnitManagerAutoUpgrade=1
+UnitManagerUpgradeSystem=1
 PriorityUpgrade=0

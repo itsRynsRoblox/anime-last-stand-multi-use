@@ -1,24 +1,6 @@
 #Requires AutoHotkey v2.0
 #Include %A_ScriptDir%\Lib\GUI.ahk
 global confirmClicked := false
-
-SavePsSettings(*) {
-    AddToLog("Saving Private Server")
-    
-    if FileExist("Settings\PrivateServer.txt")
-        FileDelete("Settings\PrivateServer.txt")
-    
-    FileAppend(PsLinkBox.Value, "Settings\PrivateServer.txt", "UTF-8")
-}
-
-SaveUINavSettings(*) {
-    AddToLog("Saving UI Navigation Key")
-    
-    if FileExist("Settings\UINavigation.txt")
-        FileDelete("Settings\UINavigation.txt")
-    
-    FileAppend(UINavBox.Value, "Settings\UINavigation.txt", "UTF-8")
-}
  
  ;Minimizes the UI
  minimizeUI(*){
@@ -48,7 +30,6 @@ getCurrentTime() {
 
     return Format("{:d}:{:02}:{:02} {}", currentHour, currentMinute, currentSecond, amPm)
 }
-
 
 OnModeChange(*) {
     selected := ModeDropdown.Text
@@ -449,5 +430,90 @@ ClickUnit(slot, totalUnits) {
 
 GetAutoAbilityTimer() {
     seconds := AutoAbilityTimer.Value
-    return Round(seconds * 1000)  ; Round to nearest millisecond
+    return Round(seconds * 1000)
+}
+
+ToggleMenu(name := "") {
+    if (!name)
+        return
+
+    key := ""
+    if (name = "Unit Manager")
+        key := "F"
+    else if (name = "Ability Manager")
+        key := "Z"
+
+    if (!key)
+        return
+
+    if (isMenuOpen(name)) {
+        AddToLog("Closing " name)
+        Send(key)
+        Sleep(300)
+    } else {
+        Send(key)
+        AddToLog("Opening " name)
+        Sleep(300)
+    }
+}
+
+CloseMenu(name := "") {
+    if (!name)
+        return
+
+    key := ""
+    if (name = "Unit Manager")
+        key := "F"
+    else if (name = "Ability Manager")
+        key := "Z"
+
+    if (!key)
+        return
+
+    if (isMenuOpen(name)) {
+        AddToLog("Closing " name)
+        Send(key)  ; Close menu if it's open
+        Sleep(300)
+    }
+}
+
+OpenMenu(name := "") {
+    if (!name)
+        return
+
+    key := ""
+    if (name = "Unit Manager")
+        key := "F"
+    else if (name = "Ability Manager")
+        key := "Z"
+
+    if (!key)
+        return  ; Unknown menu name
+
+    if (!isMenuOpen(name)) {
+        AddToLog("Opening " name)
+        Send(key)
+        Sleep(1000)
+    }
+}
+
+CheckAutoAbility() {
+    global successfulCoordinates
+    global totalUnits
+
+    AddToLog("Checking for unactive abilities...")
+    OpenMenu("Ability Manager")
+    Sleep (1000)
+
+    if (CheckForXP()) {
+        AddToLog("Stopping auto ability check because the game ended")
+        CloseMenu("Ability Manager")
+        SetTimer(CheckAutoAbility, 0)  ; Stop the timer
+        return
+    }
+
+    HandleAutoAbilityUnitManager()
+    Sleep (1000)
+    CloseMenu("Ability Manager")
+    AddToLog("Finished looking for abilities")
 }

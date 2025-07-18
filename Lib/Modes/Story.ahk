@@ -105,3 +105,33 @@ SelectDifficulty(name := "") {
     }
     Sleep(1000)
 }
+
+WalkToStoryRoom(angle) {
+    switch angle {
+        case 1:
+            SendInput("{a down}")
+            Sleep(400)
+            SendInput("{a up}")
+            KeyWait "a"  ; Wait for the key to be fully processed
+            SendInput("{s down}")
+            Sleep(800)
+            SendInput("{s up}")
+            KeyWait "s"  ; Wait for the key to be fully processed
+            SendInput("{a down}")
+            Sleep(400)
+            SendInput("{a up}")
+            KeyWait "a"  ; Wait for the key to be fully processed
+            Sleep (1000)
+        case 2:
+            SendInput("{d down}")
+            Sleep(1000)
+            SendInput("{d up}")
+            KeyWait "d"  ; Wait for the key to be fully processed
+            Sleep (250)
+            SendInput("{s down}")
+            Sleep(2000)
+            SendInput("{s up}")
+            KeyWait "s"  ; Wait for the key to be fully processed   
+            Sleep (1000) 
+    }
+}
