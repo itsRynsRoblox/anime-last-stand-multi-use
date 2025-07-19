@@ -43,6 +43,12 @@ DungeonSelectButton:="|<>*120$28.00000w6024MY0IVyTzO7tzswMaA3l2EbS492QwMqAHzzzzz
 UnitManager:="|<>*121$67.zzzzzzzzzzzzzzzzzzzzzzwTjn3UTzzNzwDrtVwzzzjzyC1sEyMUA21XmJw8T9GIf2ZZ+y0DY92JVEslCxHr6lWGgTzzzzzzuzzyjzzzzzzzzzzzzzzzzzzzzzz"
 AbilityManager:="|<>*118$65.zzzzzzzzzzz0Tznzv/xzjz3zzbzW7lzTz7zzDz4DXwTyMlWMw0S0UlwY+IZs0w1/9x+493m5t2GLz6AP7z9zlaDzxOzzzzzzzzzxvzzzzzzzzzzzzzzzzzzk"
 IngameQuests:="|<>*80$11.zzzzUC0Q1s3l7UD0y3zzk"
+;(356, 436, 447, 455)
+ChoosePortal:="|<>*116$31.zzzzzzzzzzy3zzzy1zzzyAA833C001VX800Us6028y7NnCTzzzzzzzzzz"
+ChoosePortalHighlighted:="|<>*127$35.000000D03w01V088023znzzcs0061HU0083X0GMk6U0olYhXDzjzMzzzzzU00000E"
+
+;Portals (549, 230, 628, 249)
+SummerLaguna:="|<>*127$70.zzzzzzzzDzzvzzzzzzzzzzziTzzzzzzwzzzlzzzzznzvzzyTzzzzzDzzzzwPFgP6Ay8KXWkA0000nkUE4/kl0E0DCEV24g86lgQww8EA3lVPKoPsEV2oDzzzzzzzybzzs"
 
 ;Upgrade Limits (630, 375, 717, 385)
 Upgrade0:="|<>*49$6.zvlZZUkzzU"

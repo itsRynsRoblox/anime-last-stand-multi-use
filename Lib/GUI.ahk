@@ -5,7 +5,7 @@
 
 ; Application Info
 global GameTitle := "Ryn's Anime Last Stand Macro "
-global version := "v1.5.8"
+global version := "v1.5.9"
 global rblxID := "ahk_exe RobloxPlayerBeta.exe"
 ;Coordinate and Positioning Variables
 global targetWidth := 816
@@ -211,7 +211,7 @@ PlaceSpeedText := MainUI.Add("Text", "x956 y390 w115 h20", "Placement Speed")
 global PlaceSpeed := MainUI.Add("DropDownList", "x963 y410 w100 h180 Choose3 +Center", ["Super Fast (1s)", "Fast (1.5s)", "Default (2s)", "Slow (2.5s)", "Very Slow (3s)", "Toaster (4s)"])
 
 PlacementSelectionText := MainUI.Add("Text", "x1245 y390 w115 h20", "Placement Order")
-global PlacementSelection := MainUI.Add("DropDownList", "x1250 y410 w100 h180 Choose1 +Center", ["Slot #1 First", "Slot #2 First"])
+global PlacementSelection := MainUI.Add("DropDownList", "x1250 y410 w100 h180 Choose1 +Center", ["Default", "By Priority", "Slot #2 First"])
 
 placementSaveText := MainUI.Add("Text", "x807 y451 w80 h20", "Save Config")
 Hotkeytext := MainUI.Add("Text", "x807 y35 w200 h30", "F1: Fix Roblox Position")
@@ -276,8 +276,11 @@ global MiscSettingsBorder := MainUI.Add("GroupBox", "x1163 y205 w195 h176 +Cente
 global ModeBorder := MainUI.Add("GroupBox", "x808 y85 w550 h296 +Center Hidden c" uiTheme[1], "Mode Configuration")
 global ModeConfigurations := MainUI.Add("CheckBox", "x825 y110 Hidden cffffff", "Enable Per-Mode Unit Settings")
 
-global StoryBorder := MainUI.Add("GroupBox", "x808 y170 w550 h210 +Center Hidden c" uiTheme[1], "Story Settings")
-global NightmareDifficulty := MainUI.Add("CheckBox", "x825 y197 Hidden cffffff", "Nightmare Difficulty")
+global StoryBorder := MainUI.Add("GroupBox", "x808 y170 w550 h211 +Center Hidden c" uiTheme[1], "Story Settings")
+global NightmareDifficulty := MainUI.Add("CheckBox", "x825 y195 Hidden cffffff", "Nightmare Difficulty")
+
+global PortalBorder := MainUI.Add("GroupBox", "x808 y255 w550 h126 +Center Hidden c" uiTheme[1], "Portal Settings")
+global PortalLobby := MainUI.Add("CheckBox", "x825 y280 Hidden cffffff", "Starting portal from the lobby")
 
 GithubButton.OnEvent("Click", (*) => OpenGithub())
 DiscordButton.OnEvent("Click", (*) => OpenDiscord())
@@ -293,6 +296,7 @@ global RaidDropdown := MainUI.Add("DropDownList", "x968 y53 w150 h180 Choose0 +C
 global RaidActDropdown := MainUI.Add("DropDownList", "x1128 y53 w80 h180 Choose0 +Center", ["Act 1", "Act 2", "Act 3", "Act 4", "Act 5", "Act 6"])
 global DungeonDropdown := MainUI.Add("DropDownList", "x968 y53 w150 h180 Choose0 +Center Hidden", ["Devil's Dungeon", "Infernal Dungeon", "Monarch's Dungeon"])
 global PortalDropdown := MainUI.Add("DropDownList", "x968 y53 w150 h180 Choose0 +Center Hidden", ["Demon Place", "Gate", "Soul King Palace", "Summer Laguna"])
+global PortalRoleDropdown := MainUI.Add("DropDownList", "x1128 y53 w80 h180 Choose0 +Center Hidden", ["Host", "Guest"])
 global ConfirmButton := MainUI.Add("Button", "x1218 y53 w80 h25", "Confirm")
 
 
@@ -337,6 +341,8 @@ AddUnitCard(MainUI, index, x, y) {
     MainUI.SetFont("s9 c" uiTheme[1])
     unit.PlacementText        := AddText(x + 90, y + 2, 80, 20, "+BackgroundTrans", "Placements")
     unit.PriorityText         := AddText(x + 185, y + 2, 60, 20, "BackgroundTrans", "Priority")
+
+    MainUI.SetFont("s9 c" uiTheme[1])
     unit.PlaceAndUpgradeText  := AddText(x + 266, y + 2, 250, 20, "BackgroundTrans", "Place && Upgrade")
     unit.UpgradeTitle         := AddText(x + 295, y + 20, 250, 25, "+BackgroundTrans", "Enabled")
     unit.UpgradeCapText       := AddText(x + 425, y + 2, 250, 20, "BackgroundTrans", "Upgrade Limit")
@@ -378,26 +384,48 @@ upgradeLimitEnabled6 := MainUI.Add("CheckBox", "x1210 y355 w15 h15", "")
 MainUI.SetFont("s8 c" uiTheme[6])
 
 ; Placement dropdowns
-Placement1 := MainUI.Add("DropDownList", "x908 y105 w60 h180 Choose1 +Center", ["1","2","3","4","5","6"])
-Placement2 := MainUI.Add("DropDownList", "x908 y155 w60 h180 Choose1 +Center", ["1","2","3","4","5","6"])
-Placement3 := MainUI.Add("DropDownList", "x908 y205 w60 h180 Choose1 +Center", ["1","2","3","4","5","6"])
-Placement4 := MainUI.Add("DropDownList", "x908 y255 w60 h180 Choose1 +Center", ["1","2","3","4","5","6"])
-Placement5 := MainUI.Add("DropDownList", "x908 y305 w60 h180 Choose1 +Center", ["1","2","3","4","5","6"])
-Placement6 := MainUI.Add("DropDownList", "x908 y355 w60 h180 Choose1 +Center", ["1","2","3","4","5","6"])
+Placement1 := MainUI.Add("DropDownList", "x918 y105 w35 h180 Choose1 +Center", ["1","2","3","4","5","6"])
+Placement2 := MainUI.Add("DropDownList", "x918 y155 w35 h180 Choose1 +Center", ["1","2","3","4","5","6"])
+Placement3 := MainUI.Add("DropDownList", "x918 y205 w35 h180 Choose1 +Center", ["1","2","3","4","5","6"])
+Placement4 := MainUI.Add("DropDownList", "x918 y255 w35 h180 Choose1 +Center", ["1","2","3","4","5","6"])
+Placement5 := MainUI.Add("DropDownList", "x918 y305 w35 h180 Choose1 +Center", ["1","2","3","4","5","6"])
+Placement6 := MainUI.Add("DropDownList", "x918 y355 w35 h180 Choose1 +Center", ["1","2","3","4","5","6"])
 
-Priority1 := MainUI.Add("DropDownList", "x990 y105 w60 h180 Choose1 +Center", ["1","2","3","4","5","6"])
-Priority2 := MainUI.Add("DropDownList", "x990 y155 w60 h180 Choose2 +Center", ["1","2","3","4","5","6"])
-Priority3 := MainUI.Add("DropDownList", "x990 y205 w60 h180 Choose3 +Center", ["1","2","3","4","5","6"])
-Priority4 := MainUI.Add("DropDownList", "x990 y255 w60 h180 Choose4 +Center", ["1","2","3","4","5","6"])
-Priority5 := MainUI.Add("DropDownList", "x990 y305 w60 h180 Choose5 +Center", ["1","2","3","4","5","6"])
-Priority6 := MainUI.Add("DropDownList", "x990 y355 w60 h180 Choose6 +Center", ["1","2","3","4","5","6"])
+Priority1 := MainUI.Add("DropDownList", "x980 y105 w35 h180 Choose1 +Center", ["1","2","3","4","5","6"])
+Priority1.OnEvent("Change", (*) => OnPriorityChange("Placement", 1, Priority1.Value))
 
-UpgradePriority1 := MainUI.Add("DropDownList", "x1250 y105 w60 h180 Choose1 +Center Hidden", ["1","2","3","4","5","6"])
-UpgradePriority2 := MainUI.Add("DropDownList", "x1250 y155 w60 h180 Choose2 +Center Hidden", ["1","2","3","4","5","6"])
-UpgradePriority3 := MainUI.Add("DropDownList", "x1250 y205 w60 h180 Choose3 +Center Hidden", ["1","2","3","4","5","6"])
-UpgradePriority4 := MainUI.Add("DropDownList", "x1250 y255 w60 h180 Choose4 +Center Hidden", ["1","2","3","4","5","6"])
-UpgradePriority5 := MainUI.Add("DropDownList", "x1250 y305 w60 h180 Choose5 +Center Hidden", ["1","2","3","4","5","6"])
-UpgradePriority6 := MainUI.Add("DropDownList", "x1250 y355 w60 h180 Choose6 +Center Hidden", ["1","2","3","4","5","6"])
+Priority2 := MainUI.Add("DropDownList", "x980 y155 w35 h180 Choose2 +Center", ["1","2","3","4","5","6"])
+Priority2.OnEvent("Change", (*) => OnPriorityChange("Placement", 2, Priority2.Value))
+
+Priority3 := MainUI.Add("DropDownList", "x980 y205 w35 h180 Choose3 +Center", ["1","2","3","4","5","6"])
+Priority3.OnEvent("Change", (*) => OnPriorityChange("Placement", 3, Priority3.Value))
+
+Priority4 := MainUI.Add("DropDownList", "x980 y255 w35 h180 Choose4 +Center", ["1","2","3","4","5","6"])
+Priority4.OnEvent("Change", (*) => OnPriorityChange("Placement", 4, Priority4.Value))
+
+Priority5 := MainUI.Add("DropDownList", "x980 y305 w35 h180 Choose5 +Center", ["1","2","3","4","5","6"])
+Priority5.OnEvent("Change", (*) => OnPriorityChange("Placement", 5, Priority5.Value))
+
+Priority6 := MainUI.Add("DropDownList", "x980 y355 w35 h180 Choose6 +Center", ["1","2","3","4","5","6"])
+Priority6.OnEvent("Change", (*) => OnPriorityChange("Placement", 6, Priority6.Value))
+
+UpgradePriority1 := MainUI.Add("DropDownList", "x1020 y105 w35 h180 Choose1 +Center", ["1","2","3","4","5","6"])
+UpgradePriority1.OnEvent("Change", (*) => OnPriorityChange("Upgrade", 1, UpgradePriority1.Value))
+
+UpgradePriority2 := MainUI.Add("DropDownList", "x1020 y155 w35 h180 Choose2 +Center", ["1","2","3","4","5","6"])
+UpgradePriority2.OnEvent("Change", (*) => OnPriorityChange("Upgrade", 2, UpgradePriority2.Value))
+
+UpgradePriority3 := MainUI.Add("DropDownList", "x1020 y205 w35 h180 Choose3 +Center", ["1","2","3","4","5","6"])
+UpgradePriority3.OnEvent("Change", (*) => OnPriorityChange("Upgrade", 3, UpgradePriority3.Value))
+
+UpgradePriority4 := MainUI.Add("DropDownList", "x1020 y255 w35 h180 Choose4 +Center", ["1","2","3","4","5","6"])
+UpgradePriority4.OnEvent("Change", (*) => OnPriorityChange("Upgrade", 4, UpgradePriority4.Value))
+
+UpgradePriority5 := MainUI.Add("DropDownList", "x1020 y305 w35 h180 Choose5 +Center", ["1","2","3","4","5","6"])
+UpgradePriority5.OnEvent("Change", (*) => OnPriorityChange("Upgrade", 5, UpgradePriority5.Value))
+
+UpgradePriority6 := MainUI.Add("DropDownList", "x1020 y355 w35 h180 Choose6 +Center", ["1","2","3","4","5","6"])
+UpgradePriority6.OnEvent("Change", (*) => OnPriorityChange("Upgrade", 6, UpgradePriority6.Value))
 
 ; Upgrade Limit
 UpgradeLimit1 := MainUI.Add("DropDownList", "x1310 y105 w45 h180 Choose1 +Center", ["0","1","2","3","4","5","6","7","8","9","10","11","12","13","14"])
@@ -431,7 +459,14 @@ AddToLog(current) {
     ; Optional: Log to file
     elapsedTime := getElapsedTime()
     Sleep(50)
-    FileAppend(current . " " . elapsedTime . "`n", currentOutputFile)
+
+    ; Remove emojis from the log string
+    cleanCurrent := CleanString(current)
+
+    ; Optional: Log to file
+    elapsedTime := getElapsedTime()
+    Sleep(50)
+    FileAppend(cleanCurrent . " " . elapsedTime . "`n", currentOutputFile)
 
     ; Store last log and optionally send webhook
     lastlog := current
@@ -668,7 +703,7 @@ InitControlGroups() {
 
     ControlGroups["Default"] := []
 
-    for name in ["Placement", "enabled", "priority", "upgradeEnabled", "upgradeLimitEnabled", "upgradeLimit"] {
+    for name in ["Placement", "enabled", "priority", "upgradePriority", "upgradeEnabled", "upgradeLimitEnabled", "upgradeLimit"] {
         loop 6 {
             varName := name . A_Index
             if IsSet(%varName%)  ; Check if the variable exists
@@ -693,7 +728,8 @@ InitControlGroups() {
 
     ControlGroups["Mode"] := [
         ModeBorder, ModeConfigurations,
-        StoryBorder, NightmareDifficulty
+        StoryBorder, NightmareDifficulty,
+        PortalBorder, PortalLobby
     ]
 }
 

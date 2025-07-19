@@ -86,10 +86,13 @@ SaveSettingsForMode(*) {
         content .= "`nZoomLevel=" ZoomBox.Value
 
         content .= "`n`n[Upgrade Settings]"
-        content .= "`nUnitManagerLeft=" LeftSideUnitManager.Value
-        content .= "`nUnitManagerAutoUpgrade=" UnitManagerAutoUpgrade.Value
-        content .= "`nUnitManagerUpgradeSystem=" UnitManagerUpgradeSystem.Value
-        content .= "`nPriorityUpgrade=" PriorityUpgrade.Value
+        content .= "`nUnit Manager Left=" LeftSideUnitManager.Value
+        content .= "`nUnit Manager Auto Upgrade=" UnitManagerAutoUpgrade.Value
+        content .= "`nUnit Manager Upgrade System=" UnitManagerUpgradeSystem.Value
+        content .= "`nPriority Upgrade=" PriorityUpgrade.Value
+
+        content .= "`n`n[Portal Settings]"
+        content .= "`nStart Portal In Lobby=" PortalLobby.Value
 
         FileAppend(content, settingsFile)
         SaveCustomPlacements()
@@ -173,10 +176,12 @@ LoadUnitSettingsByMode() {
             case "AutoAbility": AutoAbilityBox.Value := value
             case "AutoAbilityTimer": AutoAbilityTimer.Text := value
 
-            case "UnitManagerLeft": LeftSideUnitManager.Value := value
+            case "Unit Manager Left": LeftSideUnitManager.Value := value
             case "ZoomLevel": ZoomBox.Text := value
-            case "UnitManagerAutoUpgrade": UnitManagerAutoUpgrade.Value := value
-            case "UnitManagerUpgradeSystem": UnitManagerUpgradeSystem.Value := value
+            case "Unit Manager Auto Upgrade": UnitManagerAutoUpgrade.Value := value
+            case "Unit Manager Upgrade System": UnitManagerUpgradeSystem.Value := value
+            case "Priority Upgrade": PriorityUpgrade.Value := value
+            case "Start Portal In Lobby": PortalLobby.Value := value
         }
     }
     LoadCustomPlacements()

@@ -1,9 +1,7 @@
 #Include %A_ScriptDir%\Lib\Discord-Webhook-master\lib\WEBHOOK.ahk
 #Include %A_ScriptDir%\Lib\AHKv2-Gdip-master\Gdip_All.ahk
 
-global DiscordUserIDFile := "Settings\DiscordUSERID.txt"
-global SendActivityLogsFile := "Settings\SendActivityLogs.txt"
-global WebhookURL := WebhookURLBox.Text  
+global WebhookURL := WebhookURLBox.Text
 global webhook := ""
 global currentStreak := 0
 global lastResult := "none"
@@ -17,91 +15,6 @@ global currentMap := ""
 if (!FileExist("Settings")) {
     DirCreate("Settings")
 }
-
-win_messages := [
-            "clean victory secured 🏆",
-            "macro going crazy rn fr 🔥",
-            "stacking those Ws 📈",
-            "another dub in the books 🎯",
-            "back to back wins incoming 💫",
-            "(˵ •̀ ᴗ – ˵ ) ✧",
-            "♡‧₊˚✧ ૮ ˶ᵔ ᵕ ᵔ˶ ა ✧˚₊‧♡",
-            "/)_/)`n(,,>.<)`n/ >❤️",
-            "૮꒰ ˶• ༝ •˶꒱ა ♡",
-            "✧｡٩(ˊᗜˋ )و✧*｡",
-            "( •̯́ ₃ •̯̀)",
-            "₍ᐢ•ﻌ•ᐢ₎*･ﾟ｡"
-
-        ],
-        lose_messages := [
-            "next one is a win fr 💯",
-            "just warming up 🔥",
-            "next run is the one 🎮",
-            "almost had it that time 🎯",
-            "getting better each run 📈",
-            "(╯°□°)╯︵ ┻━┻",
-            "(ಠ益ಠ)",
-            "(╥﹏╥)",
-            "(⇀‸↼‶)",
-            "(◣ _ ◢)",
-            "<(ꐦㅍ _ㅍ)>"
-        ],
-        ; Milestone messages (every 10th attempt)
-        milestone_win_messages := [
-        "milestone #{count} win secured! 🏆",
-        "#{count} wins and counting! 📈",
-        "#{count} wins in the books! 🔥",
-        "reached #{count} wins! ⭐",
-        "#{count} wins and still going strong! 💫"
-        ],
-        milestone_lose_messages := [
-        "milestone #{count} loss... just bad luck, next time! 🍀",
-        "#{count} losses, but we'll get 'em next time! 🤞",
-        "reached #{count} losses... just one of those days! 🤷‍♂️",
-        "hit #{count} losses, but we’ll turn it around soon! 🙌",
-        "milestone #{count} loss, but no worries—next game is ours! 😎"
-        ]
-        ; Streak messages
-        winstreak_messages := [
-            "#{streak} win streak lets gooo 🏆",
-            "on fire with #{streak} wins 🔥",
-            "unstoppable #{streak} win streak 💫",
-            "#{streak} wins in a row sheesh 📈",
-            "#{streak} win streak going crazy 🌟"
-            "(˵ •̀ ᴗ – ˵ ) ✧",
-            "♡‧₊˚✧ ૮ ˶ᵔ ᵕ ᵔ˶ ა ✧˚₊‧♡",
-            "/)_/)`n(,,>.<)`n/ >❤️",
-            "૮꒰ ˶• ༝ •˶꒱ა ♡",
-            "✧｡٩(ˊᗜˋ )و✧*｡",
-            "( •̯́ ₃ •̯̀)"
-        ],
-        losestreak_messages := [
-            "#{streak} runs of experience gained 📚",
-            "#{streak} tries closer to victory 🎯",
-            "learning from #{streak} attempts 💪",
-            "#{streak} runs of practice secured 📈",
-            "comeback loading after #{streak} 🔄"
-            "(╯°□°)╯︵ ┻━┻",
-            "(ಠ益ಠ)",
-            "(╥﹏╥)",
-            "(⇀‸↼‶)",
-            "(◣ _ ◢)",
-            "<(ꐦㅍ _ㅍ)>"
-        ],
-        ; Time-based messages
-        long_win_messages := [
-        "took #{time} but macro finally popped off 💪",
-        "#{time} grind actually paid off wtf 😳",
-        "pc earned its rest after #{time} 😴",
-        "#{time} of pure skill 🔥",
-        ],
-        long_lose_messages := [
-        "#{time} of valuable experience 📚",
-        "#{time} of strategy learning 🧠",
-        "#{time} closer to victory 🎯",
-        "#{time} of practice makes perfect ⭐",
-        "#{time} getting stronger 💪"
-        ]
 
 ; Function to update streak
 UpdateStreak(isWin) {
@@ -130,16 +43,19 @@ UpdateStreak(isWin) {
 SendWebhookWithTime(isWin, stageLength) {
     global currentStreak, Wins, loss, WebhookURL, webhook, macroStartTime
     
-    ; Update streak
-    UpdateStreak(isWin)
-
-    if !(WebhookURL ~= 'i)https?:\/\/discord\.com\/api\/webhooks\/(\d{18,19})\/[\w-]{68}') {
-        AddToLog("Invalid webhook URL - skipping webhook")
+    ; Check if WebhookURL is initialized and valid
+    if (!IsSet(WebhookURL) || WebhookURL = "" || !(WebhookURL ~= "i)^https?:\/\/discord\.com\/api\/webhooks\/(\d{18,19})\/[\w-]{68}$")) {
+        AddToLog("Webhook URL is missing or invalid - skipping webhook")
         return
     }
-    
-    ; Initialize webhook
-    webhook := WebHookBuilder(WebhookURL)
+
+    ; Build webhook object if not already initialized
+    if !IsObject(webhook) {
+        webhook := WebHookBuilder(WebhookURL)
+    }
+
+    ; Update streak
+    UpdateStreak(isWin)
     
     ; Calculate macro runtime (total time)
     macroLength := FormatStageTime(A_TickCount - macroStartTime)
@@ -214,10 +130,7 @@ TextWebhook() {
     Runtime := Format("{} hours, {} minutes", ElapsedHours, ElapsedMinutes)
 
     ; Prepare the attachment and embed
-    myEmbed := EmbedBuilder()
-        .setTitle("")
-        .setDescription("[" FormatTime(A_Now, "hh:mm tt") "] " lastlog)
-        .setColor(0x0077ff)
+    myEmbed := EmbedBuilder().setTitle("").setDescription("[" FormatTime(A_Now, "hh:mm tt") "] " lastlog).setColor(0x0077ff)
         
 
     ; Send the webhook
@@ -230,47 +143,14 @@ TextWebhook() {
     ; Clean up resources
 }
 
-InitiateWinWebhook() {
-    if (webhookURL ~= 'i)https?:\/\/discord\.com\/api\/webhooks\/(\d{18,19})\/[\w-]{68}') {
-        global webhook := WebHookBuilder(WebhookURL)
-        stageLength := FormatStageTime(A_TickCount - stageStartTime)
-        SendWebhookWithTime(true, stageLength)
-    }
-}
-
-InitiateLoseWebhook() {
-    if (webhookURL ~= 'i)https?:\/\/discord\.com\/api\/webhooks\/(\d{18,19})\/[\w-]{68}') {
-        global webhook := WebHookBuilder(WebhookURL)
-        stageLength := FormatStageTime(A_TickCount - stageStartTime)
-        SendWebhookWithTime(false, stageLength)
-    }
-}
-
 WebhookLog() {
     if (webhookURL ~= 'i)https?:\/\/discord\.com\/api\/webhooks\/(\d{18,19})\/[\w-]{68}') {
-        global webhook := WebHookBuilder(WebhookURL)
         TextWebhook()
     } 
 }
-;Discord webhooks, above
 
 WebhookScreenshot(title, description, color := 0x0dffff, status := "") {
     global webhook, WebhookURL, wins, loss, currentStreak, stageStartTime
-    ; Yap message
-
-    footerMessages := Map(
-        "win", win_messages,
-        "lose", lose_messages,
-        "milestone_win", milestone_win_messages,
-        "milestone_lose", milestone_lose_messages,
-        "winstreak", winstreak_messages,
-        "losestreak", losestreak_messages,
-        "long_win", long_win_messages,
-        "long_lose", long_lose_messages
-    )
-
-    global webhook := WebHookBuilder(WebhookURL)
-    global wins, loss, currentStreak, stageStartTime
 
     if (!IsSet(stageStartTime)) {
         stageStartTime := A_TickCount
@@ -281,8 +161,7 @@ WebhookScreenshot(title, description, color := 0x0dffff, status := "") {
     }
     
     ; Select appropriate message based on conditions
-    footerText := ""
-    messages := footerMessages[status = "win" ? "win" : "lose"]  ; default messages
+    footerText := GameTitle . version
 
     ; Check if it's a long run (30+ minutes)
     stageLength := CalculateElapsedTime(stageStartTime)
@@ -296,12 +175,6 @@ WebhookScreenshot(title, description, color := 0x0dffff, status := "") {
         return text
     }
 
-    ; If no special message was set, use a random regular message
-    if (footerText = "") {
-        footerText := GameTitle . version
-    }
-
-    ; Rest of your existing WebhookScreenshot code...
     UserIDSent := ""
 
     ; Initialize GDI+

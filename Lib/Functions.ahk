@@ -42,7 +42,8 @@ OnModeChange(*) {
         RaidDropdown,
         RaidActDropdown,
         DungeonDropdown,
-        PortalDropdown
+        PortalDropdown,
+        PortalRoleDropdown
     ]
 
     ; Hide all
@@ -62,6 +63,7 @@ OnModeChange(*) {
             DungeonDropdown.Visible := true
         case "Portal":
             PortalDropdown.Visible := true
+            PortalRoleDropdown.Visible := true
         case "Custom":
             ; Add handling if needed
     }
@@ -103,7 +105,7 @@ OnConfirmClick(*) {
 
     ; For Story mode, check if both Story and Act are selected
     if (ModeDropdown.Text = "Story") {
-        if (StoryDropdown.Text = "") {
+        if (StoryDropdown.Text = "" || StoryActDropdown.Text = "") {
             AddToLog("Please select both Story and Act before confirming")
             return
         }
@@ -141,6 +143,7 @@ OnConfirmClick(*) {
     RaidActDropdown.Visible := false
     DungeonDropdown.Visible := false
     PortalDropdown.Visible := false
+    PortalRoleDropdown.Visible := false
     ConfirmButton.Visible := false
     modeSelectionGroup.Visible := false
     Hotkeytext.Visible := true
@@ -516,4 +519,39 @@ CheckAutoAbility() {
     Sleep (1000)
     CloseMenu("Ability Manager")
     AddToLog("Finished looking for abilities")
+}
+
+CleanString(str) {
+    ; Remove emojis and any adjacent spaces (handles gaps)
+    return RegExReplace(str, "\s*[^\x00-\x7F]+\s*", " ")
+}
+
+SortArrayOfObjects(arr, key, ascending := true) {
+    len := arr.Length
+    if (len < 2)
+        return arr
+
+    Loop len {
+        i := 1
+        while (i < len) {
+            a := arr[i][key]
+            b := arr[i + 1][key]
+
+            if (ascending ? (a > b) : (a < b)) {
+                temp := arr[i]
+                arr[i] := arr[i + 1]
+                arr[i + 1] := temp
+            }
+            i++
+        }
+    }
+    return arr
+}
+
+OnPriorityChange(type, priorityNumber, newPriorityNumber) {
+    if (type == "Placement") {
+        AddToLog("Placement priority changed: Slot " priorityNumber " → " newPriorityNumber)
+    } else {
+        AddToLog("Upgrade priority changed: Slot " priorityNumber " → " newPriorityNumber)
+    }
 }

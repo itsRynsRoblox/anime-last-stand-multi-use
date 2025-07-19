@@ -18,7 +18,7 @@ F6:: {
 }
 
 F7:: {
-    CopyMouseCoords(false)
+    CopyMouseCoords(true)
 }
 
 F8:: {
@@ -57,6 +57,11 @@ StartPlacingUnits(untilSuccessful := true) {
     maxedCoordinates := []
     placedCounts := Map()  
 
+    ; --- Priority Setup ---
+    global slotPriority := Map(1, 2, 2, 1, 3, 3)  ; Customize as needed
+    usePriorityPlacement := true  ; <- Toggle to enable/disable priority mode
+
+    ; --- Check if any slot is enabled ---
     anyEnabled := false
     for slotNum in [1, 2, 3, 4, 5, 6] {
         enabled := "enabled" slotNum
@@ -73,8 +78,45 @@ StartPlacingUnits(untilSuccessful := true) {
         return MonitorStage()
     }
 
-    ; Get the user-defined placement order (could be from a dropdown or user input)
-    placementOrder := PlacementSelection.Text = "Slot #1 First" ? [1, 2, 3, 4, 5, 6] : [2, 1, 3, 4, 5, 6]
+    ; --- Placement Order Logic ---
+    if (PlacementSelection.Text = "By Priority") {
+        slotPriorityList := []
+
+        ; Build list of enabled slots and their priorities
+        for slotNum in [1, 2, 3, 4, 5, 6] {
+            priorityVar := "priority" slotNum
+            enabledVar := "enabled" slotNum
+
+            priority := %priorityVar%
+            enabled := %enabledVar%
+
+            if (enabled.Value) {
+                slotPriorityList.Push({slot: slotNum, priority: priority.Value})
+            }
+        }
+
+        ; Manually sort the list by priority (ascending)
+        Loop slotPriorityList.Length {
+            for i, item in slotPriorityList {
+                if (i = slotPriorityList.Length)
+                    continue
+                if (slotPriorityList[i].priority > slotPriorityList[i + 1].priority) {
+                    temp := slotPriorityList[i]
+                    slotPriorityList[i] := slotPriorityList[i + 1]
+                    slotPriorityList[i + 1] := temp
+                }
+            }
+        }
+
+        ; Extract sorted slot numbers into placementOrder
+        placementOrder := []
+
+        for item in slotPriorityList {
+            placementOrder.Push(item.slot)
+        }
+    } else {
+        placementOrder := PlacementSelection.Text = "Slot #2 First" ? [2, 1, 3, 4, 5, 6] : [1, 2, 3, 4, 5, 6]
+    }
 
     placementStrategies := Map(
         "Map Specific", UseRecommendedPoints,
@@ -391,7 +433,7 @@ UpgradeUnits() {
             ; Upgrade in slot order 1-6 when using UnitManagerUpgradeSystem
             for slot in [1, 2, 3, 4, 5, 6] {
                 for priorityNum in [1, 2, 3, 4, 5, 6] {
-                    priority := "priority" slot
+                    priority := "upgradePriority" slot
                     priority := %priority%
 
                     if (priority.Text = priorityNum && HasUnitsInSlot(slot, successfulCoordinates)) {
@@ -404,7 +446,7 @@ UpgradeUnits() {
             ; Default behavior: loop through priorities first
             for priorityNum in [1, 2, 3, 4, 5, 6] {
                 for slot in [1, 2, 3, 4, 5, 6] {
-                    priority := "priority" slot
+                    priority := "upgradePriority" slot
                     priority := %priority%
 
                     if (priority.Text = priorityNum && HasUnitsInSlot(slot, successfulCoordinates)) {
@@ -511,20 +553,27 @@ HandleRaidEnd() {
 
 HandleCustomEnd() {
     global lastResult
-    AddToLog("Handling end case")
     if (NextLevelBox.Value) {
         if (lastResult = "win") {
-            AddToLog("Next level")
+            AddToLog("[Info] Starting next level")
             ClickUntilGone(0, 0, 80, 85, 739, 224, LobbyIcon, +260, -35)
             return RestartStage()
         }
     } else {
-        AddToLog("Replaying")
+        AddToLog("[Info] Replaying stage")
         ClickReplay()
+
+        ; Wait until "End Screen" is gone before restarting
+        Loop {
+            Sleep(500)
+            if (!isMenuOpen("End Screen")) {
+                break
+            }
+        }
+
         return RestartStage()
     }
 }
-
 
 MonitorStage() {
     global Wins, loss, mode, stageStartTime
@@ -536,7 +585,7 @@ MonitorStage() {
 
         ; --- Anti-AFK ---
         if ((A_TickCount - lastClickTime) >= 10000) {
-            FixClick(380, 505)
+            FixClick(400, 500)
             lastClickTime := A_TickCount
         }
 
@@ -597,7 +646,7 @@ ClickThroughDrops() {
 }
 
 CheckForPortalSelection() {
-    if (ok:=FindText(&X, &Y, 348, 429, 454, 459, 0, 0, PortalSelection) or (ok:=FindText(&X, &Y, 348, 429, 454, 459, 0, 0, PortalSelection))) {
+    if (ok:=FindText(&X, &Y, 356, 436, 447, 455, 0, 0, ChoosePortal) or (ok:=FindText(&X, &Y, 356, 436, 447, 455, 0.10, 0.10, ChoosePortalHighlighted))) {
         if (AutoAbilityBox.Value) {
             CloseMenu("Ability Manager")
             SetTimer(CheckAutoAbility, 0)
@@ -626,6 +675,7 @@ RaidMovement() {
     spawnAngle := DetectAngle("Raid")
     WalkToRaidRoom(spawnAngle)
     Sleep (1000)
+    
 }
 
 StartContent(mapName, actName, getMapFunc, getActFunc, mapScrollMousePos, actScrollMousePos) {
@@ -1136,7 +1186,7 @@ StartSelectedMode() {
         CustomMode()
     }
     else if (ModeDropdown.Text = "Portal") {
-        PortalMode()
+        StartPortalMode()
     }
 }
 
@@ -1556,6 +1606,7 @@ HasUnitsInSlot(slot, coordinates) {
 
 CheckForStartButton() {
     return FindText(&X, &Y, 319, 536, 396, 558, 0, 0, StartButton)
+    || FindText(&X, &Y, 319, 536, 396, 558, 0, 0, StartButton)
 }
 
 HandleStartButton() {
@@ -1623,5 +1674,8 @@ isMenuOpen(name := "") {
     }
     else if (name = "Story") {
         return FindText(&X, &Y, 352, 431, 451, 458, 0, 0, StorySelectButton)
+    }
+    else if (name = "End Screen") {
+        return FindText(&X, &Y, 225, 217, 356, 246, 0.20, 0.20, Results)
     }
 }
