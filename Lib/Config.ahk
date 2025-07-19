@@ -69,7 +69,7 @@ SaveSettingsForMode(*) {
         ; Start building the content
         content := "[Unit Settings]"
 
-        for settingType in ["Enabled", "Placement", "Priority", "UpgradeEnabled", "UpgradeLimit", "UpgradeLimitEnabled"] {
+        for settingType in ["Enabled", "Placement", "Priority", "UpgradePriority", "UpgradeEnabled", "UpgradeLimit", "UpgradeLimitEnabled"] {
             loop 6 {
                 index := A_Index
                 setting := %settingType%%index%
@@ -172,6 +172,13 @@ LoadUnitSettingsByMode() {
             case "Priority4": priority4.Text := value
             case "Priority5": priority5.Text := value
             case "Priority6": priority6.Text := value
+
+            case "UpgradePriority1": UpgradePriority1.Text := value
+            case "UpgradePriority2": UpgradePriority2.Text := value
+            case "UpgradePriority3": UpgradePriority3.Text := value
+            case "UpgradePriority4": UpgradePriority4.Text := value
+            case "UpgradePriority5": UpgradePriority5.Text := value
+            case "UpgradePriority6": UpgradePriority6.Text := value
 
             case "AutoAbility": AutoAbilityBox.Value := value
             case "AutoAbilityTimer": AutoAbilityTimer.Text := value

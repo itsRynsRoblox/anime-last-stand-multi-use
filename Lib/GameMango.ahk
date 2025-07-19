@@ -410,7 +410,8 @@ UpgradeUnits() {
     if (UnitManagerAutoUpgrade.Value) {
         if (PriorityUpgrade.Value) {
             FixClick(580, 125) ; Swap to old manager
-            for slot, total in totalUnits {
+
+            for slot in totalUnits {
                 SetAutoUpgrade(slot, totalUnits)
             }
         } else {
@@ -562,15 +563,6 @@ HandleCustomEnd() {
     } else {
         AddToLog("[Info] Replaying stage")
         ClickReplay()
-
-        ; Wait until "End Screen" is gone before restarting
-        Loop {
-            Sleep(500)
-            if (!isMenuOpen("End Screen")) {
-                break
-            }
-        }
-
         return RestartStage()
     }
 }
@@ -646,17 +638,30 @@ ClickThroughDrops() {
 }
 
 CheckForPortalSelection() {
-    if (ok:=FindText(&X, &Y, 356, 436, 447, 455, 0, 0, ChoosePortal) or (ok:=FindText(&X, &Y, 356, 436, 447, 455, 0.10, 0.10, ChoosePortalHighlighted))) {
+    if (ok := FindText(&X, &Y, 356, 436, 447, 455, 0, 0, ChoosePortal) or (ok := FindText(&X, &Y, 356, 436, 447, 455, 0.10, 0.10, ChoosePortalHighlighted))) {
+        
         if (AutoAbilityBox.Value) {
             CloseMenu("Ability Manager")
             SetTimer(CheckAutoAbility, 0)
         }
+
         CloseMenu("Unit Manager")
         FixClick(399, 299)
-        Sleep (500)
+        Sleep(500)
         FixClick(402, 414)
+
+        ; Wait before checking for another portal
+        Sleep(1500)
+
+        if (ok := FindText(&X, &Y, 356, 436, 447, 455, 0, 0, ChoosePortal) or (ok := FindText(&X, &Y, 356, 436, 447, 455, 0.10, 0.10, ChoosePortalHighlighted))) {
+            FixClick(399, 299)
+            Sleep(500)
+            FixClick(402, 414)
+        }
+        
         return true
     }
+
     return false
 }
 
@@ -839,7 +844,7 @@ BasicSetup(usedButton := false) {
     CloseChat()
     Sleep 300
 
-    if (ModeDropdown.Text = "Custom" && SeamlessToggle.Value && !usedButton) {
+    if (ModeDropdown.Text = "Custom" && SeamlessToggle.Value && !usedButton || ModeDropdown.Text == "Portal" && SeamlessToggle.Value) {
         return
     }
 
@@ -1623,10 +1628,14 @@ IsUpgradeEnabled(slotNum) {
 }
 
 StartsInLobby(ModeName) {
-    ; Array of maps that need movement
+    ; Array of modes that usually start in lobby
     static modes := ["Story", "Raid", "Challenge", "Dungeon", "Portal", "Survival"]
     
-    ; Check if current map is in the array
+    ; Special case: If PortalLobby.Value is set, don't start in lobby for "Portal"
+    if (ModeName = "Portal" && !PortalLobby.Value)
+        return false
+
+    ; Check if current mode is in the array
     for mode in modes {
         if (mode = ModeName)
             return true

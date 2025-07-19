@@ -5,7 +5,7 @@
 
 ; Application Info
 global GameTitle := "Ryn's Anime Last Stand Macro "
-global version := "v1.5.9"
+global version := "v1.6.0"
 global rblxID := "ahk_exe RobloxPlayerBeta.exe"
 ;Coordinate and Positioning Variables
 global targetWidth := 816
@@ -162,11 +162,6 @@ OpenGuide(*) {
     GuideGUI.SetFont("s16 bold", "Segoe UI")
     GuideGUI.Add("Text", "x0 w800 cWhite +Center", "1 - In your ROBLOX settings, make sure your graphics are set to 1")
     GuideGUI.Add("Picture", "x50 w700   cWhite +Center", "Images\graphics1.png")
-    GuideGUI.Add("Text", "x0 w800 cWhite +Center", "2 - Make sure you have enabled unit selection to the right")
-    GuideGUI.Add("Picture", "x100 w511   cWhite +Center", "Images\als_settings.png")
-    GuideGUI.Add("Text", "x0 w800 cWhite +Center", "3 - Start the macro after you have started your mode")
-    GuideGUI.Add("Text", "x0 w800 cWhite +Center", "4 - Map Specific placement currently only covers Raids")
-
     GuideGUI.Show("w800")
 }
 

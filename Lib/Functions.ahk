@@ -352,7 +352,7 @@ SetAutoUpgrade(slot, totalUnits) {
     rowSpacing := 115    ; Vertical space between rows
 
     ; Get the priority value
-    priorityVarName := "priority" slot
+    priorityVarName := "upgradePriority" slot
     ctrl := %priorityVarName%  ; your GUI dropdown control
     priority := ctrl.Text + 0  ; safely convert text to number
 
@@ -390,6 +390,8 @@ SetAutoUpgrade(slot, totalUnits) {
     if (priority > 4) {
         priority := 4
     }
+
+    AddToLog("Setting Slot: " slot " to Priority: " priority)
 
     loop priority {
         FixClick(clickX, clickY)
@@ -554,4 +556,43 @@ OnPriorityChange(type, priorityNumber, newPriorityNumber) {
     } else {
         AddToLog("Upgrade priority changed: Slot " priorityNumber " → " newPriorityNumber)
     }
+}
+
+GetUpgradePriority() {
+    upgradePriorityList := []
+
+    ; Build list of enabled upgrade slots and their priorities
+    for slotNum in [1, 2, 3, 4, 5, 6] {
+        priorityVar := "upgradePriority" slotNum
+        enabledVar := "enabled" slotNum
+
+        priority := %priorityVar%
+        enabled := %enabledVar%
+
+        if (enabled.Value) {
+            upgradePriorityList.Push({slot: slotNum, priority: priority.Value})
+        }
+    }
+
+    ; Manually sort by ascending priority
+    Loop upgradePriorityList.Length {
+        for i, item in upgradePriorityList {
+            if (i = upgradePriorityList.Length)
+                continue
+            if (upgradePriorityList[i].priority > upgradePriorityList[i + 1].priority) {
+                temp := upgradePriorityList[i]
+                upgradePriorityList[i] := upgradePriorityList[i + 1]
+                upgradePriorityList[i + 1] := temp
+            }
+        }
+    }
+
+    ; Extract sorted slot numbers into upgradeOrder
+    upgradeOrder := []
+
+    for item in upgradePriorityList {
+        upgradeOrder.Push(item.slot)
+    }
+
+    return upgradeOrder
 }
