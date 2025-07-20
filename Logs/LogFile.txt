@@ -1,0 +1,6 @@
+
+==Ryn's Anime Last Stand Macro v1.6.1==
+  Start Time: [3:24:20 PM]
+ Settings successfully loaded for mode: Default 00:00
+Displaying: Settings UI 00:00
+Displaying: Default UI 00:02

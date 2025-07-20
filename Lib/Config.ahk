@@ -73,7 +73,7 @@ SaveSettingsForMode(*) {
             loop 6 {
                 index := A_Index
                 setting := %settingType%%index%
-                value := (settingType = "UpgradeLimit") ? setting.Text : setting.Value
+                value := (settingType = "UpgradeLimit" || settingType = "UpgradePriority") ? setting.Text : setting.Value
                 content .= "`n" settingType index "=" value
             }
         }
@@ -86,7 +86,6 @@ SaveSettingsForMode(*) {
         content .= "`nZoomLevel=" ZoomBox.Value
 
         content .= "`n`n[Upgrade Settings]"
-        content .= "`nUnit Manager Left=" LeftSideUnitManager.Value
         content .= "`nUnit Manager Auto Upgrade=" UnitManagerAutoUpgrade.Value
         content .= "`nUnit Manager Upgrade System=" UnitManagerUpgradeSystem.Value
         content .= "`nPriority Upgrade=" PriorityUpgrade.Value
@@ -183,7 +182,6 @@ LoadUnitSettingsByMode() {
             case "AutoAbility": AutoAbilityBox.Value := value
             case "AutoAbilityTimer": AutoAbilityTimer.Text := value
 
-            case "Unit Manager Left": LeftSideUnitManager.Value := value
             case "ZoomLevel": ZoomBox.Text := value
             case "Unit Manager Auto Upgrade": UnitManagerAutoUpgrade.Value := value
             case "Unit Manager Upgrade System": UnitManagerUpgradeSystem.Value := value

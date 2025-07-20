@@ -18,6 +18,7 @@ SendMode "Event"
 #Include %A_ScriptDir%/lib/Modes/Survival.ahk
 #Include %A_ScriptDir%/lib/WebhookSettings.ahk
 #Include %A_ScriptDir%/lib/PlacementPatterns.ahk
+#Include %A_ScriptDir%/lib/Functions/Upgrading.ahk
 #Include %A_ScriptDir%/lib/FindText.ahk
 #Include %A_ScriptDir%/lib/Toggles.ahk
 

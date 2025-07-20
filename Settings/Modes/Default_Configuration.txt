@@ -50,10 +50,9 @@ AutoAbilityTimer=60
 ZoomLevel=20
 
 [Upgrade Settings]
-Unit Manager Left=1
 Unit Manager Auto Upgrade=1
 Unit Manager Upgrade System=1
-Priority Upgrade=0
+Priority Upgrade=1
 
 [Portal Settings]
 Start Portal In Lobby=0

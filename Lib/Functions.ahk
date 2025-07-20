@@ -345,60 +345,6 @@ CloseLobbyPopups() {
 
 }
 
-SetAutoUpgrade(slot, totalUnits) {
-    baseX := 610         ; X of first (leftmost) slot
-    baseY := 215         ; Y of top row
-    colSpacing := 80     ; Horizontal space between units
-    rowSpacing := 115    ; Vertical space between rows
-
-    ; Get the priority value
-    priorityVarName := "upgradePriority" slot
-    ctrl := %priorityVarName%  ; your GUI dropdown control
-    priority := ctrl.Text + 0  ; safely convert text to number
-
-    if (!IsNumber(priority)) {
-        return
-    }
-
-    maxCols := 3  ; Number of columns per row
-
-    ; Calculate the total count of units (sum of all values in the map)
-    totalCount := 0
-    for _, count in totalUnits {
-        totalCount += count
-    }
-
-    fullRows := Floor(totalCount / maxCols)
-    lastRowUnits := Mod(totalCount, maxCols)
-
-    ; Calculate current slot’s position (indexing from zero)
-    index := slot - 1
-    row := Floor(index / maxCols)
-    colInRow := Mod(index, maxCols)
-    isLastRow := (row = fullRows)
-
-    ; Adjust col to center last row if it’s not full
-    if (lastRowUnits != 0 && isLastRow) {
-        rowStartX := baseX + ((maxCols - lastRowUnits) * colSpacing / 2)
-        clickX := rowStartX + (colInRow * colSpacing)
-    } else {
-        clickX := baseX + (colInRow * colSpacing)
-    }
-
-    clickY := baseY + (row * rowSpacing)
-
-    if (priority > 4) {
-        priority := 4
-    }
-
-    AddToLog("Setting Slot: " slot " to Priority: " priority)
-
-    loop priority {
-        FixClick(clickX, clickY)
-        Sleep(150)
-    }
-}
-
 ; === ClickUnit unchanged but passed totalUnits explicitly ===
 ClickUnit(slot, totalUnits) {
     baseX := 585
@@ -551,48 +497,12 @@ SortArrayOfObjects(arr, key, ascending := true) {
 }
 
 OnPriorityChange(type, priorityNumber, newPriorityNumber) {
+    if (newPriorityNumber == "") {
+        newPriorityNumber := "Disabled"
+    }
     if (type == "Placement") {
         AddToLog("Placement priority changed: Slot " priorityNumber " → " newPriorityNumber)
     } else {
         AddToLog("Upgrade priority changed: Slot " priorityNumber " → " newPriorityNumber)
     }
-}
-
-GetUpgradePriority() {
-    upgradePriorityList := []
-
-    ; Build list of enabled upgrade slots and their priorities
-    for slotNum in [1, 2, 3, 4, 5, 6] {
-        priorityVar := "upgradePriority" slotNum
-        enabledVar := "enabled" slotNum
-
-        priority := %priorityVar%
-        enabled := %enabledVar%
-
-        if (enabled.Value) {
-            upgradePriorityList.Push({slot: slotNum, priority: priority.Value})
-        }
-    }
-
-    ; Manually sort by ascending priority
-    Loop upgradePriorityList.Length {
-        for i, item in upgradePriorityList {
-            if (i = upgradePriorityList.Length)
-                continue
-            if (upgradePriorityList[i].priority > upgradePriorityList[i + 1].priority) {
-                temp := upgradePriorityList[i]
-                upgradePriorityList[i] := upgradePriorityList[i + 1]
-                upgradePriorityList[i + 1] := temp
-            }
-        }
-    }
-
-    ; Extract sorted slot numbers into upgradeOrder
-    upgradeOrder := []
-
-    for item in upgradePriorityList {
-        upgradeOrder.Push(item.slot)
-    }
-
-    return upgradeOrder
 }
