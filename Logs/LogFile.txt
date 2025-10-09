@@ -2995,3 +2995,235 @@ No units enabled - skipping to monitoring 44:50
 ==Ryn's Anime Last Stand Macro v1.6.3==
   Start Time: [7:46:03 PM]
  Settings successfully loaded for mode: Default 00:00
+
+==Ryn's Anime Last Stand Macro v1.6.3==
+  Start Time: [8:13:31 PM]
+ Settings successfully loaded for mode: Default 00:00
+Displaying: Settings UI 00:01
+Displaying: Default UI 00:02
+
+==Ryn's Anime Last Stand Macro v1.6.3==
+  Start Time: [8:16:09 PM]
+ Settings successfully loaded for mode: Default 00:00
+
+==Ryn's Anime Last Stand Macro v1.6.3==
+  Start Time: [8:17:29 PM]
+ Settings successfully loaded for mode: Default 00:00
+
+==Ryn's Anime Last Stand Macro v1.6.3==
+  Start Time: [8:30:42 PM]
+ Settings successfully loaded for mode: Default 00:00
+Displaying: Unit Settings UI 00:03
+Displaying: Default UI 00:12
+Displaying: Mode Settings UI 00:13
+Displaying: Default UI 00:15
+Displaying: Settings UI 00:16
+Displaying: Default UI 00:17
+Displaying: Settings UI 00:18
+Displaying: Default UI 00:18
+Displaying: Settings UI 00:19
+Displaying: Default UI 00:21
+Displaying: Mode Settings UI 01:07
+Displaying: Default UI 01:08
+Displaying: Settings UI 01:09
+Displaying: Default UI 01:18
+Displaying: Unit Settings UI 01:20
+Displaying: Default UI 01:21
+Selected Custom 01:24
+
+==Ryn's Anime Last Stand Macro v1.6.3==
+  Start Time: [8:32:14 PM]
+ Settings successfully loaded for mode: Default 00:00
+
+==Ryn's Anime Last Stand Macro v1.6.3==
+  Start Time: [8:33:18 PM]
+
+==Ryn's Anime Last Stand Macro v1.6.3==
+  Start Time: [8:33:27 PM]
+
+==Ryn's Anime Last Stand Macro v1.6.3==
+  Start Time: [8:34:31 PM]
+ Settings successfully loaded for mode: Default 00:00
+Selected Custom 00:01
+
+==Ryn's Anime Last Stand Macro v1.6.3==
+  Start Time: [8:35:18 PM]
+ Settings successfully loaded for mode: Default 00:00
+Selected Custom 00:01
+
+==Ryn's Anime Last Stand Macro v1.6.3==
+  Start Time: [8:35:29 PM]
+ Settings successfully loaded for mode: Default 00:00
+Displaying: Settings UI 00:00
+
+==Ryn's Anime Last Stand Macro v1.6.3==
+  Start Time: [8:39:11 PM]
+ Settings successfully loaded for mode: Default 00:00
+Displaying: Settings UI 00:00
+
+==Ryn's Anime Last Stand Macro v1.6.3==
+  Start Time: [8:39:46 PM]
+ Settings successfully loaded for mode: Default 00:00
+Displaying: Settings UI 00:01
+
+==Ryn's Anime Last Stand Macro v1.6.3==
+  Start Time: [8:40:01 PM]
+ Settings successfully loaded for mode: Default 00:00
+
+==Ryn's Anime Last Stand Macro v1.6.3==
+  Start Time: [8:41:21 PM]
+ Settings successfully loaded for mode: Default 00:00
+
+==Ryn's Anime Last Stand Macro v1.6.3==
+  Start Time: [8:42:49 PM]
+ Settings successfully loaded for mode: Default 00:00
+
+==Ryn's Anime Last Stand Macro v1.6.3==
+  Start Time: [8:43:40 PM]
+ Settings successfully loaded for mode: Default 00:00
+
+==Ryn's Anime Last Stand Macro v1.6.3==
+  Start Time: [8:45:07 PM]
+ Settings successfully loaded for mode: Default 00:00
+
+==Ryn's Anime Last Stand Macro v1.6.3==
+  Start Time: [8:46:07 PM]
+ Settings successfully loaded for mode: Default 00:00
+
+==Ryn's Anime Last Stand Macro v1.6.3==
+  Start Time: [8:46:29 PM]
+ Settings successfully loaded for mode: Default 00:00
+
+==Ryn's Anime Last Stand Macro v1.6.3==
+  Start Time: [8:46:38 PM]
+ Settings successfully loaded for mode: Default 00:00
+
+==Ryn's Anime Last Stand Macro v1.6.3==
+  Start Time: [8:47:01 PM]
+ Settings successfully loaded for mode: Default 00:00
+
+==Ryn's Anime Last Stand Macro v1.6.3==
+  Start Time: [8:48:47 PM]
+ Settings successfully loaded for mode: Default 00:00
+
+==Ryn's Anime Last Stand Macro v1.6.3==
+  Start Time: [8:49:10 PM]
+ Settings successfully loaded for mode: Default 00:00
+
+==Ryn's Anime Last Stand Macro v1.6.3==
+  Start Time: [8:49:25 PM]
+ Settings successfully loaded for mode: Default 00:00
+
+==Ryn's Anime Last Stand Macro v1.6.3==
+  Start Time: [8:49:33 PM]
+ Settings successfully loaded for mode: Default 00:00
+
+==Ryn's Anime Last Stand Macro v1.6.3==
+  Start Time: [8:50:09 PM]
+ Settings successfully loaded for mode: Default 00:00
+
+==Ryn's Anime Last Stand Macro v1.6.3==
+  Start Time: [8:50:24 PM]
+ Settings successfully loaded for mode: Default 00:00
+
+==Ryn's Anime Last Stand Macro v1.6.3==
+  Start Time: [8:50:35 PM]
+ Settings successfully loaded for mode: Default 00:00
+
+==Ryn's Anime Last Stand Macro v1.6.3==
+  Start Time: [8:50:53 PM]
+ Settings successfully loaded for mode: Default 00:00
+
+==Ryn's Anime Last Stand Macro v1.6.3==
+  Start Time: [8:51:05 PM]
+ Settings successfully loaded for mode: Default 00:00
+
+==Ryn's Anime Last Stand Macro v1.6.3==
+  Start Time: [9:04:32 PM]
+ Settings successfully loaded for mode: Default 00:00
+Press LShift to stop coordinate capture 00:00
+
+==Ryn's Anime Last Stand Macro v1.6.3==
+  Start Time: [9:06:43 PM]
+ Settings successfully loaded for mode: Default 00:00
+Press LShift to stop coordinate capture 00:01
+
+==Ryn's Anime Last Stand Macro v1.6.3==
+  Start Time: [9:07:30 PM]
+ Settings successfully loaded for mode: Default 00:00
+Press LShift to stop coordinate capture 00:03
+
+==Ryn's Anime Last Stand Macro v1.6.3==
+  Start Time: [9:09:04 PM]
+ Settings successfully loaded for mode: Default 00:00
+Press LShift to stop coordinate capture 00:01
+
+==Ryn's Anime Last Stand Macro v1.6.3==
+  Start Time: [9:09:57 PM]
+ Settings successfully loaded for mode: Default 00:00
+Press LShift to stop coordinate capture 00:00
+
+==Ryn's Anime Last Stand Macro v1.6.3==
+  Start Time: [9:10:53 PM]
+ Settings successfully loaded for mode: Default 00:00
+Press LShift to stop coordinate capture 00:02
+
+==Ryn's Anime Last Stand Macro v1.6.3==
+  Start Time: [9:11:39 PM]
+ Settings successfully loaded for mode: Default 00:00
+Press LShift to stop coordinate capture 00:00
+ [Preset: Survival] Saved X: 443, Y: 446 | Set: 1 00:01
+ [Preset: Survival] Saved X: 586, Y: 386 | Set: 2 00:02
+ [Preset: Survival] Saved X: 490, Y: 440 | Set: 3 00:03
+
+==Ryn's Anime Last Stand Macro v1.6.3==
+  Start Time: [9:11:48 PM]
+ Settings successfully loaded for mode: Default 00:00
+
+==Ryn's Anime Last Stand Macro v1.6.3==
+  Start Time: [9:14:50 PM]
+ Settings successfully loaded for mode: Default 00:00
+Press LShift to stop coordinate capture 00:01
+
+==Ryn's Anime Last Stand Macro v1.6.3==
+  Start Time: [9:15:25 PM]
+ Settings successfully loaded for mode: Default 00:00
+Press LShift to stop coordinate capture 00:02
+
+==Ryn's Anime Last Stand Macro v1.6.3==
+  Start Time: [9:16:08 PM]
+ Settings successfully loaded for mode: Default 00:00
+Press LShift to stop coordinate capture 00:03
+ [Preset: Survival] Saved X: 285, Y: 401, Delay: 0 | Set: 1 00:03
+ [Preset: Survival] Saved X: 528, Y: 407, Delay: 1750 | Set: 2 00:05
+ [Preset: Survival] Saved X: 256, Y: 322, Delay: 2500 | Set: 3 00:08
+Stopping coordinate capture 00:08
+Press LShift to stop coordinate capture 00:11
+ [Preset: Survival] Saved X: 603, Y: 480, Delay: 4265 | Set: 1 00:12
+ [Preset: Survival] Saved X: 569, Y: 382, Delay: 2032 | Set: 2 00:14
+ [Preset: Survival] Saved X: 464, Y: 446, Delay: 1125 | Set: 3 00:15
+ [Preset: Survival] Saved X: 589, Y: 351, Delay: 2000 | Set: 4 00:17
+Stopping coordinate capture 00:18
+
+==Ryn's Anime Last Stand Macro v1.6.3==
+  Start Time: [9:17:58 PM]
+ Settings successfully loaded for mode: Default 00:00
+Press LShift to stop coordinate capture 00:00
+ [Preset: Survival] Saved X: 421, Y: 438, Delay: 0 | Set: 1 00:01
+ [Preset: Survival] Saved X: 566, Y: 318, Delay: 1859 | Set: 2 00:03
+Stopping coordinate capture 00:05
+Press LShift to stop coordinate capture 00:12
+ [Preset: Survival] Saved X: 297, Y: 386, Delay: 0 | Set: 1 00:13
+ [Preset: Survival] Saved X: 522, Y: 333, Delay: 2328 | Set: 2 00:16
+ [Preset: Survival] Saved X: 598, Y: 486, Delay: 1609 | Set: 3 00:17
+Stopping coordinate capture 00:19
+
+==Ryn's Anime Last Stand Macro v1.6.3==
+  Start Time: [9:19:18 PM]
+ Settings successfully loaded for mode: Default 00:00
+Press LShift to stop coordinate capture 00:01
+ [Preset: Survival] Saved X: 385, Y: 441, Delay: 0.0s | Set: 1 00:03
+ [Preset: Survival] Saved X: 526, Y: 364, Delay: 2.3s | Set: 2 00:05
+ [Preset: Survival] Saved X: 233, Y: 325, Delay: 1.7s | Set: 3 00:06
+ [Preset: Survival] Saved X: 433, Y: 423, Delay: 1.6s | Set: 4 00:08
+Stopping coordinate capture 00:13

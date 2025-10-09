@@ -1,15 +1,21 @@
 ﻿#Requires AutoHotkey v2.0
 #SingleInstance Force
+SendMode "Event"
 
 global scriptInitialized := false
 
-SendMode "Event"
-
+; === Main Script ===
 #Include %A_ScriptDir%/lib/Image.ahk
 #Include %A_ScriptDir%/lib/GUI.ahk
 #Include %A_ScriptDir%/lib/GameMango.ahk
-#Include %A_ScriptDir%/lib/Functions.ahk
+
+; === Saving and Loading Configs ===
 #Include %A_ScriptDir%/lib/Config.ahk
+
+; === Core Libraries ===
+#Include %A_ScriptDir%/lib/FindText.ahk
+
+; === Game Modes ===
 #Include %A_ScriptDir%/lib/Modes/BossRush.ahk
 #Include %A_ScriptDir%/lib/Modes/Caverns.ahk
 #Include %A_ScriptDir%/lib/Modes/Challenges.ahk
@@ -17,10 +23,16 @@ SendMode "Event"
 #Include %A_ScriptDir%/lib/Modes/Portal.ahk
 #Include %A_ScriptDir%/lib/Modes/Story.ahk
 #Include %A_ScriptDir%/lib/Modes/Survival.ahk
-#Include %A_ScriptDir%/lib/WebhookSettings.ahk
-#Include %A_ScriptDir%/lib/PlacementPatterns.ahk
+
+; === Core Mechanics ===
+#Include %A_ScriptDir%/lib/Functions/Functions.ahk
 #Include %A_ScriptDir%/lib/Functions/Upgrading.ahk
-#Include %A_ScriptDir%/lib/FindText.ahk
+#Include %A_ScriptDir%/lib/PlacementPatterns.ahk
+
+; === Webhook Integration ===
+#Include %A_ScriptDir%/lib/WebhookSettings.ahk
+
+; === Testing and Debugging ===
 #Include %A_ScriptDir%/lib/Toggles.ahk
 
 global scriptInitialized := true

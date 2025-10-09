@@ -1,7 +1,7 @@
 #Requires AutoHotkey v2.0
 #SingleInstance Force
 #Include Image.ahk
-#Include Functions.ahk
+#Include %A_ScriptDir%/lib/Functions/Functions.ahk
 
 ; Application Info
 global GameTitle := "Ryn's Anime Last Stand Macro "
@@ -30,6 +30,10 @@ global firstStartup := true
 ;Custom Unit Placement
 global waitingForClick := false
 global savedCoords := [[], []]  ; Index-based: one array for each preset
+;Custom Walk
+global waitingForWalk := false
+global walkStartTime := 0
+global savedWalkCoords := [[], []]  ; Index-based: one array for each preset
 ;Hotkeys
 global F1Key := "F1"
 global F2Key := "F2"
@@ -212,9 +216,9 @@ PlacementSelectionText := MainUI.Add("Text", "x1245 y390 w115 h20", "Placement O
 global PlacementSelection := MainUI.Add("DropDownList", "x1250 y410 w100 h180 Choose1 +Center", ["Default", "By Priority", "Slot #2 First"])
 
 placementSaveText := MainUI.Add("Text", "x807 y451 w80 h20", "Save Config")
-Hotkeytext := MainUI.Add("Text", "x807 y35 w200 h30", "F1: Fix Roblox Position")
-Hotkeytext2 := MainUI.Add("Text", "x807 y50 w200 h30", "F2: Start Macro")
-Hotkeytext3 := MainUI.Add("Text", "x807 y65 w200 h30", "F3: Stop Macro")
+Hotkeytext := MainUI.Add("Text", "x807 y35 w200 h30", F1Key ": Fix Roblox Position")
+Hotkeytext2 := MainUI.Add("Text", "x807 y50 w200 h30", F2Key ": Start Macro")
+Hotkeytext3 := MainUI.Add("Text", "x807 y65 w200 h30", F3Key ": Stop Macro")
 GithubButton := MainUI.Add("Picture", "x30 y640", GithubImage)
 DiscordButton := MainUI.Add("Picture", "x112 y645 w60 h34 +BackgroundTrans cffffff", DiscordImage)
 
@@ -229,6 +233,14 @@ customPlacementClearButton.OnEvent("Click", (*) => DeleteCoordsForPreset(Placeme
 fixCameraText := MainUI.Add("Text", "x505 y642 w60 h20 +Left", "Camera")
 fixCameraButton := MainUI.Add("Button", "x490 y662 w80 h20", "Fix")
 fixCameraButton.OnEvent("Click", (*) => BasicSetup(true))
+
+global CustomWalkSettings := MainUI.Add("GroupBox", "x600 y632 w190 h60 +Center c" uiTheme[1], "Custom Walk Settings")
+
+customWalkButton := MainUI.Add("Button", "x610 y662 w80 h20", "Set")
+customWalkButton.OnEvent("Click", (*) => StartWalkCapture())
+
+customWalkClearButton := MainUI.Add("Button", "x700 y662 w80 h20", "Clear")
+;customWalkClearButton.OnEvent("Click", (*) => DeleteCoordsForPreset(PlacementProfiles.Value, "CustomWalk"))
 
 global WebhookBorder := MainUI.Add("GroupBox", "x808 y85 w550 h296 +Center Hidden c" uiTheme[1], "Webhook Settings")
 global WebhookEnabled := MainUI.Add("CheckBox", "x825 y110 Hidden cffffff", "Webhook Enabled")
@@ -615,9 +627,13 @@ UpdateTooltip() {
 
 ~LShift::
 {
-    global waitingForClick
+    global waitingForClick, waitingForWalk, walkStartTime
     if waitingForClick {
         AddToLog("Stopping coordinate capture")
+        if (waitingForWalk) {
+            waitingForWalk := false
+            walkStartTime := 0
+        }
         waitingForClick := false
     }
 }
@@ -625,39 +641,73 @@ UpdateTooltip() {
 ~LButton::
 {
     global waitingForClick, savedCoords
+    global waitingForWalk, savedWalkCoords, walkStartTime
     global placement1, placement2, placement3, placement4, placement5, placement6
 
     if !scriptInitialized
         return
 
     if waitingForClick {
-        presetIndex := PlacementProfiles.Value
+        if (waitingForWalk) {
+            presetIndex := PlacementProfiles.Value
 
-        if (presetIndex < 1)
-        {
-            if (debugMessages) {
-                AddToLog("⚠️ Invalid preset index: " presetIndex)
+            if (presetIndex < 1)
+            {
+                if (debugMessages) {
+                    AddToLog("⚠️ Invalid preset index: " presetIndex)
+                }
+                return
             }
-            return
-        }
 
-        totalEnabled := placement1.Value + placement2.Value + placement3.Value + placement4.Value + placement5.Value + placement6.Value
+            MouseGetPos(&x, &y)
+            SetTimer(UpdateTooltip, 0)
 
-        MouseGetPos(&x, &y)
-        SetTimer(UpdateTooltip, 0)
+            ; === Delay handling ===
+            if (!walkStartTime) {
+                walkStartTime := A_TickCount
+                delay := 0
+            } else {
+                delay := A_TickCount - walkStartTime
+                walkStartTime := A_TickCount ; Reset for next click
+            }
 
-        ; Use your function here
-        coords := GetOrInitPresetCoords(presetIndex)
-        coords.Push({x: x, y: y})
-        savedCoords[presetIndex] := coords  ; Not strictly needed, but OK for clarity
+            coords := GetOrInitWalkCoords(presetIndex)
+            coords.Push({x: x, y: y, delay: delay}) ; Store delay with coords
+            savedWalkCoords[presetIndex] := coords
 
-        ToolTip("Coords Set: " coords.Length " / Total Enabled: " totalEnabled, x + 10, y + 10)
-        AddToLog("📌 [Preset: " PlacementProfiles.Text "] Saved → X: " x ", Y: " y " | Set: " coords.Length " / Enabled: " totalEnabled)
-        SetTimer(ClearToolTip, -1200)
+            ToolTip("Coords Set: " coords.Length, x + 10, y + 10)
+            delaySeconds := Round(delay / 1000, 1)
+            AddToLog("📌 [Preset: " PlacementProfiles.Text "] Saved → X: " x ", Y: " y ", Delay: " delaySeconds "s | Set: " coords.Length)
+            SetTimer(ClearToolTip, -1200)
+        } else {
+            presetIndex := PlacementProfiles.Value
 
-        if coords.Length >= totalEnabled {
-            AddToLog("✅ [Preset " PlacementProfiles.Text "] All coordinates set, stopping capture.")
-            waitingForClick := false
+            if (presetIndex < 1)
+            {
+                if (debugMessages) {
+                    AddToLog("⚠️ Invalid preset index: " presetIndex)
+                }
+                return
+            }
+
+            totalEnabled := placement1.Value + placement2.Value + placement3.Value + placement4.Value + placement5.Value + placement6.Value
+
+            MouseGetPos(&x, &y)
+            SetTimer(UpdateTooltip, 0)
+
+            ; Use your function here
+            coords := GetOrInitPresetCoords(presetIndex)
+            coords.Push({x: x, y: y})
+            savedCoords[presetIndex] := coords  ; Not strictly needed, but OK for clarity
+
+            ToolTip("Coords Set: " coords.Length " / Total Enabled: " totalEnabled, x + 10, y + 10)
+            AddToLog("📌 [Preset: " PlacementProfiles.Text "] Saved → X: " x ", Y: " y " | Set: " coords.Length " / Enabled: " totalEnabled)
+            SetTimer(ClearToolTip, -1200)
+
+            if coords.Length >= totalEnabled {
+                AddToLog("✅ [Preset " PlacementProfiles.Text "] All coordinates set, stopping capture.")
+                waitingForClick := false
+            }
         }
     }
 }
@@ -675,6 +725,21 @@ GetOrInitPresetCoords(index) {
         savedCoords[index] := []
 
     return savedCoords[index]
+}
+
+GetOrInitWalkCoords(index) {
+    global savedWalkCoords
+    if !IsObject(savedWalkCoords)
+        savedWalkCoords := []
+
+    ; Extend the array up to the index if needed
+    while (savedWalkCoords.Length < index)
+        savedWalkCoords.Push([])
+
+    if !IsObject(savedWalkCoords[index])
+        savedWalkCoords[index] := []
+
+    return savedWalkCoords[index]
 }
 
 ClearToolTip() {
@@ -825,4 +890,23 @@ ValidateEditBox(ctrl) {
 
     if (num > 20)
         ctrl.Value := "20"  ; Limit to a maximum of 20
+}
+
+StartWalkCapture() {
+    global waitingForClick
+    global savedWalkCoords
+    global waitingForWalk
+
+    ; Reset saved walk coordinates
+    savedWalkCoords := []
+
+    ; Activate Roblox window
+    if (WinExist(rblxID)) {
+        WinActivate(rblxID)
+    }
+
+    waitingForClick := true
+    waitingForWalk := true
+    AddToLog("Press LShift to stop coordinate capture")
+    SetTimer UpdateTooltip, 50  ; Update tooltip position every 50ms
 }
