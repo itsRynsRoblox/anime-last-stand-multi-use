@@ -18,7 +18,7 @@ F6:: {
 }
 
 F7:: {
-    CopyMouseCoords(true)
+    CopyMouseCoords(false)
 }
 
 F8:: {
@@ -373,6 +373,9 @@ MonitorStage() {
 
     lastClickTime := A_TickCount
 
+    ; Initial anti-AFK click
+    FixClick(400, 500)
+
     Loop {
         Sleep(1000)
 
@@ -392,36 +395,36 @@ MonitorStage() {
         if (!CheckForXp())
             continue
 
+        ; --- Handle Auto Ability ---
         if (AutoAbilityBox.Value) {
             SetTimer(CheckAutoAbility, 0)
         }
 
+        ; --- Close Menus ---
         CloseMenu("Unit Manager")
+        Sleep(500)
         CloseMenu("Ability Manager")
 
+        ; --- Endgame Handling ---
         AddToLog("Checking win/loss status")
         stageEndTime := A_TickCount
         stageLength := FormatStageTime(stageEndTime - stageStartTime)
+        if (FindText(&X, &Y, 357, 253, 454, 310, 0.20, 0.20, Victory) || FindText(&X, &Y, 255, 118, 555, 418, 0.20, 0.20, Cleared) || (isDefeat := FindText(&X, &Y, 357, 253, 454, 310, 0, 0, Defeat))) {
+            result := isDefeat ? true : false
+            AddToLog(result " detected - Stage Length: " stageLength)
 
-        ; --- Victory or Cleared ---
-        if (FindText(&X, &Y, 357, 253, 454, 310, 0.20, 0.20, Victory) || FindText(&X, &Y, 255, 118, 555, 418, 0.20, 0.20, Cleared)) {
-            AddToLog("Victory detected - Stage Length: " stageLength)
-            Wins++
-            SendWebhookWithTime(true, stageLength)
-            Sleep(2000)
-            Reconnect()
-            HandleEndScreen(true)
-            return
-        }
+            if (WebhookEnabled.Value) {
+                try {
+                    SendWebhookWithTime(result, stageLength)
+                } catch {
+                    AddToLog("Error: Unable to send webhook.")
+                }
+            } else {
+                UpdateStreak(result)
+            }
 
-        ; --- Defeat ---
-        if (FindText(&X, &Y, 357, 253, 454, 310, 0, 0, Defeat)) {
-            AddToLog("Defeat detected - Stage Length: " stageLength)
-            loss++
-            SendWebhookWithTime(false, stageLength)
-            Sleep(2000)
+            HandleEndScreen(result)
             Reconnect()
-            HandleEndScreen(false)
             return
         }
     }
@@ -587,6 +590,8 @@ GetRaidAct(act) {
 }
 
 Zoom() {
+    WinActivate(rblxID)
+    Sleep 100
     MouseMove(400, 300)
     Sleep 100
 
@@ -639,8 +644,6 @@ BasicSetup(usedButton := false) {
     }
 
     ; Close various UI elements
-    FixClick(487, 72) ; Closes Player leaderboard
-    Sleep 300
 
     CloseChat()
     Sleep 300
@@ -653,6 +656,9 @@ BasicSetup(usedButton := false) {
 
     ; Teleport to spawn
     TeleportToSpawn()
+
+    FixClick(487, 72) ; Closes Player leaderboard
+    Sleep 300
 
     if (SeamlessToggle.Value && !usedButton) {
         firstStartup := false
@@ -947,7 +953,7 @@ CheckLoaded() {
     loop {
         Sleep(500)
         
-        if (ok := FindText(&X, &Y, 18, 600, 42, 614, 0, 0, IngameQuests)) {
+        if (ok := FindText(&X, &Y, 14, 596, 39, 616, 0.20, 0.20, IngameQuests)) {
             AddToLog("Successfully Loaded In")
             Sleep(500)
             break
@@ -1410,8 +1416,7 @@ HasUnitsInSlot(slot, coordinates) {
 }
 
 CheckForStartButton() {
-    return FindText(&X, &Y, 319, 536, 396, 558, 0, 0, StartButton)
-    || FindText(&X, &Y, 319, 536, 396, 558, 0, 0, StartButton)
+    return FindText(&X, &Y, 319, 536, 396, 558, 0.10, 0.10, StartButton)
 }
 
 HandleStartButton() {
@@ -1444,9 +1449,8 @@ StartsInLobby(ModeName) {
 }
 
 UnitManagerUpgrade(slot) {
-    global totalUnits
     if !(GetPixel(0x1643C5, 77, 357, 4, 4, 2)) {
-        ClickUnit(slot, totalUnits)
+        ClickUnit(slot)
         Sleep(500)
     }
     Loop 3 {
@@ -1455,9 +1459,8 @@ UnitManagerUpgrade(slot) {
 }
 
 UnitManagerUpgradeWithLimit(coord, index, upgradeLimit) {
-    global totalUnits
     if !(GetPixel(0x1643C5, 77, 357, 4, 4, 2)) {
-        ClickUnit(coord.upgradePriority, totalUnits)
+        ClickUnit(coord.upgradePriority)
         Sleep(500)
     }
     if (WaitForUpgradeLimitText(upgradeLimit + 1, 750)) {
@@ -1476,13 +1479,13 @@ ShouldOpenUnitManager() {
 
 isMenuOpen(name := "") {
     if (name = "Unit Manager") {
-        return FindText(&X, &Y, 700, 142, 789, 166, 0, 0, UnitManager)
+        return FindText(&X, &Y, 700, 142, 789, 166, 0.20, 0.20, UnitManager)
     }
     else if (name = "Ability Manager") {
-        return FindText(&X, &Y, 675, 594, 785, 616, 0, 0, AbilityManager)
+        return FindText(&X, &Y, 675, 594, 785, 616, 0.20, 0.20, AbilityManager)
     }
     else if (name = "Story") {
-        return FindText(&X, &Y, 352, 431, 451, 458, 0, 0, StorySelectButton)
+        return FindText(&X, &Y, 352, 431, 451, 458, 0.20, 0.20, StorySelectButton)
     }
     else if (name = "End Screen") {
         return FindText(&X, &Y, 225, 217, 356, 246, 0.20, 0.20, Results)

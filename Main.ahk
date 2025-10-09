@@ -10,6 +10,7 @@ SendMode "Event"
 #Include %A_ScriptDir%/lib/GameMango.ahk
 #Include %A_ScriptDir%/lib/Functions.ahk
 #Include %A_ScriptDir%/lib/Config.ahk
+#Include %A_ScriptDir%/lib/Modes/BossRush.ahk
 #Include %A_ScriptDir%/lib/Modes/Caverns.ahk
 #Include %A_ScriptDir%/lib/Modes/Challenges.ahk
 #Include %A_ScriptDir%/lib/Modes/Dungeon.ahk

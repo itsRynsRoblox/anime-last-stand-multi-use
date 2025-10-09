@@ -5,15 +5,19 @@ Seamless Replay=1
 Using Mode Configurations=0
 
 [Webhook Settings]
-Webhook Enabled=0
-Webhook URL=
+Webhook Enabled=1
+Webhook URL=https://discord.com/api/webhooks/1359179134626037904/FXb0IXAUjXTKriMaTv3zz5h7qN0C1XSr9xRvHPOs5GWZ9BiM_CHqx_6_XAKAp6_80MOu
 Webhook Logs Enabled=0
 
 [Private Server Settings]
 Private Server Enabled=0
-Private Server URL=[Story Settings]
-Nightmare Difficulty=0[Placement Settings]
-Placement Pattern=1
-Placement Order=1
-Placement Profile=1
+Private Server URL=
+
+[Story Settings]
+Nightmare Difficulty=0
+
+[Placement Settings]
+Placement Pattern=2
+Placement Order=2
+Placement Profile=5
 Placement Speed=3

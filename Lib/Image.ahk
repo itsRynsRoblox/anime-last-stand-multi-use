@@ -42,13 +42,21 @@ RaidSelectButton:="|<>*120$29.00000S3U01a903a7mzwcTbztsFAMVs0EFbs0UDD0xD6TAP6Czz
 DungeonSelectButton:="|<>*120$28.00000w6024MY0IVyTzO7tzswMaA3l2EbS492QwMqAHzzzzzzzzzs"
 UnitManager:="|<>*121$67.zzzzzzzzzzzzzzzzzzzzzzwTjn3UTzzNzwDrtVwzzzjzyC1sEyMUA21XmJw8T9GIf2ZZ+y0DY92JVEslCxHr6lWGgTzzzzzzuzzyjzzzzzzzzzzzzzzzzzzzzzz"
 AbilityManager:="|<>*118$65.zzzzzzzzzzz0Tznzv/xzjz3zzbzW7lzTz7zzDz4DXwTyMlWMw0S0UlwY+IZs0w1/9x+493m5t2GLz6AP7z9zlaDzxOzzzzzzzzzxvzzzzzzzzzzzzzzzzzzk"
-IngameQuests:="|<>*80$11.zzzzUC0Q1s3l7UD0y3zzk"
+IngameQuests:="|<>*90$9.zw1bA1jg1bA1zw"
 ;(356, 436, 447, 455)
 ChoosePortal:="|<>*116$31.zzzzzzzzzzy3zzzy1zzzyAA833C001VX800Us6028y7NnCTzzzzzzzzzz"
 ChoosePortalHighlighted:="|<>*127$35.000000D03w01V088023znzzcs0061HU0083X0GMk6U0olYhXDzjzMzzzzzU00000E"
 
 ;Portals (549, 230, 628, 249)
 SummerLaguna:="|<>*127$70.zzzzzzzzDzzvzzzzzzzzzzziTzzzzzzwzzzlzzzzznzvzzyTzzzzzDzzzzwPFgP6Ay8KXWkA0000nkUE4/kl0E0DCEV24g86lgQww8EA3lVPKoPsEV2oDzzzzzzzybzzs"
+
+;Sunwoo
+Rebirth:="|<>*98$67.zzzzzzzzzzzzy3zsyDwtzzzz0TwT7wQzzzzU7yDzyCTzzzlW30F010zzzs08U800UDzzw10F43ln7zzy0U8W1stXzzz4FAF0wQlzzzW420WT2MzzznX70nDlCTzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzVxzztzDzysTqUJYQHb5FRjsBO6iKnOeCrxEh3L/NVILPyUG1foA8q/Vzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz"
+SecondRebirth:="|<>*98$60.zzzzzzzzzzzzzzzzzzzzzUTyTbwMzzzUDyTbwMzzzU7y3jw8bzzX4614003zzU4204483zzU8284QMlzzW8284QMlzzW8m04Q8lzzX4204S0lzzXa61YT0nzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzVxzzryzzrXh4gFWCwSLPVJgoqiu9bNU5gooas87NhJcoqiv1b/h6krmC4qTXzzzzzzzzzzzzzzzzzzzzU"
+Wave50:="|<>*110$10.zz4M1WG1C5n7zs"
+
+;Boss Rush
+Gilgamesh:="|<>*180$20.0000003rU0b/09nzyMVVUMMNo4mQZUrMMLTxw000U"
 
 ;Upgrade Limits (630, 375, 717, 385)
 Upgrade0:="|<>*49$6.zvlZZUkzzU"

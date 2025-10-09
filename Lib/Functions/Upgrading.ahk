@@ -122,7 +122,7 @@ SetAutoUpgradeForAllUnits() {
             priority := 0
         }
 
-        AddToLog("Upgrading placed unit from slot " slot " to level " priority)
+        AddToLog("Set slot: " slot " priority to " priority)
 
         Loop priority {
             FixClick(clickX, clickY)
@@ -139,8 +139,14 @@ UpgradeAllUnits() {
 
 HandleUnitManager(msg) {
     AddToLog(msg)
-    if (AutoAbilityBox.Value) {
-        SetTimer(CheckAutoAbility, GetAutoAbilityTimer())
+    if (SJWNuke.Value) {
+        ClickUnit(SJWSlot.Value)
+        Sleep(2000)
+        InitiateTheSystem()
+    } else {
+        if (AutoAbilityBox.Value) {
+            SetTimer(CheckAutoAbility, GetAutoAbilityTimer())
+        }
     }
     return MonitorStage()
 }
@@ -149,4 +155,72 @@ GetUpgradePriority(slotNum) {
     global
     priorityVar := "upgradePriority" slotNum
     return %priorityVar%.Value
+}
+
+InitiateTheSystem() {
+    global totalUnits
+    if (!isMenuOpen("Unit Manager")) {
+        OpenMenu("Unit Manager") ; Failsafe
+        Sleep(500)
+        ClickUnit(SJWSlot.Value)
+        Sleep(500)
+    }
+
+    AddToLog("Initiating the system")
+
+    FixClick(290, 290) ; Open the system
+    Sleep(500)
+    WaitForRebirth()
+    Sleep (500)
+    FixClick(617, 122) ; close the system
+    Sleep (500)
+    ;WaitForWave50()
+    WaitForGilgamesh()
+}
+
+WaitForRebirth() {
+    rebirthCount := 0
+    Loop {
+        FixClick(370, 245) ; Click Attack
+        Sleep(200)
+        FixClick(551, 293) ; Click Range
+
+        if (CheckForXp()) {
+            AddToLog("Game over detected")
+            break
+        }
+
+        if (ok := FindText(&X, &Y, 466, 445, 570, 491, 0.20, 0.80, Rebirth)) {
+            Sleep(100)
+            FixClick(X, Y - 35)
+            rebirthCount++
+            AddToLog("Rebirth count: " rebirthCount " / 3")
+            if (rebirthCount >= 3) {
+                break
+            }
+        }
+        Sleep 500
+    }
+}
+
+WaitForWave50() {
+    Loop {
+
+        if (CheckForXp()) {
+            AddToLog("Game over detected")
+            break
+        }
+
+        if (ok := FindText(&X, &Y, 259, 35, 294, 52, 0.10, 0.10, Wave50)) {
+            AddToLog("Found Wave 50, sleeping for 28 seconds...")
+            Sleep (28000)
+            AddToLog("Nuking...")
+            loop 15 {
+                FixClick(282, 328) ; click nuke
+                Sleep(150)
+            }
+            break
+        }
+        Sleep 500
+    }
 }

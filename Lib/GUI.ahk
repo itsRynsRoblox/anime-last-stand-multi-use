@@ -5,7 +5,7 @@
 
 ; Application Info
 global GameTitle := "Ryn's Anime Last Stand Macro "
-global version := "v1.6.1"
+global version := "v1.6.3"
 global rblxID := "ahk_exe RobloxPlayerBeta.exe"
 ;Coordinate and Positioning Variables
 global targetWidth := 816
@@ -167,14 +167,17 @@ OpenGuide(*) {
 
 MainUI.SetFont("s9 Bold c" uiTheme[1])
 
-DebugButton := MainUI.Add("Button", "x808 y5 w90 h20 +Center", "Debug")
+DebugButton := MainUI.Add("Button", "x708 y5 w90 h20 +Center", "Debug")
 DebugButton.OnEvent("Click", (*) => "")
 
-global guideBtn := MainUI.Add("Button", "x908 y5 w90 h20", "Guide")
+global guideBtn := MainUI.Add("Button", "x808 y5 w90 h20", "Guide")
 guideBtn.OnEvent("Click", OpenGuide)
 
-global unitsButton := MainUI.Add("Button", "x1008 y5 w90 h20", "Upgrades")
-unitsButton.OnEvent("Click", (*) => ToggleControlGroup("Upgrade"))
+global unitButton := MainUI.Add("Button", "x908 y5 w90 h20", "Unit Config")
+unitButton.OnEvent("Click", (*) => ToggleControlGroup("Unit"))
+
+global upgradeButton := MainUI.Add("Button", "x1008 y5 w90 h20", "Upgrades")
+upgradeButton.OnEvent("Click", (*) => ToggleControlGroup("Upgrade"))
 
 global modeButton := MainUI.Add("Button", "x1108 y5 w90 h20", "Mode Config")
 modeButton.OnEvent("Click", (*) => ToggleControlGroup("Mode"))
@@ -275,6 +278,14 @@ global NightmareDifficulty := MainUI.Add("CheckBox", "x825 y195 Hidden cffffff",
 
 global PortalBorder := MainUI.Add("GroupBox", "x808 y255 w550 h126 +Center Hidden c" uiTheme[1], "Portal Settings")
 global PortalLobby := MainUI.Add("CheckBox", "x825 y280 Hidden cffffff", "Starting portal from the lobby")
+
+
+; --- Unit Config GUI ---
+global UnitBorder := MainUI.Add("GroupBox", "x808 y85 w550 h296 +Center Hidden" uiTheme[1], "Unit Configuration")
+global SJWNuke := MainUI.Add("CheckBox", "x825 y110 Hidden cffffff", "Use SJW Nuke")
+
+global SJWSlotText := MainUI.Add("Text", "x825 y130 Hidden cffffff", "SJW Slot")
+global SJWSlot := MainUI.Add("DropDownlist", "x905 y128 w45 Hidden Choose0 +Center", ["1", "2", "3", "4", "5", "6"])
 
 GithubButton.OnEvent("Click", (*) => OpenGithub())
 DiscordButton.OnEvent("Click", (*) => OpenDiscord())
@@ -724,6 +735,10 @@ InitControlGroups() {
         ModeBorder, ModeConfigurations,
         StoryBorder, NightmareDifficulty,
         PortalBorder, PortalLobby
+    ]
+
+    ControlGroups["Unit"] := [
+        UnitBorder, SJWNuke, SJWSlotText, SJWSlot
     ]
 }
 

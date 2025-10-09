@@ -1,28 +1,28 @@
 [Unit Settings]
-Enabled1=1
-Enabled2=1
-Enabled3=1
-Enabled4=1
-Enabled5=1
-Enabled6=1
+Enabled1=0
+Enabled2=0
+Enabled3=0
+Enabled4=0
+Enabled5=0
+Enabled6=0
 Placement1=1
 Placement2=1
 Placement3=1
 Placement4=1
 Placement5=1
 Placement6=1
-Priority1=1
-Priority2=2
-Priority3=3
-Priority4=4
-Priority5=5
-Priority6=6
-UpgradePriority1=1
-UpgradePriority2=2
-UpgradePriority3=3
-UpgradePriority4=4
-UpgradePriority5=5
-UpgradePriority6=6
+Priority1=4
+Priority2=1
+Priority3=2
+Priority4=5
+Priority5=6
+Priority6=3
+UpgradePriority1=2
+UpgradePriority2=1
+UpgradePriority3=1
+UpgradePriority4=
+UpgradePriority5=2
+UpgradePriority6=2
 UpgradeEnabled1=0
 UpgradeEnabled2=0
 UpgradeEnabled3=0
@@ -52,7 +52,11 @@ ZoomLevel=20
 [Upgrade Settings]
 Unit Manager Auto Upgrade=1
 Unit Manager Upgrade System=1
-Priority Upgrade=1
+Priority Upgrade=0
 
 [Portal Settings]
 Start Portal In Lobby=0
+
+[Unit Settings]
+Use Sunwoo Nuke=0
+Sunwoo Nuke Slot=6

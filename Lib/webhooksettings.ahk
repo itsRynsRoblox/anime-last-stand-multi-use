@@ -18,7 +18,7 @@ if (!FileExist("Settings")) {
 
 ; Function to update streak
 UpdateStreak(isWin) {
-    global currentStreak, lastResult
+    global currentStreak, lastResult, Wins, loss
     
     ; Initialize lastResult if it doesn't exist
     if (!IsSet(lastResult)) {
@@ -26,11 +26,13 @@ UpdateStreak(isWin) {
     }
     
     if (isWin) {
+        Wins++
         if (lastResult = "win")
             currentStreak += 1
         else
             currentStreak := 1
     } else {
+        loss++
         if (lastResult = "lose")
             currentStreak -= 1
         else

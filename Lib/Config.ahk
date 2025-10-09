@@ -93,6 +93,10 @@ SaveSettingsForMode(*) {
         content .= "`n`n[Portal Settings]"
         content .= "`nStart Portal In Lobby=" PortalLobby.Value
 
+        content .= "`n`n[Unit Settings]"
+        content .= "`nUse Sunwoo Nuke=" SJWNuke.Value
+        content .= "`nSunwoo Nuke Slot=" SJWSlot.Value
+
         FileAppend(content, settingsFile)
         SaveCustomPlacements()
         SaveUniversalSettings()
@@ -187,6 +191,9 @@ LoadUnitSettingsByMode() {
             case "Unit Manager Upgrade System": UnitManagerUpgradeSystem.Value := value
             case "Priority Upgrade": PriorityUpgrade.Value := value
             case "Start Portal In Lobby": PortalLobby.Value := value
+
+            case "Use Sunwoo Nuke": SJWNuke.Value := value
+            case "Sunwoo Nuke Slot": SJWSlot.Value := value
         }
     }
     LoadCustomPlacements()
@@ -335,10 +342,10 @@ SaveUniversalSettings() {
         content .= "`nPrivate Server Enabled=" PrivateServerEnabled.Value
         content .= "`nPrivate Server URL=" PrivateServerURLBox.Text
 
-        content .= "[Story Settings]"
+        content .= "`n`n[Story Settings]"
         content .= "`nNightmare Difficulty=" NightmareDifficulty.Value
 
-        content .= "[Placement Settings]"
+        content .= "`n`n[Placement Settings]"
         content .= "`nPlacement Pattern=" PlacementPatternDropdown.Value
         content .= "`nPlacement Order=" PlacementSelection.Value
         content .= "`nPlacement Profile=" PlacementProfiles.Value

@@ -32,38 +32,23 @@ getCurrentTime() {
 }
 
 OnModeChange(*) {
-    selected := ModeDropdown.Text
-
-    ; Array of all dropdowns to hide
-    dropdowns := [
-        StoryDropdown,
-        StoryActDropdown,
-        LegendDropDown,
-        RaidDropdown,
-        RaidActDropdown,
-        DungeonDropdown,
-        PortalDropdown,
-        PortalRoleDropdown
-    ]
-
     ; Hide all
-    for ctrl in dropdowns
+    for ctrl in [StoryDropdown, StoryActDropdown, LegendDropDown, RaidDropdown, RaidActDropdown, DungeonDropdown, PortalDropdown, PortalRoleDropdown]
         ctrl.Visible := false
 
     ; Show based on selection
-    switch selected {
+    switch ModeDropdown.Text {
         case "Story":
             StoryDropdown.Visible := true
+            StoryActDropdown.Visible := true
         case "Legend":
             LegendDropDown.Visible := true
         case "Raid":
-            RaidDropdown.Visible := true
-            RaidActDropdown.Visible := true
+            RaidDropdown.Visible := RaidActDropdown.Visible := true
         case "Dungeon":
             DungeonDropdown.Visible := true
         case "Portal":
-            PortalDropdown.Visible := true
-            PortalRoleDropdown.Visible := true
+            PortalDropdown.Visible := PortalRoleDropdown.Visible := true
         case "Custom":
             ; Add handling if needed
     }
@@ -345,8 +330,8 @@ CloseLobbyPopups() {
 
 }
 
-; === ClickUnit unchanged but passed totalUnits explicitly ===
-ClickUnit(slot, totalUnits) {
+ClickUnit(slot) {
+    global totalUnits
     baseX := 585
     baseY := 175
     colSpacing := 80
@@ -413,13 +398,14 @@ CloseMenu(name := "") {
         return
 
     key := ""
+    clickX := 0, clickY := 0
     if (name = "Unit Manager")
         key := "F"
     else if (name = "Ability Manager")
         key := "Z"
 
     if (!key)
-        return
+        return  ; Unknown menu name
 
     if (isMenuOpen(name)) {
         AddToLog("Closing " name)
