@@ -5,15 +5,15 @@ SendMode "Event"
 global scriptInitialized := false
 
 ; === Main Script ===
-#Include %A_ScriptDir%/lib/Image.ahk
 #Include %A_ScriptDir%/lib/GUI.ahk
 #Include %A_ScriptDir%/lib/GameMango.ahk
 
 ; === Saving and Loading Configs ===
 #Include %A_ScriptDir%/lib/Config.ahk
 
-; === Core Libraries ===
-#Include %A_ScriptDir%/lib/FindText.ahk
+; === Tool Libraries ===
+#Include %A_ScriptDir%/lib/Tools/FindText.ahk
+#Include %A_ScriptDir%/lib/Tools/Image.ahk
 
 ; === Game Modes ===
 #Include %A_ScriptDir%/lib/Modes/BossRush.ahk
@@ -27,6 +27,7 @@ global scriptInitialized := false
 ; === Core Mechanics ===
 #Include %A_ScriptDir%/lib/Functions/Functions.ahk
 #Include %A_ScriptDir%/lib/Functions/Upgrading.ahk
+#Include %A_ScriptDir%/lib/Functions/WalkManager.ahk
 #Include %A_ScriptDir%/lib/PlacementPatterns.ahk
 
 ; === Webhook Integration ===

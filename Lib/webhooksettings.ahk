@@ -7,7 +7,6 @@ global currentStreak := 0
 global lastResult := "none"
 global Wins := 0
 global loss := 0
-global StartTime := A_TickCount 
 global stageStartTime := A_TickCount
 global macroStartTime := A_TickCount
 global currentMap := ""

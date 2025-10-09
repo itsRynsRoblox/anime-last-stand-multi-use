@@ -131,7 +131,6 @@ SetAutoUpgradeForAllUnits() {
     }
 }
 
-
 UpgradeAllUnits() {
     FixClick(648, 123) ; Clicks upgrade all
     Sleep(1000)
@@ -222,5 +221,297 @@ WaitForWave50() {
             break
         }
         Sleep 500
+    }
+}
+
+UnitManagerUpgrade(slot) {
+    if !(GetPixel(0x1643C5, 77, 357, 4, 4, 2)) {
+        ClickUnit(slot)
+        Sleep(500)
+    }
+    Loop 3 {
+        SendInput("T")
+    }
+}
+
+UnitManagerUpgradeWithLimit(coord, index, upgradeLimit) {
+    if !(GetPixel(0x1643C5, 77, 357, 4, 4, 2)) {
+        ClickUnit(coord.upgradePriority)
+        Sleep(500)
+    }
+    if (WaitForUpgradeLimitText(upgradeLimit + 1, 750)) {
+        HandleMaxUpgrade(coord, index)
+    } else {
+        SendInput("T")
+    }
+    
+}
+
+ProcessUpgrades(slot := false, priorityNum := "", singlePass := false) {
+    global successfulCoordinates, totalUnits
+
+    if (singlePass) {
+        for index, coord in successfulCoordinates {
+            if (!slot || coord.slot = slot) {
+                if (StageEndedDuringUpgrades()) {
+                    return HandleStageEnd()
+                }
+
+                UpgradeUnitWithLimit(coord, index)
+
+                if (StageEndedDuringUpgrades()) {
+                    return HandleStageEnd()
+                }
+
+                PostUpgradeChecks()
+
+                if (MaxUpgrade()) {
+                    HandleMaxUpgrade(coord, index)
+                }
+
+                if (!UnitManagerUpgradeSystem.Value) {
+                    SendInput("X")
+                }
+
+                PostUpgradeChecks()
+            }
+        }
+
+        if (slot)
+            AddToLog("Finished single-pass upgrades for priority " priorityNum)
+
+        return
+    }
+
+    ; Original behavior (full upgrade loop)
+    while (true) {
+        slotDone := true
+        for index, coord in successfulCoordinates {
+            if (!slot || coord.slot = slot) {
+                slotDone := false
+
+                if (StageEndedDuringUpgrades()) {
+                    return HandleStageEnd()
+                }
+
+                UpgradeUnitWithLimit(coord, index)
+
+                if (StageEndedDuringUpgrades()) {
+                    return HandleStageEnd()
+                }
+
+                PostUpgradeChecks()
+
+                if (MaxUpgrade()) {
+                    HandleMaxUpgrade(coord, index)
+                    break
+                }
+
+                if (!UnitManagerUpgradeSystem.Value) {
+                    SendInput("X") ; Close unit menu
+                }
+
+                PostUpgradeChecks()
+            }
+        }
+
+        if (slot && (slotDone || successfulCoordinates.Length = 0)) {
+            AddToLog("Finished upgrades for priority " priorityNum)
+            break
+        }
+
+        if (!slot)
+            break
+    }
+}
+
+UpgradePlacedUnits() {
+    global stage
+    global successfulCoordinates, maxedCoordinates
+    global totalUnits := Map(), upgradedCount := Map()
+
+    hasUpgradeableUnits := false
+
+    ; Check if there are any units eligible for upgrading
+    for coord in successfulCoordinates {
+        totalUnits[coord.slot] := (totalUnits.Has(coord.slot) ? totalUnits[coord.slot] + 1 : 1)
+        upgradedCount[coord.slot] := upgradedCount.Has(coord.slot) ? upgradedCount[coord.slot] : 0
+
+        if (IsUpgradeEnabled(coord.slot) && !maxedCoordinates.Has(coord)) {
+            hasUpgradeableUnits := true
+        }
+    }
+
+    ; If no upgradeable units found, skip the rest
+    if (!hasUpgradeableUnits) {
+        return
+    }
+
+    AddToLog("Initiating Single-Pass Unit Upgrades...")
+    stage := "Upgrading"
+
+    if (ShouldOpenUnitManager()) {
+        OpenMenu("Unit Manager")
+    }
+
+    if (PriorityUpgrade.Value) {
+        AddToLog("Using priority upgrade system (single pass)")
+        for priorityNum in [1, 2, 3, 4, 5, 6] {
+            for slot in [1, 2, 3, 4, 5, 6] {
+                if (!IsUpgradeEnabled(slot))
+                    continue
+
+                priority := "priority" slot
+                priority := %priority%
+
+                if (priority.Text = priorityNum && HasUnitsInSlot(slot, successfulCoordinates)) {
+                    AddToLog("Processing upgrades for priority " priorityNum " (slot " slot ")")
+                    ProcessUpgrades(slot, priorityNum, true) ; true = single pass
+                }
+            }
+        }
+    } else {
+        seenSlots := Map()
+        for coord in successfulCoordinates {
+            if (!IsUpgradeEnabled(coord.slot))
+                continue
+
+            if (!seenSlots.Has(coord.slot)) {
+                ProcessUpgrades(coord.slot, "", true)
+                seenSlots[coord.slot] := true
+            }
+        }
+    }
+
+    AddToLog("Upgrade attempt completed")
+}
+
+WaitForUpgradeText(timeout := 4500) {
+    startTime := A_TickCount
+    while (A_TickCount - startTime < timeout) {
+        if (ok := GetPixel(0x1034AC, 78, 362, 2, 2, 2)) {
+            return true
+        }
+        Sleep 100  ; Check every 100ms
+    }
+    return false  ; Timed out, upgrade text was not found
+}
+
+WaitForUpgradeLimitText(upgradeCap, timeout := 4500) {
+    upgradeTexts := [
+        Upgrade0, Upgrade1, Upgrade2, Upgrade3, Upgrade4, Upgrade5, Upgrade6, Upgrade7, Upgrade8, Upgrade9, Upgrade10, Upgrade11, Upgrade12, Upgrade13, Upgrade14
+    ]
+    targetText := upgradeTexts[upgradeCap]
+
+    startTime := A_TickCount
+    while (A_TickCount - startTime < timeout) {
+        if (FindText(&X, &Y, 103, 373, 165, 386, 0, 0, targetText)) {
+            AddToLog("Found Upgrade Cap")
+            return true
+        }
+        Sleep 100
+    }
+    return false  ; Timed out
+}
+
+UpgradeUnitWithLimit(coord, index) {
+    global totalUnits
+
+    upgradeLimitEnabled := "upgradeLimitEnabled" coord.slot
+    upgradeLimitEnabled := %upgradeLimitEnabled%
+
+    upgradeLimit := "upgradeLimit" coord.slot
+    upgradeLimit := %upgradeLimit%
+    upgradeLimit := String(upgradeLimit.Text)
+
+    upgradePriority := "upgradePriority" coord.slot
+    upgradePriority := %upgradePriority%
+    upgradePriority := String(upgradePriority.Text)
+
+    if (!upgradeLimitEnabled.Value) {
+        if (UnitManagerUpgradeSystem.Value) {
+            UnitManagerUpgrade(coord.slot)
+        } else {
+            UpgradeUnit(coord.x, coord.y)
+        }
+    } else {
+        if (UnitManagerUpgradeSystem.Value) {
+            UnitManagerUpgradeWithLimit(coord, index, upgradeLimit)
+        } else {
+            UpgradeUnitLimit(coord, index, upgradeLimit)
+        }
+    }
+}
+
+UpgradeUnitLimit(coord, index, upgradeLimit) {
+    FixClick(coord.x, coord.y)
+    if (WaitForUpgradeLimitText(upgradeLimit + 1, 750)) {
+        HandleMaxUpgrade(coord, index)
+    } else {
+        SendInput("T")
+    }
+}
+
+HandleMaxUpgrade(coord, index) {
+    global successfulCoordinates, maxedCoordinates, upgradedCount, totalUnits
+
+    if (IsSet(totalUnits) && IsSet(upgradedCount)) {
+        upgradedCount[coord.slot]++
+        AddToLog("Max upgrade reached for Unit: " coord.slot " (" upgradedCount[coord.slot] "/" totalUnits[coord.slot] ")")
+    } else {
+        AddToLog("Max upgrade reached for Unit: " coord.slot)
+        maxedCoordinates.Push(coord)
+    }
+    maxedCoordinates.Push(coord)
+    successfulCoordinates.RemoveAt(index)
+    SendInput("X")
+}
+
+PostUpgradeChecks() {
+    HandleAutoAbility()
+    CheckForPortalSelection()
+    Reconnect()
+}
+
+StageEndedDuringUpgrades() {
+    return CheckForXp()
+}
+
+IsUpgradeEnabled(slotNum) {
+    setting := "upgradeEnabled" slotNum
+    return %setting%.Value
+}
+
+TestAllUpgradeFindTexts() {
+    foundCount := 0
+    notFoundCount := 0
+
+    Loop 15 {
+        upgradeCap := A_Index  ; Now 1–15, aligns with AHK v2 arrays
+        result := WaitForUpgradeLimitText(upgradeCap, 500)
+
+        if (result) {
+            AddToLog("Found Upgrade Level: " upgradeCap - 1)
+            foundCount++
+        } else {
+            AddToLog("Did NOT Find Upgrade Level: " upgradeCap - 1)
+            notFoundCount++
+        }
+    }
+
+    AddToLog("Found: " foundCount " | Not Found: " notFoundCount)
+}
+
+HasUnitsInSlot(slot, coordinates) {
+    for coord in coordinates {
+        if (coord.slot = slot)
+            return true
+    }
+    return false
+}
+
+ShouldOpenUnitManager() {
+    if (UnitManagerAutoUpgrade.Value || UnitManagerUpgradeSystem.Value) {
+        return true
     }
 }

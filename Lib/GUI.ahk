@@ -1,25 +1,21 @@
 #Requires AutoHotkey v2.0
 #SingleInstance Force
-#Include Image.ahk
+#Include %A_ScriptDir%/lib/Tools/Image.ahk
 #Include %A_ScriptDir%/lib/Functions/Functions.ahk
 
 ; Application Info
 global GameTitle := "Ryn's Anime Last Stand Macro "
-global version := "v1.6.3"
+global version := "v1.6.4"
 global rblxID := "ahk_exe RobloxPlayerBeta.exe"
 ;Coordinate and Positioning Variables
 global targetWidth := 816
 global targetHeight := 638
 global offsetX := -5
 global offsetY := 1
-global WM_SIZING := 0x0214
-global WM_SIZE := 0x0005
 global centerX := 408
 global centerY := 320
 global successfulCoordinates := []
 ;Statistics Tracking
-global Wins := 0
-global loss := 0
 global mode := ""
 global StartTime := A_TickCount
 global currentTime := GetCurrentTime()
@@ -30,9 +26,6 @@ global firstStartup := true
 ;Custom Unit Placement
 global waitingForClick := false
 global savedCoords := [[], []]  ; Index-based: one array for each preset
-;Custom Walk
-global waitingForWalk := false
-global walkStartTime := 0
 global savedWalkCoords := [[], []]  ; Index-based: one array for each preset
 ;Hotkeys
 global F1Key := "F1"
@@ -86,7 +79,6 @@ uiColors := Map(
 )
 
 ; ========== Helper Functions ==========
-
 AddUI(type, options, text := "", onClickFunc := unset) {
     ctrl := MainUI.Add(type, options, text)
     if IsSet(onClickFunc)
@@ -97,7 +89,6 @@ AddUI(type, options, text := "", onClickFunc := unset) {
 AddBorder(x, y, w, h) {
     return MainUI.Add("Text", Format("x{} y{} w{} h{} +Background{}", x, y, w, h, uiColors["Border"]))
 }
-
 ; ========== GUI Initialization ==========
 
 MainUI.BackColor := uiColors["Background"]
@@ -240,7 +231,7 @@ customWalkButton := MainUI.Add("Button", "x610 y662 w80 h20", "Set")
 customWalkButton.OnEvent("Click", (*) => StartWalkCapture())
 
 customWalkClearButton := MainUI.Add("Button", "x700 y662 w80 h20", "Clear")
-;customWalkClearButton.OnEvent("Click", (*) => DeleteCoordsForPreset(PlacementProfiles.Value, "CustomWalk"))
+customWalkClearButton.OnEvent("Click", (*) => DeleteWalkCoordsForPreset(PlacementProfiles.Value))
 
 global WebhookBorder := MainUI.Add("GroupBox", "x808 y85 w550 h296 +Center Hidden c" uiTheme[1], "Webhook Settings")
 global WebhookEnabled := MainUI.Add("CheckBox", "x825 y110 Hidden cffffff", "Webhook Enabled")
@@ -727,21 +718,6 @@ GetOrInitPresetCoords(index) {
     return savedCoords[index]
 }
 
-GetOrInitWalkCoords(index) {
-    global savedWalkCoords
-    if !IsObject(savedWalkCoords)
-        savedWalkCoords := []
-
-    ; Extend the array up to the index if needed
-    while (savedWalkCoords.Length < index)
-        savedWalkCoords.Push([])
-
-    if !IsObject(savedWalkCoords[index])
-        savedWalkCoords[index] := []
-
-    return savedWalkCoords[index]
-}
-
 ClearToolTip() {
     ToolTip()  ; Properly clear tooltip
     Sleep 100  ; Small delay to ensure clearing happens across all systems
@@ -890,23 +866,4 @@ ValidateEditBox(ctrl) {
 
     if (num > 20)
         ctrl.Value := "20"  ; Limit to a maximum of 20
-}
-
-StartWalkCapture() {
-    global waitingForClick
-    global savedWalkCoords
-    global waitingForWalk
-
-    ; Reset saved walk coordinates
-    savedWalkCoords := []
-
-    ; Activate Roblox window
-    if (WinExist(rblxID)) {
-        WinActivate(rblxID)
-    }
-
-    waitingForClick := true
-    waitingForWalk := true
-    AddToLog("Press LShift to stop coordinate capture")
-    SetTimer UpdateTooltip, 50  ; Update tooltip position every 50ms
 }
