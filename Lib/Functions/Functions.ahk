@@ -360,6 +360,9 @@ ClickUnit(slot) {
 
     clickY := baseY + (row * rowSpacing)
 
+    OpenMenu("Unit Manager")
+    Sleep(500)
+
     FixClick(clickX, clickY)
     Sleep(150)
 }
@@ -439,7 +442,9 @@ CheckAutoAbility() {
     global totalUnits
 
     AddToLog("Checking for unactive abilities...")
-    OpenMenu("Ability Manager")
+    if (!NukeUnitSlotEnabled.Value) {
+        OpenMenu("Ability Manager")
+    }
     Sleep (1000)
 
     if (CheckForXP()) {
@@ -449,7 +454,11 @@ CheckAutoAbility() {
         return
     }
 
-    HandleAutoAbilityUnitManager()
+    if (NukeUnitSlotEnabled.Value) {
+        CheckUnitAbilities()
+    } else {
+        HandleAutoAbilityUnitManager()
+    }
     Sleep (1000)
     CloseMenu("Ability Manager")
     AddToLog("Finished looking for abilities")
@@ -490,5 +499,96 @@ OnPriorityChange(type, priorityNumber, newPriorityNumber) {
         AddToLog("Placement priority changed: Slot " priorityNumber " → " newPriorityNumber)
     } else {
         AddToLog("Upgrade priority changed: Slot " priorityNumber " → " newPriorityNumber)
+    }
+}
+
+CheckForCardSelection() {
+    if GetPixel(0x4A4747, 436, 383, 2, 2, 3) {
+        SelectCardsHalloween()
+        return true
+    }
+    return false
+}
+
+SearchForImage(X1, Y1, X2, Y2, image) {
+    if !WinExist(rblxID)
+        return false
+
+    WinActivate(rblxID)
+
+    return ImageSearch(&FoundX, &FoundY, X1, Y1, X2, Y2, image)
+}
+
+AttachDropDownEvent(dropDown, index, callback) {
+    dropDown.OnEvent("Change", (*) => callback(dropDown, index))
+}
+
+RemoveEmptyStrings(array) {
+    loop array.Length {
+        i := array.Length - A_Index + 1
+        if (array[i] = "") {
+            array.RemoveAt(i)
+        }
+    }
+}
+
+OpenCardConfig() {
+    if (ModeDropdown.Text = "Halloween Event") {
+        OpenHalloweenPriorityPicker()
+    }
+    else {
+        AddToLog("No card configuration available for mode: " (ModeDropdown.Text = "" ? "None" : ModeDropdown.Text))
+    }
+}
+
+; The function
+WaitingFor(action) {
+    global waitingState
+    return waitingState = action
+}
+
+HasMinionInSlot(slot) {
+    if (slot = 1)
+        return !!MinionSlot1.Value
+    else if (slot = 2)
+        return !!MinionSlot2.Value
+    else if (slot = 3)
+        return !!MinionSlot3.Value
+    else if (slot = 4)
+        return !!MinionSlot4.Value
+    else if (slot = 5)
+        return !!MinionSlot5.Value
+    else if (slot = 6)
+        return !!MinionSlot6.Value
+    return false
+}
+
+CheckUnitAbilities() {
+    global successfulCoordinates, maxedCoordinates
+
+    AddToLog("Checking auto abilities of placed units...")
+
+    for coord in successfulCoordinates {
+
+        slot := coord.slot
+
+        if (CheckForXp()) {
+            AddToLog("Stopping auto ability check because the game ended")
+            return MonitorStage()
+        }
+
+        if (CheckForCardSelection()) {
+            SelectCardsHalloween()
+        }
+
+        if (NukeUnitSlotEnabled.Value && slot = NukeUnitSlot.Value) {
+            AddToLog("Skipping nuke unit in slot " slot)
+            continue
+        }
+
+        FixClick(coord.x, coord.y)
+        Sleep(500)
+
+        HandleAutoAbility()
     }
 }

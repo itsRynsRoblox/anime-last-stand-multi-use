@@ -96,16 +96,27 @@ SaveSettingsForMode(*) {
         content .= "`n`n[Unit Settings]"
         content .= "`nUse Sunwoo Nuke=" SJWNuke.Value
         content .= "`nSunwoo Nuke Slot=" SJWSlot.Value
+        content .= "`nNuke Enabled=" NukeUnitSlotEnabled.Value
+        content .= "`nNuke Slot=" NukeUnitSlot.Value
+        content .= "`nNuke Coords=" nukeCoords.x "," nukeCoords.y
+        content .= "`nSlot 1 Minion=" MinionSlot1.Value
+        content .= "`nSlot 2 Minion=" MinionSlot2.Value
+        content .= "`nSlot 3 Minion=" MinionSlot3.Value
+        content .= "`nSlot 4 Minion=" MinionSlot4.Value
+        content .= "`nSlot 5 Minion=" MinionSlot5.Value
+        content .= "`nSlot 6 Minion=" MinionSlot6.Value
 
         FileAppend(content, settingsFile)
         SaveCustomPlacements()
         SaveCustomWalk()
         SaveUniversalSettings()
         AddToLog("✅ Saved settings for mode: " gameMode)
+        SaveCardLocal()
     }
 }
 
 LoadUnitSettingsByMode() {
+    global nukeCoords
     local mode := ModeDropdown.Text
 
     if !mode {
@@ -195,6 +206,24 @@ LoadUnitSettingsByMode() {
 
             case "Use Sunwoo Nuke": SJWNuke.Value := value
             case "Sunwoo Nuke Slot": SJWSlot.Value := value
+
+            case "Nuke Enabled": NukeUnitSlotEnabled.Value := value
+            case "Nuke Slot": NukeUnitSlot.Value := value
+            case "Nuke Coords":
+            {
+                coords := StrSplit(value, ",")
+                if coords.Length >= 2 {
+                    nukeCoords := {x: coords[1], y: coords[2]}
+                }
+            }
+
+            case "Slot 1 Minion": MinionSlot1.Value := value
+            case "Slot 2 Minion": MinionSlot2.Value := value
+            case "Slot 3 Minion": MinionSlot3.Value := value
+            case "Slot 4 Minion": MinionSlot4.Value := value
+            case "Slot 5 Minion": MinionSlot5.Value := value
+            case "Slot 6 Minion": MinionSlot6.Value := value
+
         }
     }
     LoadCustomPlacements()
@@ -202,6 +231,7 @@ LoadUnitSettingsByMode() {
     AddToLog("✅ Settings successfully loaded for mode: " mode)
     LoadUniversalSettings()
     LoadCustomWalk()
+    LoadCardLocal()
 }
 
 

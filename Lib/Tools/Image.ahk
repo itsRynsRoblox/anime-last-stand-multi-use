@@ -2,7 +2,8 @@
 
 ; === Image Paths ===
 global Minimize := "Images\minimizeButton.png" 
-global Exitbutton := "Images\exitButton.png" 
+global Exitbutton := "Images\exitButton.png"
+global Disconnected := "Images\disconnected.png"
 
 ;=== General FindText Text and Buttons ===
 LobbySettings:="|<>*89$13.zTz7w0S0D273V3sEsQ8S0D07wTzTk"
@@ -71,3 +72,16 @@ Upgrade11:="|<>*41$11.zzzr1Y2QYt3m7zzzw"
 Upgrade12:="|<>*45$13.zzzzznj0n0Hn9s1w0zzzzy"
 Upgrade13:="|<>*45$11.zzzztq1cWNYk3U7zzzs"
 Upgrade14:="|<>*44$13.zzzyw341/0bU7nXzzzzw"
+
+; === Halloween 2025 Cards ===
+CriticalDenial:="|<>*91$58.zzzzzzzzzzXmnzb3zwyQDtzyQ7zztb00W1nMV86Qmkm7B2E8QX912QY909sAYWBksZ8rzzzzzzzzzs"
+LingeringFear:="|<>*84$40.zzzzzzzzzzzzztnzzzzzbjzztzyQ36Czztk80U1Xb212MEC4949V0zzwMa5XzzlzzyDzzzzztzzzzzzzU"
+HellishWarp:="|<>*88$52.zzzzzzzzzzw9twYzztjkzbmGN3al227U04C2489C00ks8EY4tU33aV00HqlwzPbzzzzzvzzzzzzzzzU"
+HellMerchant:="|<>*91$57.zzzzzzzzzzzzzzzzzzvzzzzTznzyDzsQtzu60Faz3W8U0U9Aq8Q04aE19UV3V0Y2F/g48Qt4lzzzalVzzzzzzzzzzzzzzzzU"
+DeadlyStriker:="|<>*81$59.zzzzzzzzzz3zzzzzzzzy3zz3z5y7zwaAQ7w9wDztcE02M28QRmEU0Fs4E0VVl20XU9U1DzzaBjWH02TzzzyTzzz7zzzzxzzzzzs"
+FierySurge:="|<>*86$47.zzzzzzzzuTzz7zzy0zzwDt6A94GMm08ME8VsY8EkUHXZ0Mlb8bjX7lzzzzTzzXzzzzzzzzw"
+PowerReversal:="|<>*93$62.zzzzzzzzzzsTzzz3zzzza3zzzkTzzztYW54AY4W0UMG01D010YG6QY8Hm149U9bX/4wYPWFXTzzzzzzzzzy"
+SeethingBloodlust:="|<>*82$35.zzvCTz7zmTX4CM0840MU90U812G18034YjlX7Tzzn"
+WeakenedResolve:="|<>*96$43.zzzzzzzmHzbzzyN9znzzzC060F36702EEY2Ha120G11vMl+9Mlzzzzzzzs"
+DevilsSacrifice:="|<>*87$63.zzzzzzzzzzwDzzzzzzzzzUzw9yDzwZzwq313VzzYjzaUEAQQ845bQY8VXl00Uc1Vl4CAc1AhADzzxnlX1Zc1zzzzzzzzxaDzzzzzzzzzzU"
+TrickorTreat:="|<>*85$32.zzzzzzzzzzy1nnzzUzoi8SE830TYkkk7tA0C9yH8zzzzzzzzzzzzzs"

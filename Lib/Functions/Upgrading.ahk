@@ -147,6 +147,7 @@ HandleUnitManager(msg) {
             SetTimer(CheckAutoAbility, GetAutoAbilityTimer())
         }
     }
+    CloseMenu("Unit Manager")
     return MonitorStage()
 }
 
@@ -197,28 +198,6 @@ WaitForRebirth() {
             if (rebirthCount >= 3) {
                 break
             }
-        }
-        Sleep 500
-    }
-}
-
-WaitForWave50() {
-    Loop {
-
-        if (CheckForXp()) {
-            AddToLog("Game over detected")
-            break
-        }
-
-        if (ok := FindText(&X, &Y, 259, 35, 294, 52, 0.10, 0.10, Wave50)) {
-            AddToLog("Found Wave 50, sleeping for 28 seconds...")
-            Sleep (28000)
-            AddToLog("Nuking...")
-            loop 15 {
-                FixClick(282, 328) ; click nuke
-                Sleep(150)
-            }
-            break
         }
         Sleep 500
     }
@@ -469,6 +448,11 @@ HandleMaxUpgrade(coord, index) {
 
 PostUpgradeChecks() {
     HandleAutoAbility()
+
+    if (HasCards(ModeDropdown.Text)) {
+        CheckForCardSelection()
+    }
+
     CheckForPortalSelection()
     Reconnect()
 }

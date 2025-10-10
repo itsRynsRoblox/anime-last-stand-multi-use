@@ -4,6 +4,9 @@ SendMode "Event"
 
 global scriptInitialized := false
 
+; === Testing and Debugging ===
+#Include %A_ScriptDir%/lib/Toggles.ahk
+
 ; === Main Script ===
 #Include %A_ScriptDir%/lib/GUI.ahk
 #Include %A_ScriptDir%/lib/GameMango.ahk
@@ -24,16 +27,18 @@ global scriptInitialized := false
 #Include %A_ScriptDir%/lib/Modes/Story.ahk
 #Include %A_ScriptDir%/lib/Modes/Survival.ahk
 
+; === Limited Time Game Modes ===
+#Include %A_ScriptDir%/lib/Modes/Halloween/HalloweenEvent.ahk
+#Include %A_ScriptDir%/lib/Modes/Halloween/HalloweenCardManager.ahk
+
 ; === Core Mechanics ===
 #Include %A_ScriptDir%/lib/Functions/Functions.ahk
 #Include %A_ScriptDir%/lib/Functions/Upgrading.ahk
 #Include %A_ScriptDir%/lib/Functions/WalkManager.ahk
 #Include %A_ScriptDir%/lib/PlacementPatterns.ahk
+#Include %A_ScriptDir%/lib/Functions/NukeManager.ahk
 
 ; === Webhook Integration ===
 #Include %A_ScriptDir%/lib/WebhookSettings.ahk
-
-; === Testing and Debugging ===
-#Include %A_ScriptDir%/lib/Toggles.ahk
 
 global scriptInitialized := true

@@ -28,7 +28,7 @@ WalkToCoords() {
 
     ; Ensure presetIndex is valid
     if (presetIndex < 1 || !savedWalkCoords.Has(presetIndex)) {
-        AddToLog("⚠️ No placements set for Preset: " PlacementProfiles.Text)
+        AddToLog("⚠️ No coordinates set for Preset: " PlacementProfiles.Text)
         return  ; Return empty list if invalid index
     }
 
@@ -36,7 +36,7 @@ WalkToCoords() {
     for coord in savedWalkCoords[presetIndex] {
         Sleep(coord.delay)
         AddToLog("Walking to: " coord.x ", " coord.y ", Delay: " coord.delay "ms")
-        FixClick(coord.x, coord.y)
+        FixClick(coord.x, coord.y, "Right")
     }
 }
 

@@ -23,10 +23,14 @@ global currentTime := GetCurrentTime()
 global challengeStartTime := A_TickCount
 global inChallengeMode := false
 global firstStartup := true
+; Testing
+global waitingState := ""
 ;Custom Unit Placement
 global waitingForClick := false
 global savedCoords := [[], []]  ; Index-based: one array for each preset
 global savedWalkCoords := [[], []]  ; Index-based: one array for each preset
+;Nuke Ability
+global nukeCoords := []
 ;Hotkeys
 global F1Key := "F1"
 global F2Key := "F2"
@@ -162,11 +166,14 @@ OpenGuide(*) {
 
 MainUI.SetFont("s9 Bold c" uiTheme[1])
 
-DebugButton := MainUI.Add("Button", "x708 y5 w90 h20 +Center", "Debug")
+DebugButton := MainUI.Add("Button", "x608 y5 w90 h20 +Center", "Debug")
 DebugButton.OnEvent("Click", (*) => "")
 
-global guideBtn := MainUI.Add("Button", "x808 y5 w90 h20", "Guide")
+global guideBtn := MainUI.Add("Button", "x708 y5 w90 h20", "Guide")
 guideBtn.OnEvent("Click", OpenGuide)
+
+global cardButton := MainUI.Add("Button", "x808 y5 w90 h20", "Card Config")
+cardButton.OnEvent("Click", (*) => OpenCardConfig())
 
 global unitButton := MainUI.Add("Button", "x908 y5 w90 h20", "Unit Config")
 unitButton.OnEvent("Click", (*) => ToggleControlGroup("Unit"))
@@ -290,12 +297,25 @@ global SJWNuke := MainUI.Add("CheckBox", "x825 y110 Hidden cffffff", "Use SJW Nu
 global SJWSlotText := MainUI.Add("Text", "x825 y130 Hidden cffffff", "SJW Slot")
 global SJWSlot := MainUI.Add("DropDownlist", "x905 y128 w45 Hidden Choose0 +Center", ["1", "2", "3", "4", "5", "6"])
 
+global NukeUnitSlotEnabled := MainUI.Add("Checkbox", "x825 y113 Hidden Choose1 cffffff Checked", "Nuke Unit | Slot")
+global NukeUnitSlot := MainUI.Add("DropDownList", "x960 y110 w100 h180 Hidden Choose1", ["1", "2", "3", "4", "5", "6"])
+global NukeCoordinatesText := MainUI.Add("Text", "x1080 y113 Hidden cffffff", "Nuke Ability Coordinates")
+global NukeCoordinatesButton := MainUI.Add("Button", "x1260 y110 w80 h20 Hidden", "Set")
+NukeCoordinatesButton.OnEvent("Click", (*) => StartNukeCapture())
+
+global MinionSlot1 := MainUI.Add("CheckBox", "x825 y135 cffffff Hidden", "Slot 1 has minion")
+global MinionSlot2 := MainUI.Add("CheckBox", "x1000 y135 cffffff Hidden", "Slot 2 has minion")
+global MinionSlot3 := MainUI.Add("CheckBox", "x1175 y135 cffffff Hidden", "Slot 3 has minion")
+global MinionSlot4 := MainUI.Add("CheckBox", "x825 y160 cffffff Hidden", "Slot 4 has minion")
+global MinionSlot5 := MainUI.Add("CheckBox", "x1000 y160 cffffff Hidden", "Slot 5 has minion")
+global MinionSlot6 := MainUI.Add("CheckBox", "x1175 y160 cffffff Hidden", "Slot 6 has minion")
+
 GithubButton.OnEvent("Click", (*) => OpenGithub())
 DiscordButton.OnEvent("Click", (*) => OpenDiscord())
 ;--------------SETTINGS--------------;
 global modeSelectionGroup := MainUI.Add("GroupBox", "x808 y38 w500 h45 +Center Background" uiTheme[2], "Game Mode Selection")
 MainUI.SetFont("s10 c" uiTheme[6])
-global ModeDropdown := MainUI.Add("DropDownList", "x818 y53 w140 h180 Choose0 +Center", ["Story", "Dungeon", "Portal", "Raid", "Custom"])
+global ModeDropdown := MainUI.Add("DropDownList", "x818 y53 w140 h180 Choose0 +Center", ["Story", "Dungeon", "Portal", "Raid", "Halloween Event", "Custom"])
 global StoryDropdown := MainUI.Add("DropDownList", "x968 y53 w150 h180 Choose0 +Center Hidden", ["Hog Town", "Hollow Night Palace", "Firefighters Base", "Demon Skull Village", "Shibuya", "Abandoned Cathedral", "Moriah", "Soul Society", "Thrilled Bark", "Dragon Heaven", "Ryuudou Temple", "Snowy Village", "Rain Village", "Giant's District", "Oni Island", "Unknown Planet", "Oasis", "Harge Forest", "Babylon", "Destroyed Shinjuku", "Train Station", "Swordsmith Village", "Sacrifical Realm"])
 global StoryActDropdown := MainUI.Add("DropDownList", "x1128 y53 w80 h180 Choose0 +Center Hidden", ["Act 1", "Act 2", "Act 3", "Act 4", "Act 5", "Act 6", "Infinite"])
 global LegendDropDown := MainUI.Add("DropDownlist", "x968 y53 w150 h180 Choose0 +Center", ["Legend Stage #1"] )
@@ -618,13 +638,14 @@ UpdateTooltip() {
 
 ~LShift::
 {
-    global waitingForClick, waitingForWalk, walkStartTime
+    global waitingForClick, waitingForWalk, walkStartTime, waitingState
     if waitingForClick {
         AddToLog("Stopping coordinate capture")
         if (waitingForWalk) {
             waitingForWalk := false
             walkStartTime := 0
         }
+        waitingState := ""
         waitingForClick := false
     }
 }
@@ -633,13 +654,14 @@ UpdateTooltip() {
 {
     global waitingForClick, savedCoords
     global waitingForWalk, savedWalkCoords, walkStartTime
+    global nukeCoords
     global placement1, placement2, placement3, placement4, placement5, placement6
 
     if !scriptInitialized
         return
 
     if waitingForClick {
-        if (waitingForWalk) {
+        if (WaitingFor("Walk")) {
             presetIndex := PlacementProfiles.Value
 
             if (presetIndex < 1)
@@ -669,8 +691,19 @@ UpdateTooltip() {
             ToolTip("Coords Set: " coords.Length, x + 10, y + 10)
             delaySeconds := Round(delay / 1000, 1)
             AddToLog("📌 [Preset: " PlacementProfiles.Text "] Saved → X: " x ", Y: " y ", Delay: " delaySeconds "s | Set: " coords.Length)
+            SetTimer(ClearToolTip, -1200)   
+        }
+        else if (WaitingFor("Nuke")) {
+            MouseGetPos(&x, &y)
+            SetTimer(UpdateTooltip, 0)
+            nukeCoords := {x: x, y: y}
+            ToolTip("Nuke Coords Set", x + 10, y + 10)
+            AddToLog("📌 Nuke Ability Coordinates Saved → X: " x ", Y: " y)
             SetTimer(ClearToolTip, -1200)
-        } else {
+            waitingForClick := false
+            waitingState := ""
+        }
+        else {
             presetIndex := PlacementProfiles.Value
 
             if (presetIndex < 1)
@@ -779,7 +812,8 @@ InitControlGroups() {
     ]
 
     ControlGroups["Unit"] := [
-        UnitBorder, SJWNuke, SJWSlotText, SJWSlot
+        UnitBorder, NukeUnitSlotEnabled, NukeUnitSlot, NukeCoordinatesText, NukeCoordinatesButton, 
+        MinionSlot1, MinionSlot2, MinionSlot3, MinionSlot4, MinionSlot5, MinionSlot6
     ]
 }
 

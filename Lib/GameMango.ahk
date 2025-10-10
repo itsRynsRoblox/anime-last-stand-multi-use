@@ -2,7 +2,7 @@
 #Include %A_ScriptDir%/lib/Tools/Image.ahk
 global macroStartTime := A_TickCount
 global stageStartTime := A_TickCount
-
+global OCR := RapidOcr({models: A_ScriptDir "\Lib\RapidOcr\models"}, A_ScriptDir '\Lib\RapidOcr\' (A_PtrSize * 8) 'bit\RapidOcrOnnx.dll')
 LoadKeybindSettings()  ; Load saved keybinds
 Hotkey(F1Key, (*) => moveRobloxWindow())
 Hotkey(F2Key, (*) => StartMacro())
@@ -10,7 +10,7 @@ Hotkey(F3Key, (*) => Reload())
 Hotkey(F4Key, (*) => TogglePause())
 
 F5:: {
-    WalkToCoords()
+    PrepareToNuke()
 }
 
 F6:: {
@@ -22,7 +22,7 @@ F7:: {
 }
 
 F8:: {
-    Run (A_ScriptDir "\Lib\FindText.ahk")
+    Run (A_ScriptDir "\Lib\Tools\FindText.ahk")
 }
 
 StartMacro(*) {
@@ -178,10 +178,16 @@ StartPlacingUnits(untilSuccessful := true) {
                 if (!untilSuccessful) {
                     if (placedCounts[slotNum] < placements) {
                         if PlaceUnit(point.x, point.y, slotNum) {
+                            if (HasMinionInSlot(slotNum)) {
+                                successfulCoordinates.Push({x: point.x, y: point.y, slot: slotNum})
+                                placedCounts[slotNum] += 1
+                            }
                             successfulCoordinates.Push({x: point.x, y: point.y, slot: slotNum})
                             placedCounts[slotNum] += 1
                             AddToLog("Placed Unit " slotNum " (" placedCounts[slotNum] "/" placements ")")
-                            HandleAutoAbility()
+                            if (!NukeUnitSlotEnabled.Value && slotNum != NukeUnitSlot.Value) {
+                                HandleAutoAbility()
+                            }
                             SendInput("X")
                             ;AttemptUpgrade()
                             UpgradePlacedUnits()
@@ -196,6 +202,16 @@ StartPlacingUnits(untilSuccessful := true) {
                         if PlaceUnit(point.x, point.y, slotNum) {
                             placementIndex := successfulCoordinates.Length + 1
 
+                            if (HasMinionInSlot(slotNum)) {
+                                successfulCoordinates.Push({
+                                x: point.x,
+                                y: point.y,
+                                slot: slotNum,
+                                upgradePriority: GetUpgradePriority(slotNum),
+                                placementIndex: placementIndex
+                                })
+                            }
+
                             successfulCoordinates.Push({
                                 x: point.x,
                                 y: point.y,
@@ -205,7 +221,9 @@ StartPlacingUnits(untilSuccessful := true) {
                             })
                             placedCounts[slotNum] += 1
                             AddToLog("Placed Unit " slotNum " (" placedCounts[slotNum] "/" placements ")")
-                            HandleAutoAbility()
+                            if (!NukeUnitSlotEnabled.Value && slotNum != NukeUnitSlot.Value) {
+                                HandleAutoAbility()
+                            }
                             SendInput("X")
                             ;AttemptUpgrade()
                             UpgradePlacedUnits()
@@ -386,7 +404,14 @@ MonitorStage() {
         }
 
         ; --- Check for progression or special cases ---
+        if (HasCards(ModeDropdown.Text)) {
+            CheckForCardSelection()
+        }
+
         CheckForPortalSelection()
+
+        ; --- Check for wave 50 ---
+        CheckIfShouldNuke()
 
         ; --- Fallback if disconnected ---
         Reconnect()
@@ -754,15 +779,11 @@ RestartCustomStage() {
 }
 
 Reconnect(testing := false) {
-    ; Credit: @Haie
-    color_home := PixelGetColor(10, 10)
-    color_reconnect := PixelGetColor(519, 329)
-
     if (WinExist(rblxID)) {
         WinActivate(rblxID)
     }
 
-    if (color_home = 0x121215 || color_reconnect = 0x393B3D || testing) {
+    if (SearchForImage(296, 211, 521, 252, Disconnected) || testing) {
         AddToLog("Disconnected! Attempting to reconnect...")
         sendDCWebhook()
 
@@ -968,6 +989,9 @@ StartSelectedMode() {
     else if (ModeDropdown.Text = "Portal") {
         StartPortalMode()
     }
+    else if (ModeDropdown.Text = "Halloween Event") {
+        StartHalloweenEvent()
+    }
 }
 
 FormatStageTime(ms) {
@@ -1144,6 +1168,10 @@ PostPlacementChecks() {
         return MonitorStage()
     }
 
+    if (HasCards(ModeDropdown.Text)) {
+        CheckForCardSelection()
+    }
+
     CheckForPortalSelection()
 
     Reconnect()
@@ -1177,7 +1205,7 @@ HandleStartButton() {
 
 StartsInLobby(ModeName) {
     ; Array of modes that usually start in lobby
-    static modes := ["Story", "Raid", "Challenge", "Dungeon", "Portal", "Survival"]
+    static modes := ["Story", "Raid", "Challenge", "Dungeon", "Portal", "Survival", "Halloween Event"]
     
     ; Special case: If PortalLobby.Value is set, don't start in lobby for "Portal"
     if (ModeName = "Portal" && !PortalLobby.Value)
@@ -1185,6 +1213,18 @@ StartsInLobby(ModeName) {
 
     ; Check if current mode is in the array
     for mode in modes {
+        if (mode = ModeName)
+            return true
+    }
+    return false
+}
+
+HasCards(ModeName) {
+    ; Array of modes that have card selection
+    static modesWithCards := ["Boss Rush", "Halloween Event"]
+    
+    ; Check if current mode is in the array
+    for mode in modesWithCards {
         if (mode = ModeName)
             return true
     }
