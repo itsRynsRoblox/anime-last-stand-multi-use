@@ -34,7 +34,7 @@ AutoOff:="|<>*51$13.zzw1w0Q060301U0k0M0A060301k1w1zzw"
 AutoOff2:="|<>*53$13.zzw1w0Q060301U0k0M0A060301U0s0y0zzy"
 
 ; Lastest Update
-StorySelectButton:="|<>*121$42.00000000D1k0000NWE0s00kyLzY00XyTza0zkWMl3zzs0EFbzzw0E7bzzkDHlbzztXMlrzzzzzzzzzzzzzzzzzzzzzzU"
+StorySelectButton:="|<>*119$37.0w70000n4U1k0kyLzY0EzDzn0A8aAEVz022Azzk10STzUSbXDztXMlrw"
 StartButton:="|<>*121$25.00003s043y0735U6l2zzQW402wgdrtG4ty9WQzzzzzzzzz"
 MaxUpgradeText:="|<>*120$55.zzzzzzzzzvrzxrzzzTslzwvzzzbw0zyQzzz3y02LC341V705Xm5+GZ/bUls0V8MVzwGyMsaAMzzzzwxTzzzzzzzzTzzzzzzzzzzzz"
 RaidSelectButton:="|<>*120$29.00000S3U01a903a7mzwcTbztsFAMVs0EFbs0UDD0xD6TAP6CzzzzzzzzzzU"

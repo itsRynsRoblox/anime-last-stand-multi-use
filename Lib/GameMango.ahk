@@ -10,7 +10,9 @@ Hotkey(F3Key, (*) => Reload())
 Hotkey(F4Key, (*) => TogglePause())
 
 F5:: {
-    PrepareToNuke()
+    currentStoryMap := StoryDropdown.Text
+    currentStoryAct := StoryActDropdown.Text
+    StartStory(currentStoryMap, currentStoryAct)
 }
 
 F6:: {
@@ -598,7 +600,9 @@ GetRaidMap(map) {
         case "Shinjuku Crater": return { x: 185, y: 315, scrolls: 2 }
         case "Valhalla Arena": return { x: 185, y: 350, scrolls: 2 }
         case "Frozen Planet": return { x: 185, y: 380, scrolls: 2 }
-        case "Blossom Church": return { x: 185, y: 370, scrolls: 3 }
+        case "Blossom Church": return { x: 185, y: 295, scrolls: 3 }
+        case "Science Sanctuary": return { x: 185, y: 335, scrolls: 3 }
+        case "Menos Forest": return { x: 185, y: 370, scrolls: 3 }
     }
 }
 
@@ -963,9 +967,11 @@ CheckLoaded() {
 }
 
 StartedGame() {
+    global alreadyNuked
     Sleep(500)
     AddToLog("Game started")
     global stageStartTime := A_TickCount
+    alreadyNuked := false
 }
 
 StartSelectedMode() {
@@ -1239,7 +1245,7 @@ isMenuOpen(name := "") {
         return FindText(&X, &Y, 675, 594, 785, 616, 0.20, 0.20, AbilityManager)
     }
     else if (name = "Story") {
-        return FindText(&X, &Y, 352, 431, 451, 458, 0.20, 0.20, StorySelectButton)
+        return FindText(&X, &Y, 302, 432, 401, 456, 0.20, 0.20, StorySelectButton)
     }
     else if (name = "End Screen") {
         return FindText(&X, &Y, 225, 217, 356, 246, 0.20, 0.20, Results)

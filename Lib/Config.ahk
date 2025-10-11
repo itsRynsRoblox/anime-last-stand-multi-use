@@ -99,6 +99,9 @@ SaveSettingsForMode(*) {
         content .= "`nNuke Enabled=" NukeUnitSlotEnabled.Value
         content .= "`nNuke Slot=" NukeUnitSlot.Value
         content .= "`nNuke Coords=" nukeCoords.x "," nukeCoords.y
+        content .= "`nNuke At Specific Wave=" NukeAtSpecificWave.Value
+        content .= "`nNuke Wave=" NukeWave.Value
+        content .= "`nNuke Delay=" NukeDelay.Value
         content .= "`nSlot 1 Minion=" MinionSlot1.Value
         content .= "`nSlot 2 Minion=" MinionSlot2.Value
         content .= "`nSlot 3 Minion=" MinionSlot3.Value
@@ -216,6 +219,9 @@ LoadUnitSettingsByMode() {
                     nukeCoords := {x: coords[1], y: coords[2]}
                 }
             }
+            case "Nuke At Specific Wave": NukeAtSpecificWave.Value := value
+            case "Nuke Wave": NukeWave.Value := value
+            case "Nuke Delay": NukeDelay.Value := value
 
             case "Slot 1 Minion": MinionSlot1.Value := value
             case "Slot 2 Minion": MinionSlot2.Value := value

@@ -290,25 +290,32 @@ global PortalBorder := MainUI.Add("GroupBox", "x808 y255 w550 h126 +Center Hidde
 global PortalLobby := MainUI.Add("CheckBox", "x825 y280 Hidden cffffff", "Starting portal from the lobby")
 
 
-; --- Unit Config GUI ---
-global UnitBorder := MainUI.Add("GroupBox", "x808 y85 w550 h296 +Center Hidden" uiTheme[1], "Unit Configuration")
-global SJWNuke := MainUI.Add("CheckBox", "x825 y110 Hidden cffffff", "Use SJW Nuke")
-
-global SJWSlotText := MainUI.Add("Text", "x825 y130 Hidden cffffff", "SJW Slot")
-global SJWSlot := MainUI.Add("DropDownlist", "x905 y128 w45 Hidden Choose0 +Center", ["1", "2", "3", "4", "5", "6"])
-
+; === Unit Config GUI ===
+global NukeBorder := MainUI.Add("GroupBox", "x808 y85 w550 h296 +Center Hidden" uiTheme[1], "Nuke Configuration")
 global NukeUnitSlotEnabled := MainUI.Add("Checkbox", "x825 y113 Hidden Choose1 cffffff Checked", "Nuke Unit | Slot")
 global NukeUnitSlot := MainUI.Add("DropDownList", "x960 y110 w100 h180 Hidden Choose1", ["1", "2", "3", "4", "5", "6"])
 global NukeCoordinatesText := MainUI.Add("Text", "x1080 y113 Hidden cffffff", "Nuke Ability Coordinates")
 global NukeCoordinatesButton := MainUI.Add("Button", "x1260 y110 w80 h20 Hidden", "Set")
 NukeCoordinatesButton.OnEvent("Click", (*) => StartNukeCapture())
+global NukeAtSpecificWave := MainUI.Add("Checkbox", "x825 y140 Hidden Choose1 cffffff Checked", "Nuke At Wave | Wave")
+global NukeWave := MainUI.Add("DropDownList", "x1000 y137 w100 h180 Hidden Choose1", ["15", "20", "50"])
+global NukeDelayText := MainUI.Add("Text", "x1120 y140 Hidden cffffff", "Nuke Delay")
+global NukeDelay := MainUI.Add("Edit", "x1210 y138 w40 h20 Hidden cBlack Number", "0")
+NukeDelay.OnEvent("Change", (*) => ValidateEditBox(NukeDelay))
 
-global MinionSlot1 := MainUI.Add("CheckBox", "x825 y135 cffffff Hidden", "Slot 1 has minion")
-global MinionSlot2 := MainUI.Add("CheckBox", "x1000 y135 cffffff Hidden", "Slot 2 has minion")
-global MinionSlot3 := MainUI.Add("CheckBox", "x1175 y135 cffffff Hidden", "Slot 3 has minion")
-global MinionSlot4 := MainUI.Add("CheckBox", "x825 y160 cffffff Hidden", "Slot 4 has minion")
-global MinionSlot5 := MainUI.Add("CheckBox", "x1000 y160 cffffff Hidden", "Slot 5 has minion")
-global MinionSlot6 := MainUI.Add("CheckBox", "x1175 y160 cffffff Hidden", "Slot 6 has minion")
+; === Disbled At The Moment ===
+global SJWNuke := MainUI.Add("CheckBox", "x825 y110 Hidden cffffff", "Use SJW Nuke")
+global SJWSlotText := MainUI.Add("Text", "x825 y130 Hidden cffffff", "SJW Slot")
+global SJWSlot := MainUI.Add("DropDownlist", "x905 y128 w45 Hidden Choose0 +Center", ["1", "2", "3", "4", "5", "6"])
+
+global UnitBorder := MainUI.Add("GroupBox", "x808 y161 w550 h220 +Center Hidden" uiTheme[1], "Unit Configuration")
+global MinionSlot1 := MainUI.Add("CheckBox", "x825 y181 cffffff Hidden", "Slot 1 has minion")
+global MinionSlot2 := MainUI.Add("CheckBox", "x1015 y181 cffffff Hidden", "Slot 2 has minion")
+global MinionSlot3 := MainUI.Add("CheckBox", "x1200 y181 cffffff Hidden", "Slot 3 has minion")
+global MinionSlot4 := MainUI.Add("CheckBox", "x825 y206 cffffff Hidden", "Slot 4 has minion")
+global MinionSlot5 := MainUI.Add("CheckBox", "x1015 y206 cffffff Hidden", "Slot 5 has minion")
+global MinionSlot6 := MainUI.Add("CheckBox", "x1200 y206 cffffff Hidden", "Slot 6 has minion")
+; === End Unit Config GUI ===
 
 GithubButton.OnEvent("Click", (*) => OpenGithub())
 DiscordButton.OnEvent("Click", (*) => OpenDiscord())
@@ -316,11 +323,11 @@ DiscordButton.OnEvent("Click", (*) => OpenDiscord())
 global modeSelectionGroup := MainUI.Add("GroupBox", "x808 y38 w500 h45 +Center Background" uiTheme[2], "Game Mode Selection")
 MainUI.SetFont("s10 c" uiTheme[6])
 global ModeDropdown := MainUI.Add("DropDownList", "x818 y53 w140 h180 Choose0 +Center", ["Story", "Dungeon", "Portal", "Raid", "Halloween Event", "Custom"])
-global StoryDropdown := MainUI.Add("DropDownList", "x968 y53 w150 h180 Choose0 +Center Hidden", ["Hog Town", "Hollow Night Palace", "Firefighters Base", "Demon Skull Village", "Shibuya", "Abandoned Cathedral", "Moriah", "Soul Society", "Thrilled Bark", "Dragon Heaven", "Ryuudou Temple", "Snowy Village", "Rain Village", "Giant's District", "Oni Island", "Unknown Planet", "Oasis", "Harge Forest", "Babylon", "Destroyed Shinjuku", "Train Station", "Swordsmith Village", "Sacrifical Realm"])
+global StoryDropdown := MainUI.Add("DropDownList", "x968 y53 w150 h180 Choose0 +Center Hidden", ["Hog Town", "Hollow Night Palace", "Firefighters Base", "Demon Skull Village", "Shibuya", "Abandoned Cathedral", "Moriah", "Soul Society", "Thrilled Bark", "Dragon Heaven", "Ryuudou Temple", "Snowy Village", "Rain Village", "Giant's District", "Oni Island", "Unknown Planet", "Oasis", "Harge Forest", "Babylon", "Destroyed Shinjuku", "Train Station", "Swordsmith Village", "Sacrifical Realm", "The Hollowlands", "NYC Rooftop", "Laboratory 5", "Sector 7"])
 global StoryActDropdown := MainUI.Add("DropDownList", "x1128 y53 w80 h180 Choose0 +Center Hidden", ["Act 1", "Act 2", "Act 3", "Act 4", "Act 5", "Act 6", "Infinite"])
 global LegendDropDown := MainUI.Add("DropDownlist", "x968 y53 w150 h180 Choose0 +Center", ["Legend Stage #1"] )
 ;global LegendActDropdown := MainUI.Add("DropDownList", "x1128 y53 w80 h180 Choose0 +Center", ["Act 1", "Act 2", "Act 3"])
-global RaidDropdown := MainUI.Add("DropDownList", "x968 y53 w150 h180 Choose0 +Center", ["Marines Fort", "Hell City", "Snowy Capital", "Leaf Village", "Wanderniech", "Central City", "Giants District", "Flying Island", "U-18", "Flower Garden", "Ancient Dungeon", "Shinjuku Crater", "Valhalla Arena", "Frozen Planet", "Blossom Church"])
+global RaidDropdown := MainUI.Add("DropDownList", "x968 y53 w150 h180 Choose0 +Center", ["Marines Fort", "Hell City", "Snowy Capital", "Leaf Village", "Wanderniech", "Central City", "Giants District", "Flying Island", "U-18", "Flower Garden", "Ancient Dungeon", "Shinjuku Crater", "Valhalla Arena", "Frozen Planet", "Blossom Church", "Science Sanctuary", "Menos Forest"])
 global RaidActDropdown := MainUI.Add("DropDownList", "x1128 y53 w80 h180 Choose0 +Center", ["Act 1", "Act 2", "Act 3", "Act 4", "Act 5", "Act 6"])
 global DungeonDropdown := MainUI.Add("DropDownList", "x968 y53 w150 h180 Choose0 +Center Hidden", ["Devil's Dungeon", "Infernal Dungeon", "Monarch's Dungeon"])
 global PortalDropdown := MainUI.Add("DropDownList", "x968 y53 w150 h180 Choose0 +Center Hidden", ["Demon Place", "Gate", "Soul King Palace", "Summer Laguna"])
@@ -812,7 +819,8 @@ InitControlGroups() {
     ]
 
     ControlGroups["Unit"] := [
-        UnitBorder, NukeUnitSlotEnabled, NukeUnitSlot, NukeCoordinatesText, NukeCoordinatesButton, 
+        UnitBorder,
+        NukeBorder, NukeUnitSlotEnabled, NukeUnitSlot, NukeCoordinatesText, NukeCoordinatesButton, NukeAtSpecificWave, NukeWave, NukeDelayText, NukeDelay,
         MinionSlot1, MinionSlot2, MinionSlot3, MinionSlot4, MinionSlot5, MinionSlot6
     ]
 }
@@ -895,9 +903,12 @@ ValidateEditBox(ctrl) {
 
     ; Convert to integer
     num := Integer(val)
+
     if (num < 0)
         ctrl.Value := "0"
 
-    if (num > 20)
-        ctrl.Value := "20"  ; Limit to a maximum of 20
+    if (ctrl == ZoomBox) {
+        if (num > 20)
+            ctrl.Value := "20"  ; Limit to a maximum of 20
+    }
 }

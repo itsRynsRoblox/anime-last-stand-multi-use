@@ -504,7 +504,7 @@ OnPriorityChange(type, priorityNumber, newPriorityNumber) {
 
 CheckForCardSelection() {
     if GetPixel(0x4A4747, 436, 383, 2, 2, 3) {
-        SelectCardsHalloween()
+        SelectCardsByMode()
         return true
     }
     return false
@@ -517,19 +517,6 @@ SearchForImage(X1, Y1, X2, Y2, image) {
     WinActivate(rblxID)
 
     return ImageSearch(&FoundX, &FoundY, X1, Y1, X2, Y2, image)
-}
-
-AttachDropDownEvent(dropDown, index, callback) {
-    dropDown.OnEvent("Change", (*) => callback(dropDown, index))
-}
-
-RemoveEmptyStrings(array) {
-    loop array.Length {
-        i := array.Length - A_Index + 1
-        if (array[i] = "") {
-            array.RemoveAt(i)
-        }
-    }
 }
 
 OpenCardConfig() {
@@ -578,7 +565,7 @@ CheckUnitAbilities() {
         }
 
         if (CheckForCardSelection()) {
-            SelectCardsHalloween()
+            SelectCardsByMode()
         }
 
         if (NukeUnitSlotEnabled.Value && slot = NukeUnitSlot.Value) {

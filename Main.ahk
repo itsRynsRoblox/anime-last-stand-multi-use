@@ -37,6 +37,7 @@ global scriptInitialized := false
 #Include %A_ScriptDir%/lib/Functions/WalkManager.ahk
 #Include %A_ScriptDir%/lib/PlacementPatterns.ahk
 #Include %A_ScriptDir%/lib/Functions/NukeManager.ahk
+#Include %A_ScriptDir%/lib/Functions/CardManager.ahk
 
 ; === Webhook Integration ===
 #Include %A_ScriptDir%/lib/WebhookSettings.ahk

@@ -69,8 +69,13 @@ GetStoryMap(map) {
         case "Destroyed Shinjuku": return {x: 190, y: 320, scrolls: 4}
         case "Train Station": return {x: 190, y: 360, scrolls: 4}
 
-        case "Swordsmith Village": return {x: 190, y: 335, scrolls: 5}
-        case "Sacrifical Realm": return {x: 190, y: 370, scrolls: 5}
+        case "Swordsmith Village": return {x: 190, y: 255, scrolls: 5}
+        case "Sacrifical Realm": return {x: 190, y: 290, scrolls: 5}
+        case "The Hollowlands": return {x: 190, y: 325, scrolls: 5}
+        case "NYC Rooftop": return {x: 190, y: 360, scrolls: 5}
+
+        case "Laboratory 5": return {x: 190, y: 335, scrolls: 6}
+        case "Sector 7": return {x: 190, y: 370, scrolls: 6}
     }
 }
 
@@ -124,7 +129,7 @@ WalkToStoryRoom(angle) {
             Sleep (1000)
         case 2:
             SendInput("{d down}")
-            Sleep(1000)
+            Sleep(400)
             SendInput("{d up}")
             KeyWait "d"  ; Wait for the key to be fully processed
             Sleep (250)

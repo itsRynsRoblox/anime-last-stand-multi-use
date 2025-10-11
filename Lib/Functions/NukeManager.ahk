@@ -1,5 +1,7 @@
 #Requires AutoHotkey v2.0
 
+global alreadyNuked := false
+
 StartNukeCapture() {
     global waitingForClick, waitingState, nukeCoords
 
@@ -39,26 +41,58 @@ PrepareToNuke() {
 }
 
 CheckIfShouldNuke() {
-    global nukeCoords
-    if (!NukeUnitSlotEnabled.Value) {
+    global nukeCoords, alreadyNuked
+
+    if (!NukeUnitSlotEnabled.Value || alreadyNuked) {
         return
     }
 
-    if (!CheckForWave50()) {
+    nukeDelay := GetNukeDelay()
+
+    ; --- Specific Wave Logic ---
+    if (NukeAtSpecificWave.Value) {
+        if (NukeWave.Text = 50) {
+            if (!CheckForWave50()) {
+                return
+            }
+
+            AddToLog("Found Wave 50, preparing to nuke after " nukeDelay / 1000 " seconds...")
+
+            if (AutoAbilityBox.Value) {
+                SetTimer(CheckAutoAbility, 0) ; Pause auto ability checks
+            }
+
+            PrepareToNuke()
+            Sleep(nukeDelay)
+            Nuke()
+        } else {
+            AddToLog("Nuke at specific wave is set to unsupported wave: " NukeWave.Text)
+        }
+
         return
     }
 
-    if (AutoAbilityBox.Value) {
-        SetTimer(CheckAutoAbility, 0) ; Pause auto ability checks
+    ; --- Time-based Nuke Logic ---
+    if (A_TickCount - stageStartTime >= nukeDelay) {
+        AddToLog("Nuke time reached, nuking immediately...")
+        PrepareToNuke()
+        Sleep (150)
+        Nuke()
     }
+}
 
-    AddToLog("Found Wave 50, sleeping for 15 seconds...")
-    PrepareToNuke()
-    Sleep (25000)
-    AddToLog("Nuking...")
+
+GetNukeDelay() {
+    ms := NukeDelay.Value
+    return Round(ms * 1000)
+}
+
+Nuke() {
+    global nukeCoords, alreadyNuked
     FixClick(nukeCoords.x, nukeCoords.y) ; click nuke
     Sleep(150)
-
+    SendInput("X") ;close unit menu
+    alreadyNuked := true
     if (AutoAbilityBox.Value) {
         SetTimer(CheckAutoAbility, GetAutoAbilityTimer()) ; Resume auto ability checks
     }
