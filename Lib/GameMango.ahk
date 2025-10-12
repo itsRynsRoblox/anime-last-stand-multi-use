@@ -2,7 +2,7 @@
 #Include %A_ScriptDir%/lib/Tools/Image.ahk
 global macroStartTime := A_TickCount
 global stageStartTime := A_TickCount
-global OCR := RapidOcr({models: A_ScriptDir "\Lib\RapidOcr\models"}, A_ScriptDir '\Lib\RapidOcr\' (A_PtrSize * 8) 'bit\RapidOcrOnnx.dll')
+global cachedCardPriorities := Map()
 LoadKeybindSettings()  ; Load saved keybinds
 Hotkey(F1Key, (*) => moveRobloxWindow())
 Hotkey(F2Key, (*) => StartMacro())
@@ -10,9 +10,7 @@ Hotkey(F3Key, (*) => Reload())
 Hotkey(F4Key, (*) => TogglePause())
 
 F5:: {
-    currentStoryMap := StoryDropdown.Text
-    currentStoryAct := StoryActDropdown.Text
-    StartStory(currentStoryMap, currentStoryAct)
+    SelectCards("BossRush")
 }
 
 F6:: {

@@ -14,7 +14,7 @@ global confirmClicked := false
 
  ;Login Text
  setupOutputFile() {
-     content := "`n==" GameTitle "" version "==`n  Start Time: [" currentTime "]`n"
+     content := "`n==" GameTitle "" version "==`nStart Time: [" currentTime "]`n"
      FileAppend(content, currentOutputFile)
  }
  
@@ -466,7 +466,7 @@ CheckAutoAbility() {
 
 CleanString(str) {
     ; Remove emojis and any adjacent spaces (handles gaps)
-    return RegExReplace(str, "\s*[^\x00-\x7F]+\s*", " ")
+    return RegExReplace(str, "\s*[^\x00-\x7F]+\s*", "")
 }
 
 SortArrayOfObjects(arr, key, ascending := true) {
@@ -521,7 +521,10 @@ SearchForImage(X1, Y1, X2, Y2, image) {
 
 OpenCardConfig() {
     if (ModeDropdown.Text = "Halloween Event") {
-        OpenHalloweenPriorityPicker()
+        SwitchCardMode("Halloween")
+    }
+    else if (ModeDropdown.Text = "Boss Rush") {
+        SwitchCardMode("Boss Rush")
     }
     else {
         AddToLog("No card configuration available for mode: " (ModeDropdown.Text = "" ? "None" : ModeDropdown.Text))
@@ -578,4 +581,20 @@ CheckUnitAbilities() {
 
         HandleAutoAbility()
     }
+}
+
+; Global variable to track current coordinate mode (default is Screen)
+global currentCoordMode := "Screen"
+global oldCoordMode := ""
+
+; Wrapper function to set coord mode and save state
+SetCoordModeTracked(mode) {
+    global currentCoordMode, oldCoordMode
+    oldCoordMode := currentCoordMode
+    CoordMode("Mouse", mode)
+    currentCoordMode := mode
+}
+
+LoadGlobals() {
+    global CardModeConfigs
 }

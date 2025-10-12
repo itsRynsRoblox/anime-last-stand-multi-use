@@ -5,7 +5,7 @@
 
 ; Application Info
 global GameTitle := "Ryn's Anime Last Stand Macro "
-global version := "v1.6.4"
+global version := "v1.6.5"
 global rblxID := "ahk_exe RobloxPlayerBeta.exe"
 ;Coordinate and Positioning Variables
 global targetWidth := 816
@@ -42,6 +42,7 @@ global uiBackgrounds := []
 global uiTheme := []
 global UnitData := []
 global MainUI := Gui("+AlwaysOnTop -Caption")
+global CardGUI := Gui("+AlwaysOnTop")
 global lastlog := ""
 global MainUIHwnd := MainUI.Hwnd
 global ActiveControlGroup := ""
@@ -69,6 +70,56 @@ if !DirExist(A_ScriptDir "\Settings") {
 }
 
 setupOutputFile()
+
+; === Need To Load These Before GUI ===
+global currentCardMode := "BossRush"
+global CardModeConfigs := Map(
+    "BossRush", Map(
+        "title", "Boss Rush Card Priority",
+        "filePath", "Settings\BossRushCardPriority.txt",
+        "options", [
+            "Immolation",
+            "Enraged",
+            "Loyalty",
+            "Initiative",
+            "MetalSkin",
+            "WeakPoint",
+            "Reconnaissance",
+            "Ambush",
+            "Insanity",
+            "GodSpeed",
+            "Avarice",
+            "Opulence",
+            "Sluggish"
+        ]
+    ),
+    "Halloween", Map(
+        "title", "Halloween Card Priority",
+        "filePath", "Settings\HalloweenCardPriority.txt",
+        "options", [
+            "TrickorTreat",
+            "ScorchingHell",
+            "WeakenedResolve",
+            "FierySurge",
+            "HellMerchant",
+            "FortuneFlow",
+            "PowerReversal",
+            "GrievousWounds",
+            "FogofWar",
+            "BulletBreaker",
+            "GreedyVampires",
+            "SeethingBloodlust",
+            "LingeringFear",
+            "HellishWarp",
+            "HellishGravity",
+            "CriticalDenial",
+            "DeadlyStriker",
+            "SoulLink",
+            "DevilsSacrifice"
+        ]
+    )
+)
+global currentConfig := CardModeConfigs[currentCardMode]
 
 ; ========== Constants and Theme Setup ==========
 mainWidth := 1364

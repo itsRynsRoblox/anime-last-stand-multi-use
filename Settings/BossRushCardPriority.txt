@@ -1,0 +1,14 @@
+[CardPriority]
+Immolation=1
+Enraged=2
+Loyalty=3
+Initiative=4
+MetalSkin=5
+WeakPoint=6
+Reconnaissance=7
+Ambush=8
+Insanity=9
+GodSpeed=10
+Avarice=11
+Opulence=12
+Sluggish=13

@@ -114,7 +114,7 @@ SaveSettingsForMode(*) {
         SaveCustomWalk()
         SaveUniversalSettings()
         AddToLog("✅ Saved settings for mode: " gameMode)
-        SaveCardLocal()
+        SaveAllConfigs()
     }
 }
 
@@ -237,7 +237,7 @@ LoadUnitSettingsByMode() {
     AddToLog("✅ Settings successfully loaded for mode: " mode)
     LoadUniversalSettings()
     LoadCustomWalk()
-    LoadCardLocal()
+    LoadAllCardConfig()
 }
 
 

@@ -17,9 +17,10 @@ global scriptInitialized := false
 ; === Tool Libraries ===
 #Include %A_ScriptDir%/lib/Tools/FindText.ahk
 #Include %A_ScriptDir%/lib/Tools/Image.ahk
+#Include %A_ScriptDir%\Lib\OCR-main\Lib\OCR.ahk
 
 ; === Game Modes ===
-#Include %A_ScriptDir%/lib/Modes/BossRush.ahk
+#Include %A_ScriptDir%/lib/Modes/Boss Rush/BossRush.ahk
 #Include %A_ScriptDir%/lib/Modes/Caverns.ahk
 #Include %A_ScriptDir%/lib/Modes/Challenges.ahk
 #Include %A_ScriptDir%/lib/Modes/Dungeon.ahk
@@ -29,7 +30,6 @@ global scriptInitialized := false
 
 ; === Limited Time Game Modes ===
 #Include %A_ScriptDir%/lib/Modes/Halloween/HalloweenEvent.ahk
-#Include %A_ScriptDir%/lib/Modes/Halloween/HalloweenCardManager.ahk
 
 ; === Core Mechanics ===
 #Include %A_ScriptDir%/lib/Functions/Functions.ahk
