@@ -16,12 +16,8 @@ CreateCardPriorityGui(config) {
 
     loop config["options"].Length {
         yPos := yStart + ((A_Index - 1) * ySpacing)
-
         CardGUI.Add("Text", Format("x38 y{} w30 h17 +0x200 cWhite", yPos + 3), A_Index)
-
-        ; ❌ Remove Choose{} — don't preselect anything
         dropDown := CardGUI.Add("DropDownList", Format("x60 y{} w135", yPos), config["options"])
-
         dropDowns.Push(dropDown)
         AttachDropDownEvent(dropDown, A_Index, OnDropDownChange)
     }
@@ -101,7 +97,7 @@ SelectCards(eventName) {
         Sleep(500)
 
         ; OCR
-        orcResult := OCRFromFile(slot.ocrX1, slot.ocrY1, slot.ocrX2, slot.ocrY2, 10.0)
+        orcResult := OCRFromFile(slot.ocrX1, slot.ocrY1, slot.ocrX2, slot.ocrY2, 10.0, true)
         ocrCleaned := RegExReplace(orcResult, "\\s+|!", "")
         ocrCleaned := RegExReplace(ocrCleaned, "[^a-zA-Z]", "")
         ocrCleaned := RegExReplace(ocrCleaned, "i)(IV|III|II|I)$", "")
@@ -180,10 +176,19 @@ OCRFromFile(x1, y1, x2, y2, scale, keepImage := false) {
         Gdip_DrawImage(g, pBitmap, 0, 0, newWidth, newHeight, 0, 0, width, height)
 
         filename := "OCR"
-        fullPath := A_ScriptDir "\Images\" filename ".png"
+        dir := A_ScriptDir "\Images\"
+        fullPath := dir filename ".png"
 
-        if FileExist(fullPath)
-            FileDelete(fullPath)
+        if (keepImage) {
+            index := 1
+            while FileExist(fullPath) {
+                fullPath := dir filename "-" index ".png"
+                index++
+            }
+        } else {
+            if FileExist(fullPath)
+                FileDelete(fullPath)
+        }
 
         Gdip_SaveBitmapToFile(pScaled, fullPath, 100)
         
@@ -394,7 +399,6 @@ LoadAllCardConfig() {
 }
 
 ; === Helper Functions ===
-global previousSelections := []
 
 OnDropDownChange(ctrl, index) {
     if (index >= 0 and index <= 19) {
@@ -472,7 +476,7 @@ Levenshtein(s1, s2) { ; Used to compare OCR results to card names
 }
 
 DetectText(x1, y1, x2, y2) {
-    AddToLog("Checking for numbers...")
+    AddToLog("Checking for text...")
 
     x := x1
     y := y1
@@ -480,23 +484,16 @@ DetectText(x1, y1, x2, y2) {
     h := y2 - y1
 
     try {
-        result := OCR.FromRect(x, y, w, h, 
-            {   
-                grayscale: true,
-                scale: 10.0
-            })
+        result := OCR.FromRect(x, y, w, h, { grayscale: true, scale: 10.0 })
         
         if result {
-            ; Get text before any linebreak
-            number := StrSplit(result.Text, "`n")[1]
+            ; Clean the number string
             number := RegExReplace(number, "\\s+|!", "")
-            number := RegExReplace(number, "[^a-zA-Z0-9]", "")
-            number := RegExReplace(number, "i)(IV|III|II|I)$", "")
             AddToLog("Sending number: " number)
             return number
         }
     } 
-    AddToLog("Could not detect valid captcha")
+    AddToLog("Could not detect any text.")
     return false
 }
 

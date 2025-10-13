@@ -51,7 +51,6 @@ SummerLaguna:="|<>*127$70.zzzzzzzzDzzvzzzzzzzzzzziTzzzzzzwzzzlzzzzznzvzzyTzzzzzD
 ; === Sun Jin Woo ===
 Rebirth:="|<>*98$67.zzzzzzzzzzzzy3zsyDwtzzzz0TwT7wQzzzzU7yDzyCTzzzlW30F010zzzs08U800UDzzw10F43ln7zzy0U8W1stXzzz4FAF0wQlzzzW420WT2MzzznX70nDlCTzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzVxzztzDzysTqUJYQHb5FRjsBO6iKnOeCrxEh3L/NVILPyUG1foA8q/Vzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz"
 SecondRebirth:="|<>*98$60.zzzzzzzzzzzzzzzzzzzzzUTyTbwMzzzUDyTbwMzzzU7y3jw8bzzX4614003zzU4204483zzU8284QMlzzW8284QMlzzW8m04Q8lzzX4204S0lzzXa61YT0nzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzVxzzryzzrXh4gFWCwSLPVJgoqiu9bNU5gooas87NhJcoqiv1b/h6krmC4qTXzzzzzzzzzzzzzzzzzzzzU"
-Wave50:="|<>*110$10.zz4M1WG1C5n7zs"
 
 ; === Boss Rush Bosses ===
 Gilgamesh:="|<>*180$20.0000003rU0b/09nzyMVVUMMNo4mQZUrMMLTxw000U"
@@ -73,15 +72,12 @@ Upgrade12:="|<>*45$13.zzzzznj0n0Hn9s1w0zzzzy"
 Upgrade13:="|<>*45$11.zzzztq1cWNYk3U7zzzs"
 Upgrade14:="|<>*44$13.zzzyw341/0bU7nXzzzzw"
 
-; === Halloween 2025 Cards ===
-CriticalDenial:="|<>*91$58.zzzzzzzzzzXmnzb3zwyQDtzyQ7zztb00W1nMV86Qmkm7B2E8QX912QY909sAYWBksZ8rzzzzzzzzzs"
-LingeringFear:="|<>*84$40.zzzzzzzzzzzzztnzzzzzbjzztzyQ36Czztk80U1Xb212MEC4949V0zzwMa5XzzlzzyDzzzzztzzzzzzzU"
-HellishWarp:="|<>*88$52.zzzzzzzzzzw9twYzztjkzbmGN3al227U04C2489C00ks8EY4tU33aV00HqlwzPbzzzzzvzzzzzzzzzU"
-HellMerchant:="|<>*91$57.zzzzzzzzzzzzzzzzzzvzzzzTznzyDzsQtzu60Faz3W8U0U9Aq8Q04aE19UV3V0Y2F/g48Qt4lzzzalVzzzzzzzzzzzzzzzzU"
-DeadlyStriker:="|<>*81$59.zzzzzzzzzz3zzzzzzzzy3zz3z5y7zwaAQ7w9wDztcE02M28QRmEU0Fs4E0VVl20XU9U1DzzaBjWH02TzzzyTzzz7zzzzxzzzzzs"
-FierySurge:="|<>*86$47.zzzzzzzzuTzz7zzy0zzwDt6A94GMm08ME8VsY8EkUHXZ0Mlb8bjX7lzzzzTzzXzzzzzzzzw"
-PowerReversal:="|<>*93$62.zzzzzzzzzzsTzzz3zzzza3zzzkTzzztYW54AY4W0UMG01D010YG6QY8Hm149U9bX/4wYPWFXTzzzzzzzzzy"
-SeethingBloodlust:="|<>*82$35.zzvCTz7zmTX4CM0840MU90U812G18034YjlX7Tzzn"
-WeakenedResolve:="|<>*96$43.zzzzzzzmHzbzzyN9znzzzC060F36702EEY2Ha120G11vMl+9Mlzzzzzzzs"
-DevilsSacrifice:="|<>*87$63.zzzzzzzzzzwDzzzzzzzzzUzw9yDzwZzwq313VzzYjzaUEAQQ845bQY8VXl00Uc1Vl4CAc1AhADzzxnlX1Zc1zzzzzzzzxaDzzzzzzzzzzU"
-TrickorTreat:="|<>*85$32.zzzzzzzzzzy1nnzzUzoi8SE830TYkkk7tA0C9yH8zzzzzzzzzzzzzs"
+; === Nuke Wave Configuration ===
+Wave20 := "|<>*84$16.zzzzzz6DsETY9zYbwGzUXzzzzzy"
+Wave50 := "|<>*110$10.zz4M1WG1C5n7zs"
+
+; === Boss Rush ===
+BossRushEnter:="|<>*117$24.TUk0UFM0UTDzU001V003V907VB0rkTgzzzzzU"
+
+; === Survival ===
+SurvivalSelect:="|<>*115$28.00000w6024MY0IVyTzO7tzswMaA3l+GbS492QwsqAHzzzzzzzzzs"

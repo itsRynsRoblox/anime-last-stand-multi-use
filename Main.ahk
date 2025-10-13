@@ -27,6 +27,8 @@ global scriptInitialized := false
 #Include %A_ScriptDir%/lib/Modes/Portal.ahk
 #Include %A_ScriptDir%/lib/Modes/Story.ahk
 #Include %A_ScriptDir%/lib/Modes/Survival.ahk
+#Include %A_ScriptDir%/lib/Modes/Raid.ahk
+#Include %A_ScriptDir%/lib/Modes/Siege.ahk
 
 ; === Limited Time Game Modes ===
 #Include %A_ScriptDir%/lib/Modes/Halloween/HalloweenEvent.ahk

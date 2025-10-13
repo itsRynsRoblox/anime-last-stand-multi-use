@@ -1,7 +1,7 @@
 [Universal Settings]
 Next Level=0
 Return To Lobby=1
-Seamless Replay=1
+Seamless Replay=0
 Using Mode Configurations=0
 
 [Webhook Settings]

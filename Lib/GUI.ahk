@@ -24,7 +24,7 @@ global challengeStartTime := A_TickCount
 global inChallengeMode := false
 global firstStartup := true
 ; Testing
-global waitingState := ""
+global waitingState := Map()
 ;Custom Unit Placement
 global waitingForClick := false
 global savedCoords := [[], []]  ; Index-based: one array for each preset
@@ -87,10 +87,16 @@ global CardModeConfigs := Map(
             "Reconnaissance",
             "Ambush",
             "Insanity",
-            "GodSpeed",
+            "Godspeed",
             "Avarice",
             "Opulence",
-            "Sluggish"
+            "Sluggish",
+            "DemonTakeover",
+            "ChaosEater",
+            "Fortune",
+            "RagingPower",
+            "FeelingMadness",
+            "EmotionalDamage"
         ]
     ),
     "Halloween", Map(
@@ -248,7 +254,7 @@ global ReturnLobbyBox := MainUI.Add("Checkbox", "x1150 y476 cffffff Checked", "R
 
 global AutoAbilityBox := MainUI.Add("CheckBox", "x1005 y451 cffffff Checked", "Auto Ability")
 global AutoAbilityText := MainUI.Add("Text", "x1125 y451 c" uiTheme[1], "Auto Ability Timer:")
-global AutoAbilityTimer := MainUI.Add("Edit", "x1255 y449 w45 h20 cBlack Number", "60")
+global AutoAbilityTimer := MainUI.Add("Edit", "x1255 y449 w60 h20 cBlack Number", "60")
 
 global SeamlessToggle := MainUI.Add("CheckBox", "x900 y476 cffffff", "Using Seamless Replay")
 
@@ -283,14 +289,19 @@ fixCameraText := MainUI.Add("Text", "x505 y642 w60 h20 +Left", "Camera")
 fixCameraButton := MainUI.Add("Button", "x490 y662 w80 h20", "Fix")
 fixCameraButton.OnEvent("Click", (*) => BasicSetup(true))
 
+; === Custom Walk Settings ===
 global CustomWalkSettings := MainUI.Add("GroupBox", "x600 y632 w190 h60 +Center c" uiTheme[1], "Custom Walk Settings")
-
-customWalkButton := MainUI.Add("Button", "x610 y662 w80 h20", "Set")
+customWalkButton := MainUI.Add("Button", "x610 y662 w45 h20", "Set")
 customWalkButton.OnEvent("Click", (*) => StartWalkCapture())
 
-customWalkClearButton := MainUI.Add("Button", "x700 y662 w80 h20", "Clear")
-customWalkClearButton.OnEvent("Click", (*) => DeleteWalkCoordsForPreset(PlacementProfiles.Value))
+customWalkTestButton := MainUI.Add("Button", "x675 y662 w45 h20", "Test")
+customWalkTestButton.OnEvent("Click", (*) => WalkToCoords())
 
+customWalkClearButton := MainUI.Add("Button", "x735 y662 w45 h20", "Clear")
+customWalkClearButton.OnEvent("Click", (*) => DeleteWalkCoordsForPreset(PlacementProfiles.Value))
+; === End of Custom Walk Settings ===
+
+; === Settings GUI ===
 global WebhookBorder := MainUI.Add("GroupBox", "x808 y85 w550 h296 +Center Hidden c" uiTheme[1], "Webhook Settings")
 global WebhookEnabled := MainUI.Add("CheckBox", "x825 y110 Hidden cffffff", "Webhook Enabled")
 WebhookEnabled.OnEvent("Click", (*) => ValidateWebhook())
@@ -302,6 +313,7 @@ global PrivateServerEnabled := MainUI.Add("CheckBox", "x825 y175 Hidden cffffff"
 global PrivateServerURLBox := MainUI.Add("Edit", "x1050 y173 w160 h20 Hidden c" uiTheme[6], "")
 PrivateServerTestButton := MainUI.Add("Button", "x1225 y173 w80 h20 Hidden", "Test Link")
 PrivateServerTestButton.OnEvent("Click", (*) => Reconnect(true))
+; === End of Settings GUI ===
 
 ; HotKeys
 global KeybindBorder := MainUI.Add("GroupBox", "x808 y205 w195 h176 +Center Hidden c" uiTheme[1], "Keybind Settings")
@@ -358,6 +370,7 @@ NukeDelay.OnEvent("Change", (*) => ValidateEditBox(NukeDelay))
 global SJWNuke := MainUI.Add("CheckBox", "x825 y110 Hidden cffffff", "Use SJW Nuke")
 global SJWSlotText := MainUI.Add("Text", "x825 y130 Hidden cffffff", "SJW Slot")
 global SJWSlot := MainUI.Add("DropDownlist", "x905 y128 w45 Hidden Choose0 +Center", ["1", "2", "3", "4", "5", "6"])
+; === End of Disabled At The Moment ===
 
 global UnitBorder := MainUI.Add("GroupBox", "x808 y161 w550 h220 +Center Hidden" uiTheme[1], "Unit Configuration")
 global MinionSlot1 := MainUI.Add("CheckBox", "x825 y181 cffffff Hidden", "Slot 1 has minion")
@@ -373,16 +386,19 @@ DiscordButton.OnEvent("Click", (*) => OpenDiscord())
 ;--------------SETTINGS--------------;
 global modeSelectionGroup := MainUI.Add("GroupBox", "x808 y38 w500 h45 +Center Background" uiTheme[2], "Game Mode Selection")
 MainUI.SetFont("s10 c" uiTheme[6])
-global ModeDropdown := MainUI.Add("DropDownList", "x818 y53 w140 h180 Choose0 +Center", ["Story", "Dungeon", "Portal", "Raid", "Halloween Event", "Custom"])
+global ModeDropdown := MainUI.Add("DropDownList", "x818 y53 w140 h180 Choose0 +Center", ["Story", "Boss Rush", "Dungeon", "Portal", "Raid", "Siege", "Survival", "Halloween Event", "Custom"])
 global StoryDropdown := MainUI.Add("DropDownList", "x968 y53 w150 h180 Choose0 +Center Hidden", ["Hog Town", "Hollow Night Palace", "Firefighters Base", "Demon Skull Village", "Shibuya", "Abandoned Cathedral", "Moriah", "Soul Society", "Thrilled Bark", "Dragon Heaven", "Ryuudou Temple", "Snowy Village", "Rain Village", "Giant's District", "Oni Island", "Unknown Planet", "Oasis", "Harge Forest", "Babylon", "Destroyed Shinjuku", "Train Station", "Swordsmith Village", "Sacrifical Realm", "The Hollowlands", "NYC Rooftop", "Laboratory 5", "Sector 7"])
 global StoryActDropdown := MainUI.Add("DropDownList", "x1128 y53 w80 h180 Choose0 +Center Hidden", ["Act 1", "Act 2", "Act 3", "Act 4", "Act 5", "Act 6", "Infinite"])
 global LegendDropDown := MainUI.Add("DropDownlist", "x968 y53 w150 h180 Choose0 +Center", ["Legend Stage #1"] )
 ;global LegendActDropdown := MainUI.Add("DropDownList", "x1128 y53 w80 h180 Choose0 +Center", ["Act 1", "Act 2", "Act 3"])
 global RaidDropdown := MainUI.Add("DropDownList", "x968 y53 w150 h180 Choose0 +Center", ["Marines Fort", "Hell City", "Snowy Capital", "Leaf Village", "Wanderniech", "Central City", "Giants District", "Flying Island", "U-18", "Flower Garden", "Ancient Dungeon", "Shinjuku Crater", "Valhalla Arena", "Frozen Planet", "Blossom Church", "Science Sanctuary", "Menos Forest"])
 global RaidActDropdown := MainUI.Add("DropDownList", "x1128 y53 w80 h180 Choose0 +Center", ["Act 1", "Act 2", "Act 3", "Act 4", "Act 5", "Act 6"])
-global DungeonDropdown := MainUI.Add("DropDownList", "x968 y53 w150 h180 Choose0 +Center Hidden", ["Devil's Dungeon", "Infernal Dungeon", "Monarch's Dungeon"])
+global DungeonDropdown := MainUI.Add("DropDownList", "x968 y53 w150 h180 Choose0 +Center Hidden", ["Koi Pond Dungeon", "Corpse Dungeon", "Devil's Dungeon", "Infernal Dungeon", "Monarch's Dungeon"])
 global PortalDropdown := MainUI.Add("DropDownList", "x968 y53 w150 h180 Choose0 +Center Hidden", ["Demon Place", "Gate", "Soul King Palace", "Summer Laguna"])
 global PortalRoleDropdown := MainUI.Add("DropDownList", "x1128 y53 w80 h180 Choose0 +Center Hidden", ["Host", "Guest"])
+global BossRushDropdown := MainUI.Add("DropDownList", "x968 y53 w150 h180 Choose0 +Center Hidden", ["Ninja Rush", "Mana Rush", "Grail Rush", "Titan Rush", "Godly Rush"])
+global SiegeDropdown := MainUI.Add("DropDownList", "x968 y53 w150 h180 Choose0 +Center Hidden", ["Ninja Siege", "Alchemy Siege"])
+global SurvivalDropdown := MainUI.Add("DropDownList", "x968 y53 w150 h180 Choose0 +Center Hidden", ["Soul Society", "Pirate Invasion", "Hell Invasion", "Holy Invasion", "Villain Invasion"])
 global ConfirmButton := MainUI.Add("Button", "x1218 y53 w80 h25", "Confirm")
 
 
@@ -660,7 +676,6 @@ checkSizeTimer() {
 
 StartCoordCapture() {
     global savedCoords
-    global waitingForClick
     global placement1, placement2, placement3, placement4, placement5, placement6
 
     presetIndex := PlacementProfiles.Value
@@ -678,7 +693,7 @@ StartCoordCapture() {
         WinActivate(rblxID)
     }
 
-    waitingForClick := true
+    RemoveWaiting()
     AddToLog("Press LShift to stop coordinate capture")
     SetTimer UpdateTooltip, 50  ; Update tooltip position every 50ms
 }
@@ -696,22 +711,20 @@ UpdateTooltip() {
 
 ~LShift::
 {
-    global waitingForClick, waitingForWalk, walkStartTime, waitingState
+    global waitingForClick, walkStartTime
     if waitingForClick {
         AddToLog("Stopping coordinate capture")
-        if (waitingForWalk) {
-            waitingForWalk := false
+        if (WaitingFor("Walk")) {
             walkStartTime := 0
         }
-        waitingState := ""
-        waitingForClick := false
+        RemoveWaiting()
     }
 }
 
 ~LButton::
 {
     global waitingForClick, savedCoords
-    global waitingForWalk, savedWalkCoords, walkStartTime
+    global savedWalkCoords, walkStartTime
     global nukeCoords
     global placement1, placement2, placement3, placement4, placement5, placement6
 
@@ -749,7 +762,9 @@ UpdateTooltip() {
             ToolTip("Coords Set: " coords.Length, x + 10, y + 10)
             delaySeconds := Round(delay / 1000, 1)
             AddToLog("📌 [Preset: " PlacementProfiles.Text "] Saved → X: " x ", Y: " y ", Delay: " delaySeconds "s | Set: " coords.Length)
-            SetTimer(ClearToolTip, -1200)   
+            SetTimer(ClearToolTip, -1200)
+            ; Test Walk
+            FixClick(x, y, "Right")
         }
         else if (WaitingFor("Nuke")) {
             MouseGetPos(&x, &y)
@@ -758,8 +773,7 @@ UpdateTooltip() {
             ToolTip("Nuke Coords Set", x + 10, y + 10)
             AddToLog("📌 Nuke Ability Coordinates Saved → X: " x ", Y: " y)
             SetTimer(ClearToolTip, -1200)
-            waitingForClick := false
-            waitingState := ""
+            RemoveWaiting()
         }
         else {
             presetIndex := PlacementProfiles.Value
@@ -788,7 +802,7 @@ UpdateTooltip() {
 
             if coords.Length >= totalEnabled {
                 AddToLog("✅ [Preset " PlacementProfiles.Text "] All coordinates set, stopping capture.")
-                waitingForClick := false
+                RemoveWaiting()
             }
         }
     }

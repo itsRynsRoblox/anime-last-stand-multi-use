@@ -1,6 +1,6 @@
 [Unit Settings]
 Enabled1=1
-Enabled2=1
+Enabled2=0
 Enabled3=1
 Enabled4=1
 Enabled5=1
@@ -11,16 +11,16 @@ Placement3=1
 Placement4=1
 Placement5=1
 Placement6=1
-Priority1=3
+Priority1=2
 Priority2=6
 Priority3=4
 Priority4=5
-Priority5=2
-Priority6=1
-UpgradePriority1=2
-UpgradePriority2=3
+Priority5=1
+Priority6=3
+UpgradePriority1=
+UpgradePriority2=
 UpgradePriority3=2
-UpgradePriority4=3
+UpgradePriority4=
 UpgradePriority5=1
 UpgradePriority6=1
 UpgradeEnabled1=0
@@ -52,7 +52,7 @@ ZoomLevel=20
 [Upgrade Settings]
 Unit Manager Auto Upgrade=1
 Unit Manager Upgrade System=1
-Priority Upgrade=0
+Priority Upgrade=1
 
 [Portal Settings]
 Start Portal In Lobby=0
@@ -65,7 +65,7 @@ Nuke Slot=3
 Nuke Coords=282,291
 Nuke At Specific Wave=1
 Nuke Wave=3
-Nuke Delay=25
+Nuke Delay=35
 Slot 1 Minion=1
 Slot 2 Minion=0
 Slot 3 Minion=0

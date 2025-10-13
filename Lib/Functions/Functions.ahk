@@ -33,7 +33,7 @@ getCurrentTime() {
 
 OnModeChange(*) {
     ; Hide all
-    for ctrl in [StoryDropdown, StoryActDropdown, LegendDropDown, RaidDropdown, RaidActDropdown, DungeonDropdown, PortalDropdown, PortalRoleDropdown]
+    for ctrl in [StoryDropdown, StoryActDropdown, BossRushDropdown, LegendDropDown, RaidDropdown, RaidActDropdown, DungeonDropdown, PortalDropdown, PortalRoleDropdown, SiegeDropdown, SurvivalDropdown]
         ctrl.Visible := false
 
     ; Show based on selection
@@ -41,6 +41,8 @@ OnModeChange(*) {
         case "Story":
             StoryDropdown.Visible := true
             StoryActDropdown.Visible := true
+        case "Boss Rush":
+            BossRushDropdown.Visible := true    
         case "Legend":
             LegendDropDown.Visible := true
         case "Raid":
@@ -49,6 +51,13 @@ OnModeChange(*) {
             DungeonDropdown.Visible := true
         case "Portal":
             PortalDropdown.Visible := PortalRoleDropdown.Visible := true
+        case "Siege":
+            SiegeDropdown.Visible := true
+        case "Survival":
+            SurvivalDropdown.Visible := true
+        case "Dungeon":
+            AddToLog("[Dungeon] Make sure you have enabled your modifiers!")
+            DungeonDropdown.Visible := true
         case "Custom":
             ; Add handling if needed
     }
@@ -129,6 +138,9 @@ OnConfirmClick(*) {
     DungeonDropdown.Visible := false
     PortalDropdown.Visible := false
     PortalRoleDropdown.Visible := false
+    BossRushDropdown.Visible := false
+    SiegeDropdown.Visible := false
+    SurvivalDropdown.Visible := false
     ConfirmButton.Visible := false
     modeSelectionGroup.Visible := false
     Hotkeytext.Visible := true
@@ -531,10 +543,24 @@ OpenCardConfig() {
     }
 }
 
-; The function
+AddWaitingFor(action) {
+    global waitingState, waitingForClick
+    waitingState := action
+    waitingForClick := true
+}
+
 WaitingFor(action) {
     global waitingState
-    return waitingState = action
+    if (waitingState = action) {
+        return true
+    }
+    return false
+}
+
+RemoveWaiting() {
+    global waitingState, waitingForClick
+    waitingForClick := false
+    waitingState := ""
 }
 
 HasMinionInSlot(slot) {
@@ -593,8 +619,4 @@ SetCoordModeTracked(mode) {
     oldCoordMode := currentCoordMode
     CoordMode("Mouse", mode)
     currentCoordMode := mode
-}
-
-LoadGlobals() {
-    global CardModeConfigs
 }

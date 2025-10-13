@@ -2,7 +2,7 @@
 
 WalkToCavernRoom(angle) {
     switch angle {
-    case 2:
+    case 1:
         SendInput("{d down}")
         Sleep(800)
         SendInput("{d up}")
@@ -11,7 +11,7 @@ WalkToCavernRoom(angle) {
         Sleep(800)
         SendInput("{w up}")
         KeyWait "w"  ; Wait for the key to be fully processed
-    case 1:
+    case 2:
         SendInput("{w down}")
         Sleep(800)
         SendInput("{w up}")

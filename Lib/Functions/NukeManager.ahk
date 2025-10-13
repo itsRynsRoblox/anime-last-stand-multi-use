@@ -3,7 +3,7 @@
 global alreadyNuked := false
 
 StartNukeCapture() {
-    global waitingForClick, waitingState, nukeCoords
+    global nukeCoords
 
     ; Reset saved walk coordinates
     nukeCoords := []
@@ -13,8 +13,7 @@ StartNukeCapture() {
         WinActivate(rblxID)
     }
 
-    waitingForClick := true
-    waitingState := "Nuke"
+    AddWaitingFor("Nuke")
     AddToLog("Press LShift to stop coordinate capture")
     SetTimer UpdateTooltip, 50  ; Update tooltip position every 50ms
 }
@@ -26,17 +25,32 @@ CheckForWave50() {
     return false
 }
 
+CheckForWave20() {
+    if (ok := FindText(&X, &Y, 259, 35, 294, 52, 0.10, 0.10, Wave20)) {
+        return true
+    }
+    return false
+}
+
 PrepareToNuke() {
-    global successfulCoordinates
+    global successfulCoordinates, maxedCoordinates
     if (NukeUnitSlotEnabled.Value) {
+        ; try to find in successfulCoordinates
         for index, coord in successfulCoordinates {
             if (coord.slot == NukeUnitSlot.Value) {
                 ClickUnit(index)
-                break
+                return
             }
-        } else {
-            AddToLog("Nuke unit not found.")
         }
+        ; try to find in maxedCoordinates
+        for index, coord in maxedCoordinates {
+            if (coord.slot == NukeUnitSlot.Value) {
+                ClickUnit(index)
+                return
+            }
+        }
+        ; Not found in either list
+        AddToLog("Nuke unit not found.")
     }
 }
 
@@ -57,6 +71,20 @@ CheckIfShouldNuke() {
             }
 
             AddToLog("Found Wave 50, preparing to nuke after " nukeDelay / 1000 " seconds...")
+
+            if (AutoAbilityBox.Value) {
+                SetTimer(CheckAutoAbility, 0) ; Pause auto ability checks
+            }
+
+            PrepareToNuke()
+            Sleep(nukeDelay)
+            Nuke()
+        } else if (NukeWave.Text = 20) {
+            if (!CheckForWave20()) {
+                return
+            }
+
+            AddToLog("Found Wave 20, preparing to nuke after " nukeDelay / 1000 " seconds...")
 
             if (AutoAbilityBox.Value) {
                 SetTimer(CheckAutoAbility, 0) ; Pause auto ability checks
@@ -95,5 +123,25 @@ Nuke() {
     alreadyNuked := true
     if (AutoAbilityBox.Value) {
         SetTimer(CheckAutoAbility, GetAutoAbilityTimer()) ; Resume auto ability checks
+    }
+}
+
+WaitForGilgamesh() {
+    loop {
+
+        if (CheckForXp()) {
+            AddToLog("Game over detected")
+            break
+        }
+
+        if (ok := FindText(&X, &Y, 362, 117, 445, 134, 0, 0.10, Gilgamesh)) {
+            AddToLog("Using Cup of Rebirth...")
+            loop 15 {
+                FixClick(282, 328) ; click nuke
+                Sleep(150)
+            }
+            break
+        }
+        Sleep 500
     }
 }

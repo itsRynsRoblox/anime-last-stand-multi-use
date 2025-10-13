@@ -5,7 +5,7 @@ global waitingForWalk := false
 global walkStartTime := 0
 
 StartWalkCapture() {
-    global waitingForClick, waitingForWalk, savedWalkCoords
+    global savedWalkCoords
 
     ; Reset saved walk coordinates
     savedWalkCoords := []
@@ -15,16 +15,20 @@ StartWalkCapture() {
         WinActivate(rblxID)
     }
 
-    waitingForClick := true
-    waitingForWalk := true
+    AddWaitingFor("Walk")
     AddToLog("Press LShift to stop coordinate capture")
     SetTimer UpdateTooltip, 50  ; Update tooltip position every 50ms
 }
 
 WalkToCoords() {
-    global savedWalkCoords  ; Access the global saved coordinates
+    global savedWalkCoords
 
-    presetIndex := PlacementProfiles.Value  ; Get the currently selected preset index
+    presetIndex := PlacementProfiles.Value
+
+    if waitingForClick {
+        AddToLog("⚠️ Cannot test walk while capturing coordinates. Please stop capture first.")
+        return
+    }
 
     ; Ensure presetIndex is valid
     if (presetIndex < 1 || !savedWalkCoords.Has(presetIndex)) {
@@ -69,8 +73,8 @@ DeleteWalkCoordsForPreset(index) {
     ; Check if the preset has coordinates (i.e., non-empty)
     if (savedWalkCoords[index].Length > 0) {
         savedWalkCoords[index] := []  ; Clear the coordinates for the specified preset
-        AddToLog("🗑️ Cleared coordinates for Preset: " PlacementProfiles.Text)
+        AddToLog("🗑️ Cleared walk coordinates for Preset: " PlacementProfiles.Text)
     } else {
-        AddToLog("⚠️ No coordinates to clear for Preset: " PlacementProfiles.Text)
+        AddToLog("⚠️ No walk coordinates to clear for Preset: " PlacementProfiles.Text)
     }
 }
