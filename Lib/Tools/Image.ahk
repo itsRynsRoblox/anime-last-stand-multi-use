@@ -4,6 +4,8 @@
 global Minimize := "Images\minimizeButton.png" 
 global Exitbutton := "Images\exitButton.png"
 global Disconnected := "Images\disconnected.png"
+global Import := "Images\import.png"
+global Export := "Images\export.png"
 
 ;=== General FindText Text and Buttons ===
 LobbySettings:="|<>*89$13.zTz7w0S0D273V3sEsQ8S0D07wTzTk"

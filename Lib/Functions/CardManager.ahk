@@ -23,8 +23,18 @@ CreateCardPriorityGui(config) {
     }
 
     groupBoxHeight := yStart + (config["options"].Length * ySpacing - 15)
-
     CardGUI.Add("GroupBox", Format("x30 y25 w190 h{} cWhite +Center", groupBoxHeight), "Modifier Priority Order")
+
+    ; --- Import/Export Buttons at Bottom ---
+    imgY := groupBoxHeight + 40  ; adjust vertical spacing
+
+    importBtn := CardGUI.Add("Picture", Format("x85 y{} w27 h27", imgY), Import)
+    exportBtn := CardGUI.Add("Picture", Format("x135 y{} w27 h27", imgY), Export)
+
+    ; Optional: attach click handlers
+
+    importBtn.OnEvent("Click", (*) => ImportCardConfig(config["modeName"]))
+    exportBtn.OnEvent("Click", (*) => ExportCardConfig(config["modeName"]))
 
     return CardGUI
 }
@@ -79,6 +89,16 @@ SelectCards(eventName) {
         cachedCardPriorities[eventName] := priorities
     }
 
+    if (AutoAbilityBox.Value) {
+        SetTimer(CheckAutoAbility, 0) ; Pause auto ability checks
+    }
+
+    if (NukeUnitSlotEnabled.Value) {
+        PauseNuke()
+    }
+
+    SendInput("X") ; Close unit menu
+
     cardPriorities := cachedCardPriorities[eventName]
 
     ; Default card slots 571, 219, 701, 246
@@ -97,7 +117,7 @@ SelectCards(eventName) {
         Sleep(500)
 
         ; OCR
-        orcResult := OCRFromFile(slot.ocrX1, slot.ocrY1, slot.ocrX2, slot.ocrY2, 10.0, true)
+        orcResult := OCRFromFile(slot.ocrX1, slot.ocrY1, slot.ocrX2, slot.ocrY2, 10.0, false)
         ocrCleaned := RegExReplace(orcResult, "\\s+|!", "")
         ocrCleaned := RegExReplace(ocrCleaned, "[^a-zA-Z]", "")
         ocrCleaned := RegExReplace(ocrCleaned, "i)(IV|III|II|I)$", "")
@@ -136,6 +156,12 @@ SelectCards(eventName) {
             FixClick(slot.clickX, slot.clickY)
             Sleep(300)
             FixClick(400, 395)
+            if (AutoAbilityBox.Value) {
+                SetTimer(CheckAutoAbility, GetAutoAbilityTimer())
+            }
+            if (NukeUnitSlotEnabled.Value) {
+                ResumeNuke()
+            }
             return true
         }
     }
@@ -144,6 +170,9 @@ SelectCards(eventName) {
 
     if (AutoAbilityBox.Value) {
         SetTimer(CheckAutoAbility, GetAutoAbilityTimer())
+    }
+    if (NukeUnitSlotEnabled.Value) {
+        ResumeNuke()
     }
     return false
 }
@@ -503,4 +532,134 @@ ArrayHasValue(arr, val) {
             return true
     }
     return false
+}
+
+ExportCardConfig(modeName) {
+    global CardModeConfigs, dropDowns
+
+    config := CardModeConfigs[modeName]
+
+    modeName := StrReplace(config["title"], " ", "")
+
+
+    if !config {
+        AddToLog("❌ No card config found for mode: " modeName)
+        return
+    }
+
+    exportDir := A_ScriptDir "\Settings\Export"
+    if !DirExist(exportDir)
+        DirCreate(exportDir)
+
+    filePath := exportDir "\" modeName ".txt"
+
+    try {
+        if FileExist(filePath)
+            FileDelete(filePath)
+
+        ; Write the card priority in [CardPriority] section
+        cardData := "[CardPriority]`n"
+
+        for index, dd in dropDowns {
+            selected := dd.Text
+            if selected != ""
+                cardData .= selected "=" index "`n"
+        }
+
+        FileAppend(cardData, filePath)
+        AddToLog("✅ Card config successfully exported!")
+    } catch {
+        AddToLog("❌ Failed to export card config")
+    }
+}
+
+ImportCardConfig(modeName) {
+    global CardModeConfigs, dropDowns
+
+    config := CardModeConfigs[modeName]
+    if !config {
+        AddToLog("❌ No config found for mode: " modeName)
+        return
+    }
+
+    ; Disable AlwaysOnTop temporarily for file dialog
+    MainUI.Opt("-AlwaysOnTop")
+    Sleep(100)
+
+    selectedFile := FileSelect(3, , "Select a card config file to import", "Text Documents (*.txt)")
+
+    MainUI.Opt("+AlwaysOnTop")
+
+    if !selectedFile {
+        AddToLog("⚠️ Import cancelled by user.")
+        return
+    }
+
+    ; Read selected file
+    content := FileRead(selectedFile)
+    lines := StrSplit(content, "`n")
+
+    loadedOptions := []
+    section := ""
+
+    for line in lines {
+        line := Trim(line)
+        if (line = "" || SubStr(line, 1, 1) = ";")
+            continue
+
+        if RegExMatch(line, "^\[(.*)\]$", &match) {
+            section := match.1
+            continue
+        }
+
+        if (section = "CardPriority") {
+            if RegExMatch(line, "(.+?)=(\d+)", &match) {
+                cardName := match.1
+                loadedOptions.Push(cardName)
+            }
+        }
+    }
+
+    if (loadedOptions.Length = 0) {
+        AddToLog("⚠️ No valid card data found in file.")
+        return
+    }
+
+    ; Overwrite the existing file for this mode
+    targetFile := A_ScriptDir "\" config["filePath"]
+
+    try {
+        if FileExist(targetFile) {
+            FileDelete(targetFile)
+        }
+    } catch as e {
+        AddToLog("❌ Failed to delete file: " targetFile "`nError: " e.Message)
+    }
+
+    try {
+        FileAppend("[CardPriority]`n", targetFile)
+        for index, name in loadedOptions {
+            FileAppend(name "=" index "`n", targetFile)
+            AddToLog("Added " name " with priority " index)
+        }
+
+        config["options"] := loadedOptions
+        AddToLog("✅ Imported and replaced card config for mode: " modeName)
+
+        ; Update all the dropdowns
+        for index, dd in dropDowns {
+            dd.Text := loadedOptions[index]
+        }
+    } catch as e {
+        AddToLog("❌ Failed to write new card config: " e.Message)
+    }
+}
+
+
+ExportAllCardConfigs() {
+    global CardModeConfigs
+
+    for modeName, config in CardModeConfigs {
+        ExportCardConfig(modeName)
+    }
 }

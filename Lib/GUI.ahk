@@ -5,7 +5,7 @@
 
 ; Application Info
 global GameTitle := "Ryn's Anime Last Stand Macro "
-global version := "v1.6.5"
+global version := "v1.6.7"
 global rblxID := "ahk_exe RobloxPlayerBeta.exe"
 ;Coordinate and Positioning Variables
 global targetWidth := 816
@@ -19,6 +19,8 @@ global successfulCoordinates := []
 global mode := ""
 global StartTime := A_TickCount
 global currentTime := GetCurrentTime()
+; Config and Settings
+global UnitConfigMap := Map()
 ;Auto Challenge
 global challengeStartTime := A_TickCount
 global inChallengeMode := false
@@ -75,6 +77,7 @@ setupOutputFile()
 global currentCardMode := "BossRush"
 global CardModeConfigs := Map(
     "BossRush", Map(
+        "modeName", "BossRush",
         "title", "Boss Rush Card Priority",
         "filePath", "Settings\BossRushCardPriority.txt",
         "options", [
@@ -100,6 +103,7 @@ global CardModeConfigs := Map(
         ]
     ),
     "Halloween", Map(
+        "modeName", "Halloween",
         "title", "Halloween Card Priority",
         "filePath", "Settings\HalloweenCardPriority.txt",
         "options", [
@@ -125,6 +129,7 @@ global CardModeConfigs := Map(
         ]
     )
 )
+
 global currentConfig := CardModeConfigs[currentCardMode]
 
 ; ========== Constants and Theme Setup ==========
@@ -176,6 +181,10 @@ global robloxHolder := MainUI.Add("Text", Format("x3 y33 w797 h597 +Background{}
 ; ========== Exit and Minimize Buttons ==========
 global exitButton := AddUI("Picture", "x1330 y1 w32 h32 +BackgroundTrans", Exitbutton, (*) => Destroy())
 global minimizeButton := AddUI("Picture", "x1305 y3 w27 h27 +Background" uiColors["Background"], Minimize, (*) => minimizeUI())
+
+; ========== Import ==========
+global importUnitConfigButton := AddUI("Picture", "x1312 y48 w20 h20 +BackgroundTrans", Import, (*) => ImportSettingsFromFile())
+global exportUnitConfigButton := AddUI("Picture", "x1337 y48 w20 h20 +BackgroundTrans", Export, (*) => ExportUnitConfig())
 
 ; ========== Title ==========
 MainUI.SetFont("Bold s16 c" uiColors["Primary"], "Verdana")
@@ -279,10 +288,13 @@ DiscordButton := MainUI.Add("Picture", "x112 y645 w60 h34 +BackgroundTrans cffff
 
 global CustomSettings := MainUI.Add("GroupBox", "x190 y632 w390 h60 +Center c" uiTheme[1], "Custom Placement Settings")
 
-customPlacementButton := MainUI.Add("Button", "x210 y662 w80 h20", "Set")
+customPlacementImportButton := AddUI("Picture", "x205 y652 w27 h27 +BackgroundTrans", Import, (*) => ImportCoordinatesPreset())
+customPlacementExportButton := AddUI("Picture", "x255 y652 w27 h27 +BackgroundTrans", Export, (*) => ExportCoordinatesPreset(PlacementProfiles.Value))
+
+customPlacementButton := MainUI.Add("Button", "x300 y662 w80 h20", "Set")
 customPlacementButton.OnEvent("Click", (*) => StartCoordCapture())
 
-customPlacementClearButton := MainUI.Add("Button", "x345 y662 w80 h20", "Clear")
+customPlacementClearButton := MainUI.Add("Button", "x395 y662 w80 h20", "Clear")
 customPlacementClearButton.OnEvent("Click", (*) => DeleteCoordsForPreset(PlacementProfiles.Value))
 
 fixCameraText := MainUI.Add("Text", "x505 y642 w60 h20 +Left", "Camera")
@@ -294,7 +306,7 @@ global CustomWalkSettings := MainUI.Add("GroupBox", "x600 y632 w190 h60 +Center 
 customWalkButton := MainUI.Add("Button", "x610 y662 w45 h20", "Set")
 customWalkButton.OnEvent("Click", (*) => StartWalkCapture())
 
-customWalkTestButton := MainUI.Add("Button", "x675 y662 w45 h20", "Test")
+customWalkTestButton := MainUI.Add("Button", "x673 y662 w45 h20", "Test")
 customWalkTestButton.OnEvent("Click", (*) => WalkToCoords())
 
 customWalkClearButton := MainUI.Add("Button", "x735 y662 w45 h20", "Clear")
@@ -341,7 +353,18 @@ global ZoomText := MainUI.Add("Text", "x1018 y230 Hidden c" uiTheme[1], "Zoom Le
 global ZoomBox := MainUI.Add("Edit", "x1115 y228 w30 h20 Hidden cBlack Number", "20")
 ZoomBox.OnEvent("Change", (*) => ValidateEditBox(ZoomBox))
 
-global MiscSettingsBorder := MainUI.Add("GroupBox", "x1163 y205 w195 h176 +Center Hidden c" uiTheme[1], "")
+global MiscSettingsBorder := MainUI.Add("GroupBox", "x1163 y205 w195 h176 +Center Hidden c" uiTheme[1], "Import/Export")
+global UnitConfigText := MainUI.Add("Text", "x1200 y230 w120 h20 Hidden cffffff", "Unit Configuration")
+global UnitImportButton := MainUI.Add("Button", "x1180 y258 w80 h20 Hidden", "Import")
+UnitImportButton.OnEvent("Click", (*) => ImportSettingsFromFile())
+global UnitExportButton := MainUI.Add("Button", "x1265 y258 w80 h20 Hidden", "Export")
+UnitExportButton.OnEvent("Click", (*) => ExportUnitConfig())
+
+global CustomPlacementText := MainUI.Add("Text", "x1200 y290 w140 h20 Hidden cffffff", "Custom Placements")
+global CustomPlacementImportButton := MainUI.Add("Button", "x1180 y318 w80 h20 Hidden", "Import")
+CustomPlacementImportButton.OnEvent("Click", (*) => ImportCoordinatesPreset())
+global CustomPlacementExportButton := MainUI.Add("Button", "x1265 y318 w80 h20 Hidden", "Export")
+CustomPlacementExportButton.OnEvent("Click", (*) => ExportCoordinatesPreset(PlacementProfiles.Value))
 
 global ModeBorder := MainUI.Add("GroupBox", "x808 y85 w550 h296 +Center Hidden c" uiTheme[1], "Mode Configuration")
 global ModeConfigurations := MainUI.Add("CheckBox", "x825 y110 Hidden cffffff", "Enable Per-Mode Unit Settings")
@@ -693,7 +716,7 @@ StartCoordCapture() {
         WinActivate(rblxID)
     }
 
-    RemoveWaiting()
+    AddWaitingFor("Custom Coords")
     AddToLog("Press LShift to stop coordinate capture")
     SetTimer UpdateTooltip, 50  ; Update tooltip position every 50ms
 }
@@ -869,7 +892,7 @@ InitControlGroups() {
         PrivateSettingsBorder, PrivateServerEnabled, PrivateServerURLBox, PrivateServerTestButton,
         KeybindBorder, F1Text, F1Box, F2Text, F2Box, F3Text, F3Box, F4Text, F4Box, keybindSaveBtn,
         ZoomSettingsBorder, ZoomText, ZoomBox,
-        MiscSettingsBorder, 
+        MiscSettingsBorder, UnitConfigText, UnitImportButton, UnitExportButton, CustomPlacementText, CustomPlacementImportButton, CustomPlacementExportButton
     ]
 
     ControlGroups["Upgrade"] := [
@@ -976,4 +999,8 @@ ValidateEditBox(ctrl) {
         if (num > 20)
             ctrl.Value := "20"  ; Limit to a maximum of 20
     }
+}
+
+OpenCoordinateEditor() {
+    
 }

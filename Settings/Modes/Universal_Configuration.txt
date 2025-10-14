@@ -1,12 +1,12 @@
 [Universal Settings]
 Next Level=0
 Return To Lobby=1
-Seamless Replay=0
+Seamless Replay=1
 Using Mode Configurations=0
 
 [Webhook Settings]
-Webhook Enabled=1
-Webhook URL=https://discord.com/api/webhooks/1359179134626037904/FXb0IXAUjXTKriMaTv3zz5h7qN0C1XSr9xRvHPOs5GWZ9BiM_CHqx_6_XAKAp6_80MOu
+Webhook Enabled=0
+Webhook URL=
 Webhook Logs Enabled=0
 
 [Private Server Settings]
@@ -17,7 +17,7 @@ Private Server URL=
 Nightmare Difficulty=0
 
 [Placement Settings]
-Placement Pattern=2
+Placement Pattern=1
 Placement Order=2
-Placement Profile=3
+Placement Profile=1
 Placement Speed=3

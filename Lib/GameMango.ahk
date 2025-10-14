@@ -10,11 +10,7 @@ Hotkey(F3Key, (*) => Reload())
 Hotkey(F4Key, (*) => TogglePause())
 
 F5:: {
-    Teleport("Story")
-    Sleep (1000)
-    spawnAngle := DetectAngle("Story")
-    WalkToCavernRoom(spawnAngle)
-    Sleep (1000)
+
 }
 
 F6:: {
@@ -22,7 +18,7 @@ F6:: {
 }
 
 F7:: {
-    CopyMouseCoords(true)
+    CopyMouseCoords(false)
 }
 
 F8:: {
@@ -384,7 +380,7 @@ MonitorStage() {
         CheckForPortalSelection()
 
         ; --- Check for wave 50 ---
-        CheckIfShouldNuke()
+        HandleNuke()
 
         ; --- Fallback if disconnected ---
         Reconnect()
@@ -396,6 +392,10 @@ MonitorStage() {
         ; --- Handle Auto Ability ---
         if (AutoAbilityBox.Value) {
             SetTimer(CheckAutoAbility, 0)
+        }
+
+        if (NukeUnitSlotEnabled.Value) {
+            ClearNuke()
         }
 
         ; --- Close Menus ---
@@ -786,7 +786,9 @@ HandleAutoAbility() {
         {color: 0xC22725, x: 539, y: 268},
         {color: 0xC22725, x: 539, y: 303},
 
-        {color: 0xC22725, x: 326, y: 284} ; Left Side
+        {color: 0xC22725, x: 326, y: 284}, ; Left Side
+        {color: 0xC22725, x: 326, y: 265},
+        {color: 0xC22725, x: 326, y: 303}
     ]
 
     for pixel in pixelChecks {
@@ -882,6 +884,7 @@ StartedGame() {
     AddToLog("Game started")
     global stageStartTime := A_TickCount
     alreadyNuked := false
+    HandleNuke()
 }
 
 StartSelectedMode() {

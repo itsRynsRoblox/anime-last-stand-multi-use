@@ -39,7 +39,6 @@ LoadKeybindSettings() {
 }
 
 SaveSettingsForMode(*) {
-
     try {
         ; Create the Settings directory if it doesn't exist
         settingsDir := A_ScriptDir "\Settings\Modes"
@@ -59,8 +58,7 @@ SaveSettingsForMode(*) {
         }
 
         ; Sanitize the game mode name to avoid illegal filename characters
-        safeMode := RegExReplace(gameMode, '[\\/:*?"<>|]', "_")
-        settingsFile := settingsDir "\" safeMode "_Configuration.txt"
+        settingsFile := settingsDir "\" gameMode "_Configuration.txt"
 
         ; Delete the existing file for this mode (optional)
         if FileExist(settingsFile)
@@ -119,23 +117,24 @@ SaveSettingsForMode(*) {
 }
 
 LoadUnitSettingsByMode() {
-    global nukeCoords
+    global UnitConfigMap, nukeCoords
+
+    InitSettings()
+
     local mode := ModeDropdown.Text
-
-    if !mode {
+    if !mode
         mode := "Default"
-    }
 
-    ; Step 2: Sanitize mode and get mode-specific config file path
+    ; Sanitize mode for filename safety
     safeMode := RegExReplace(mode, '[\\/:*?"<>|]', "_")
     settingsFile := A_ScriptDir "\Settings\Modes\" safeMode "_Configuration.txt"
 
     if !FileExist(settingsFile) {
         AddToLog("⚠️ No configuration found for mode: " mode)
+        SaveSettingsForMode()  ; Save default settings if missing
         return
     }
 
-    ; Step 3: Read and parse the mode-specific config file
     content := FileRead(settingsFile)
     lines := StrSplit(content, "`n")
 
@@ -145,100 +144,32 @@ LoadUnitSettingsByMode() {
             continue
 
         parts := StrSplit(line, "=")
+        if (parts.Length < 2)
+            continue
 
-        key := parts[1], value := parts[2]
+        key := Trim(parts[1])
+        value := Trim(parts[2])
 
-        switch key {
-            case "Enabled1": enabled1.Value := value
-            case "Enabled2": enabled2.Value := value
-            case "Enabled3": enabled3.Value := value
-            case "Enabled4": enabled4.Value := value
-            case "Enabled5": enabled5.Value := value
-            case "Enabled6": enabled6.Value := value
-
-            case "UpgradeEnabled1": upgradeEnabled1.Value := value
-            case "UpgradeEnabled2": upgradeEnabled2.Value := value
-            case "UpgradeEnabled3": upgradeEnabled3.Value := value
-            case "UpgradeEnabled4": upgradeEnabled4.Value := value
-            case "UpgradeEnabled5": upgradeEnabled5.Value := value
-            case "UpgradeEnabled6": upgradeEnabled6.Value := value
-
-            case "UpgradeLimitEnabled1": upgradeLimitEnabled1.Value := value
-            case "UpgradeLimitEnabled2": upgradeLimitEnabled2.Value := value
-            case "UpgradeLimitEnabled3": upgradeLimitEnabled3.Value := value
-            case "UpgradeLimitEnabled4": upgradeLimitEnabled4.Value := value
-            case "UpgradeLimitEnabled5": upgradeLimitEnabled5.Value := value
-            case "UpgradeLimitEnabled6": upgradeLimitEnabled6.Value := value
-
-            case "UpgradeLimit1": UpgradeLimit1.Text := value
-            case "UpgradeLimit2": UpgradeLimit2.Text := value
-            case "UpgradeLimit3": UpgradeLimit3.Text := value
-            case "UpgradeLimit4": UpgradeLimit4.Text := value
-            case "UpgradeLimit5": UpgradeLimit5.Text := value
-            case "UpgradeLimit6": UpgradeLimit6.Text := value
-
-            case "Placement1": placement1.Text := value
-            case "Placement2": placement2.Text := value
-            case "Placement3": placement3.Text := value
-            case "Placement4": placement4.Text := value
-            case "Placement5": placement5.Text := value
-            case "Placement6": placement6.Text := value
-
-            case "Priority1": priority1.Text := value
-            case "Priority2": priority2.Text := value
-            case "Priority3": priority3.Text := value
-            case "Priority4": priority4.Text := value
-            case "Priority5": priority5.Text := value
-            case "Priority6": priority6.Text := value
-
-            case "UpgradePriority1": UpgradePriority1.Text := value
-            case "UpgradePriority2": UpgradePriority2.Text := value
-            case "UpgradePriority3": UpgradePriority3.Text := value
-            case "UpgradePriority4": UpgradePriority4.Text := value
-            case "UpgradePriority5": UpgradePriority5.Text := value
-            case "UpgradePriority6": UpgradePriority6.Text := value
-
-            case "AutoAbility": AutoAbilityBox.Value := value
-            case "AutoAbilityTimer": AutoAbilityTimer.Text := value
-
-            case "ZoomLevel": ZoomBox.Text := value
-            case "Unit Manager Auto Upgrade": UnitManagerAutoUpgrade.Value := value
-            case "Unit Manager Upgrade System": UnitManagerUpgradeSystem.Value := value
-            case "Priority Upgrade": PriorityUpgrade.Value := value
-            case "Start Portal In Lobby": PortalLobby.Value := value
-
-            case "Use Sunwoo Nuke": SJWNuke.Value := value
-            case "Sunwoo Nuke Slot": SJWSlot.Value := value
-
-            case "Nuke Enabled": NukeUnitSlotEnabled.Value := value
-            case "Nuke Slot": NukeUnitSlot.Value := value
-            case "Nuke Coords":
-            {
-                coords := StrSplit(value, ",")
-                if coords.Length >= 2 {
-                    nukeCoords := {x: coords[1], y: coords[2]}
-                }
-            }
-            case "Nuke At Specific Wave": NukeAtSpecificWave.Value := value
-            case "Nuke Wave": NukeWave.Value := value
-            case "Nuke Delay": NukeDelay.Value := value
-
-            case "Slot 1 Minion": MinionSlot1.Value := value
-            case "Slot 2 Minion": MinionSlot2.Value := value
-            case "Slot 3 Minion": MinionSlot3.Value := value
-            case "Slot 4 Minion": MinionSlot4.Value := value
-            case "Slot 5 Minion": MinionSlot5.Value := value
-            case "Slot 6 Minion": MinionSlot6.Value := value
-
+        if UnitConfigMap.Has(key) {
+            ctrl := UnitConfigMap[key].control
+            prop := UnitConfigMap[key].prop
+            try ctrl.%prop% := value
+        } else if (key = "Nuke Coords") {
+            coords := StrSplit(value, ",")
+            if coords.Length >= 2
+                nukeCoords := { x: coords[1], y: coords[2] }
         }
     }
+
     LoadCustomPlacements()
     InitControlGroups()
-    AddToLog("✅ Settings successfully loaded for mode: " mode)
     LoadUniversalSettings()
     LoadCustomWalk()
     LoadAllCardConfig()
+
+    AddToLog("✅ Settings successfully loaded for mode: " mode)
 }
+
 
 
 SaveCustomPlacements() {
@@ -470,4 +401,221 @@ LoadCustomWalk() {
         delay := StrReplace(coordParts[3], "Delay=")
         savedWalkCoords[currentPreset].Push({ x: x, y: y, delay: delay })
     }
+}
+
+ImportSettingsFromFile() {
+    global MainUI, UnitConfigMap, nukeCoords
+
+    ; Temporarily disable AlwaysOnTop for file dialog
+    MainUI.Opt("-AlwaysOnTop")
+    Sleep(100)
+
+    file := FileSelect(3, , "Select a configuration file to import", "Text Documents (*.txt)")
+    MainUI.Opt("+AlwaysOnTop")
+
+    if !file
+        return
+
+    content := FileRead(file)
+    lines := StrSplit(content, "`n")
+
+    for line in lines {
+        line := Trim(line)
+        if (line = "" || InStr(line, "["))
+            continue
+
+        parts := StrSplit(line, "=")
+        if parts.Length < 2
+            continue
+
+        key := Trim(parts[1])
+        value := Trim(parts[2])
+
+        if UnitConfigMap.Has(key) {
+            ctrl := UnitConfigMap[key].control
+            prop := UnitConfigMap[key].prop
+            try ctrl.%prop% := value
+        } else if (key = "Nuke Coords") {
+            coords := StrSplit(value, ",")
+            if coords.Length >= 2
+                nukeCoords := { x: coords[1], y: coords[2] }
+        }
+    }
+
+    ; Finalize
+    AddToLog("📥 Imported settings from external file!")
+}
+
+ExportCoordinatesPreset(presetIndex) {
+    global savedCoords
+
+    if !IsSet(savedCoords) || savedCoords.Length < presetIndex || savedCoords[presetIndex].Length = 0 {
+        AddToLog("⚠️ No coordinates saved for Preset " presetIndex)
+        return
+    }
+
+    ; Ensure export directory
+    exportDir := A_ScriptDir "\Settings\Export"
+    if !DirExist(exportDir)
+        DirCreate(exportDir)
+
+    file := exportDir "\Preset" presetIndex ".txt"
+
+    exportData := Format("[Preset {1}]`n", presetIndex)
+    for coord in savedCoords[presetIndex] {
+        exportData .= Format("X={1}, Y={2}`n", coord.x, coord.y)
+    }
+
+    try {
+        if FileExist(file)
+            FileDelete(file)
+        FileAppend(exportData, file)
+    } catch {
+        AddToLog "❌ Failed to save preset"
+        return
+    }
+
+    AddToLog("✅ Preset " presetIndex " exported to: Settings\Export\Preset" presetIndex ".txt")
+}
+
+ImportCoordinatesPreset() {
+    global savedCoords, MainUI
+
+    ; Allow file dialog to appear
+    MainUI.Opt("-AlwaysOnTop")
+    Sleep(100)
+
+    file := FileSelect(3, , "Import a custom placement preset", "Text Documents (*.txt)")
+
+    if !file
+        return
+
+    content := FileRead(file)
+    lines := StrSplit(content, "`n")
+
+    newPresetCoords := []
+
+    for line in lines {
+        line := Trim(line)
+        if (line = "" || InStr(line, "[Preset"))
+            continue
+
+        if (line = "NoCoordinatesSaved") {
+            break
+        }
+
+        coordParts := StrSplit(line, ", ")
+        if coordParts.Length < 2
+            continue
+
+        x := StrReplace(coordParts[1], "X=")
+        y := StrReplace(coordParts[2], "Y=")
+        newPresetCoords.Push({ x: x + 0, y: y + 0 })  ; Convert to numbers
+    }
+
+    if newPresetCoords.Length = 0 {
+        MsgBox "❌ No coordinates found in file."
+        return
+    }
+
+    ; Prompt user for target slot using AHK v2 InputBox
+    result := InputBox("Enter preset slot (1–10) to import into:", "Import Custom Placements", "h95 w250")
+
+    MainUI.Opt("+AlwaysOnTop")
+
+    if result.Result = "Cancel" {
+        AddToLog("❌ Import canceled.")
+        return
+    }
+
+    targetSlot := Trim(result.Value)
+
+    if !RegExMatch(targetSlot, "^\d+$") || targetSlot < 1 || targetSlot > 10 {
+        MsgBox "❌ Invalid input. Please enter a number between 1 and 10."
+        return
+    }
+
+    targetSlot := targetSlot + 0
+
+    ; Ensure array is large enough
+    while (savedCoords.Length < targetSlot)
+        savedCoords.Push([])
+
+    savedCoords[targetSlot] := newPresetCoords
+
+    AddToLog("✅ Imported preset into slot " targetSlot "!")
+}
+
+ExportUnitConfig() {
+    global UnitConfigMap, nukeCoords
+
+    ; Set export directory and default file name
+    exportDir := A_ScriptDir "\Settings\Export"
+    if !DirExist(exportDir)
+        DirCreate(exportDir)
+
+    file := exportDir "\Exported_Unit_Config.txt"
+    configData := ""
+
+    ; Export all mapped settings
+    for key, obj in UnitConfigMap {
+        ctrl := obj.control
+        prop := obj.prop
+        try configData .= key "=" ctrl.%prop% "`n"
+    }
+
+    ; Nuke coordinates (handled separately)
+    if IsSet(nukeCoords) {
+        configData .= "Nuke Coords=" nukeCoords.x "," nukeCoords.y "`n"
+    }
+
+    ; Save to file
+    try {
+        if FileExist(file)
+            FileDelete(file)
+        FileAppend(configData, file)
+        AddToLog("✅ Unit configuration exported to Export\Exported_Unit_Config.txt")
+    } catch {
+        AddToLog("❌ Failed to export unit config.")
+    }
+}
+
+
+InitSettings() {
+    loop 6 {
+        i := A_Index
+        UnitConfigMap["Enabled" i] := { control: enabled%i%, prop: "Value" }
+        UnitConfigMap["UpgradeEnabled" i] := { control: upgradeEnabled%i%, prop: "Value" }
+        UnitConfigMap["UpgradeLimitEnabled" i] := { control: upgradeLimitEnabled%i%, prop: "Value" }
+        UnitConfigMap["UpgradeLimit" i] := { control: UpgradeLimit%i%, prop: "Text" }
+        UnitConfigMap["Placement" i] := { control: placement%i%, prop: "Text" }
+        UnitConfigMap["Priority" i] := { control: priority%i%, prop: "Text" }
+        UnitConfigMap["UpgradePriority" i] := { control: UpgradePriority%i%, prop: "Text" }
+    }
+
+    ; Other controls
+    UnitConfigMap["AutoAbility"] := { control: AutoAbilityBox, prop: "Value" }
+    UnitConfigMap["AutoAbilityTimer"] := { control: AutoAbilityTimer, prop: "Text" }
+
+    UnitConfigMap["ZoomLevel"] := { control: ZoomBox, prop: "Text" }
+    UnitConfigMap["Unit Manager Auto Upgrade"] := { control: UnitManagerAutoUpgrade, prop: "Value" }
+    UnitConfigMap["Unit Manager Upgrade System"] := { control: UnitManagerUpgradeSystem, prop: "Value" }
+    UnitConfigMap["Priority Upgrade"] := { control: PriorityUpgrade, prop: "Value" }
+    UnitConfigMap["Start Portal In Lobby"] := { control: PortalLobby, prop: "Value" }
+
+    UnitConfigMap["Use Sunwoo Nuke"] := { control: SJWNuke, prop: "Value" }
+    UnitConfigMap["Sunwoo Nuke Slot"] := { control: SJWSlot, prop: "Value" }
+    UnitConfigMap["Nuke Enabled"] := { control: NukeUnitSlotEnabled, prop: "Value" }
+    UnitConfigMap["Nuke Slot"] := { control: NukeUnitSlot, prop: "Value" }
+
+    UnitConfigMap["Nuke At Specific Wave"] := { control: NukeAtSpecificWave, prop: "Value" }
+    UnitConfigMap["Nuke Wave"] := { control: NukeWave, prop: "Value" }
+    UnitConfigMap["Nuke Delay"] := { control: NukeDelay, prop: "Value" }
+
+    UnitConfigMap["Slot 1 Minion"] := { control: MinionSlot1, prop: "Value" }
+    UnitConfigMap["Slot 2 Minion"] := { control: MinionSlot2, prop: "Value" }
+    UnitConfigMap["Slot 3 Minion"] := { control: MinionSlot3, prop: "Value" }
+    UnitConfigMap["Slot 4 Minion"] := { control: MinionSlot4, prop: "Value" }
+    UnitConfigMap["Slot 5 Minion"] := { control: MinionSlot5, prop: "Value" }
+    UnitConfigMap["Slot 6 Minion"] := { control: MinionSlot6, prop: "Value" }
 }

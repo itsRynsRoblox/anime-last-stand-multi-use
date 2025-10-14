@@ -536,7 +536,7 @@ OpenCardConfig() {
         SwitchCardMode("Halloween")
     }
     else if (ModeDropdown.Text = "Boss Rush") {
-        SwitchCardMode("Boss Rush")
+        SwitchCardMode("BossRush")
     }
     else {
         AddToLog("No card configuration available for mode: " (ModeDropdown.Text = "" ? "None" : ModeDropdown.Text))
