@@ -5,7 +5,7 @@
 
 ; Application Info
 global GameTitle := "Ryn's Anime Last Stand Macro "
-global version := "v1.6.8"
+global version := "v1.6.9"
 global rblxID := "ahk_exe RobloxPlayerBeta.exe"
 ;Coordinate and Positioning Variables
 global targetWidth := 816

@@ -607,7 +607,7 @@ CheckUnitAbilities() {
         FixClick(coord.x, coord.y)
         Sleep(500)
 
-        HandleAutoAbility()
+        HandleAutoAbility(slot)
     }
 }
 

@@ -10,7 +10,7 @@ Hotkey(F3Key, (*) => Reload())
 Hotkey(F4Key, (*) => TogglePause())
 
 F5:: {
-    Reconnect()
+
 }
 
 F6:: {
@@ -187,6 +187,7 @@ StartPlacingUnits(untilSuccessful := true) {
                                     upgradePriority: GetUpgradePriority(slotNum),
                                     placementIndex: placementIndex
                                 })
+                                placementIndex += 1
                             }
                             successfulCoordinates.Push({
                                 x: point.x,
@@ -198,7 +199,7 @@ StartPlacingUnits(untilSuccessful := true) {
                             placedCounts[slotNum] += 1
                             AddToLog("Placed Unit " slotNum " (" placedCounts[slotNum] "/" placements ")")
                             if (!NukeUnitSlotEnabled.Value && slotNum != NukeUnitSlot.Value) {
-                                HandleAutoAbility()
+                                HandleAutoAbility(slotNum)
                             }
                             SendInput("X")
                             ;AttemptUpgrade()
@@ -234,7 +235,7 @@ StartPlacingUnits(untilSuccessful := true) {
                             placedCounts[slotNum] += 1
                             AddToLog("Placed Unit " slotNum " (" placedCounts[slotNum] "/" placements ")")
                             if (!NukeUnitSlotEnabled.Value && slotNum != NukeUnitSlot.Value) {
-                                HandleAutoAbility()
+                                HandleAutoAbility(slotNum)
                             }
                             SendInput("X")
                             ;AttemptUpgrade()
@@ -285,7 +286,7 @@ PlaceDungeonUnits() {
             point := placementPoints[pointIndex]
             if PlaceUnit(point.x, point.y, slotNum) {
                 SendInput("{T}")
-                HandleAutoAbility()
+                HandleAutoAbility(slotNum)
                 FixClick(700, 560) ; Move Click
             }
             Sleep(500) ; Prevent spamming
@@ -402,7 +403,7 @@ MonitorStage() {
             continue
 
         ; --- Handle Auto Ability ---
-        if (AutoAbilityBox.Value) {
+        if (AutoAbilityBox.Value && UnitManagerAutoUpgrade.Value) {
             SetTimer(CheckAutoAbility, 0)
         }
 
@@ -458,7 +459,7 @@ ClickThroughDrops() {
 CheckForPortalSelection() {
     if (ok := FindText(&X, &Y, 356, 436, 447, 455, 0, 0, ChoosePortal) or (ok := FindText(&X, &Y, 356, 436, 447, 455, 0.10, 0.10, ChoosePortalHighlighted))) {
         
-        if (AutoAbilityBox.Value) {
+        if (AutoAbilityBox.Value && UnitManagerAutoUpgrade.Value) {
             CloseMenu("Ability Manager")
             SetTimer(CheckAutoAbility, 0)
         }
@@ -778,7 +779,7 @@ PlaceUnit(x, y, slot := 1) {
 MaxUpgrade() {
     Sleep 500
     ; Check for max text
-    if (ok := FindText(&X, &Y, 95, 386, 170, 407, 0, 0, MaxUpgradeText)) {
+    if (ok := FindText(&X, &Y, 97, 387, 166, 407, 0.20, 0.20, MaxUpgradeText)) {
         return true
     }
     return false
@@ -792,9 +793,13 @@ UnitPlaced() {
     return false
 }
 
-HandleAutoAbility() {
+HandleAutoAbility(slotNum) {
     if !AutoAbilityBox.Value
         return
+
+    if (NukeUnitSlotEnabled.Value && slotNum == NukeUnitSlot.Value) {
+        return
+    }
 
     wiggle()
 

@@ -1,10 +1,10 @@
 [Unit Settings]
-Enabled1=0
-Enabled2=0
-Enabled3=0
-Enabled4=0
-Enabled5=0
-Enabled6=0
+Enabled1=1
+Enabled2=1
+Enabled3=1
+Enabled4=1
+Enabled5=1
+Enabled6=1
 Placement1=1
 Placement2=1
 Placement3=1
@@ -17,11 +17,11 @@ Priority3=3
 Priority4=4
 Priority5=5
 Priority6=6
-UpgradePriority1=2
+UpgradePriority1=1
 UpgradePriority2=2
 UpgradePriority3=3
 UpgradePriority4=4
-UpgradePriority5=5
+UpgradePriority5=4
 UpgradePriority6=6
 UpgradeEnabled1=0
 UpgradeEnabled2=0
@@ -50,7 +50,7 @@ AutoAbilityTimer=60
 ZoomLevel=20
 
 [Upgrade Settings]
-Unit Manager Auto Upgrade=1
+Unit Manager Auto Upgrade=0
 Unit Manager Upgrade System=1
 Priority Upgrade=1
 
@@ -66,7 +66,7 @@ Nuke Coords=282,291
 Nuke At Specific Wave=0
 Nuke Wave=1
 Nuke Delay=0
-Slot 1 Minion=0
+Slot 1 Minion=1
 Slot 2 Minion=0
 Slot 3 Minion=0
 Slot 4 Minion=0
