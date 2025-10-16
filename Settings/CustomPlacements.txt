@@ -1,46 +1,20 @@
 [SavedCoordinates]
 [Preset 1]
-X=277, Y=406
-X=213, Y=409
-X=372, Y=362
-X=282, Y=364
-X=510, Y=457
-X=627, Y=466
+NoCoordinatesSaved
 [Preset 2]
-X=338, Y=190
-X=338, Y=248
-X=331, Y=308
-X=606, Y=342
-X=327, Y=381
+NoCoordinatesSaved
 [Preset 3]
-X=277, Y=406
-X=213, Y=409
-X=372, Y=362
-X=282, Y=364
-X=510, Y=457
-X=627, Y=466
+NoCoordinatesSaved
 [Preset 4]
 NoCoordinatesSaved
 [Preset 5]
-X=541, Y=307
-X=407, Y=308
+NoCoordinatesSaved
 [Preset 6]
-X=158, Y=313
-X=206, Y=312
-X=19, Y=136
-X=90, Y=364
-X=102, Y=412
-X=158, Y=412
+NoCoordinatesSaved
 [Preset 7]
-X=404, Y=248
-X=336, Y=258
-X=426, Y=155
-X=329, Y=275
-X=470, Y=302
-X=405, Y=355
+NoCoordinatesSaved
 [Preset 8]
-X=222, Y=333
-X=98, Y=271
+NoCoordinatesSaved
 [Preset 9]
 NoCoordinatesSaved
 [Preset 10]

@@ -523,8 +523,10 @@ CheckForCardSelection() {
 }
 
 SearchForImage(X1, Y1, X2, Y2, image) {
-    if !WinExist(rblxID)
+    if !WinExist(rblxID) {
+        AddToLog("Roblox window not found.")
         return false
+    }
 
     WinActivate(rblxID)
 

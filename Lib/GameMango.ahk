@@ -10,7 +10,7 @@ Hotkey(F3Key, (*) => Reload())
 Hotkey(F4Key, (*) => TogglePause())
 
 F5:: {
-
+    Reconnect()
 }
 
 F6:: {
@@ -178,11 +178,23 @@ StartPlacingUnits(untilSuccessful := true) {
                 if (!untilSuccessful) {
                     if (placedCounts[slotNum] < placements) {
                         if PlaceUnit(point.x, point.y, slotNum) {
+                            placementIndex := successfulCoordinates.Length + 1
                             if (HasMinionInSlot(slotNum)) {
-                                successfulCoordinates.Push({x: point.x, y: point.y, slot: slotNum})
-                                placedCounts[slotNum] += 1
+                                successfulCoordinates.Push({
+                                    x: point.x,
+                                    y: point.y,
+                                    slot: slotNum,
+                                    upgradePriority: GetUpgradePriority(slotNum),
+                                    placementIndex: placementIndex
+                                })
                             }
-                            successfulCoordinates.Push({x: point.x, y: point.y, slot: slotNum})
+                            successfulCoordinates.Push({
+                                x: point.x,
+                                y: point.y,
+                                slot: slotNum,
+                                upgradePriority: GetUpgradePriority(slotNum),
+                                placementIndex: placementIndex
+                            })
                             placedCounts[slotNum] += 1
                             AddToLog("Placed Unit " slotNum " (" placedCounts[slotNum] "/" placements ")")
                             if (!NukeUnitSlotEnabled.Value && slotNum != NukeUnitSlot.Value) {
@@ -697,7 +709,7 @@ Reconnect(testing := false) {
         WinActivate(rblxID)
     }
 
-    if (SearchForImage(204, 206, 602, 254, Disconnected) || testing) {
+    if (FindText(&X, &Y, 202, 206, 601, 256, 0.10, 0.10, Disconnect) || testing) {
         AddToLog("Disconnected! Attempting to reconnect...")
         sendDCWebhook()
 
@@ -723,6 +735,9 @@ Reconnect(testing := false) {
             FixClick(490, 400)
             AddToLog("Reconnecting to Anime Last Stand...")
             Sleep 15000
+            if (WinExist(rblxID)) {
+                WinActivate(rblxID)
+            }
             if (ok := FindText(&X, &Y, 7, 590, 37, 618, 0, 0, LobbySettings)) {
                 AddToLog("Reconnected Successfully!")
                 return StartSelectedMode()
@@ -745,6 +760,8 @@ PlaceUnit(x, y, slot := 1) {
     ; Confirm placement with 'x' key
     SendInput("x")
     Sleep 500
+
+    wiggle()
 
     ; Second click to confirm the placement location
     FixClick(x, y)

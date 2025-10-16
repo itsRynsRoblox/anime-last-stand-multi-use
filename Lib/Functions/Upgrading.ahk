@@ -158,7 +158,6 @@ GetUpgradePriority(slotNum) {
 }
 
 InitiateTheSystem() {
-    global totalUnits
     if (!isMenuOpen("Unit Manager")) {
         OpenMenu("Unit Manager") ; Failsafe
         Sleep(500)
