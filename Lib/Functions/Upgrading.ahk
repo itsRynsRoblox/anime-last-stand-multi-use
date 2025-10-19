@@ -46,7 +46,7 @@ UpgradeWithPriority() {
         for priorityNum in priorityOrder {
             for slot in slotOrder {
                 if (HasUnitsInSlot(slot, priorityNum, successfulCoordinates)) {
-                    AddToLog("Upgrading priority " priorityNum)
+                    AddToLog("Starting upgrades for priority " priorityNum " (slot " slot ")")
                     ProcessUpgrades(slot, priorityNum)
                 }
             }
@@ -61,6 +61,7 @@ UpgradeWithPriority() {
             }
         }
     }
+
     AddToLog("All units maxed, proceeding to monitor stage")
     CloseMenu("Unit Manager")
 }
@@ -168,8 +169,6 @@ InitiateTheSystem() {
     Sleep (500)
     FixClick(617, 122) ; close the system
     Sleep (500)
-    ;WaitForWave50()
-    WaitForGilgamesh()
 }
 
 WaitForRebirth() {
@@ -242,11 +241,11 @@ ProcessUpgrades(slot := false, priorityNum := false, singlePass := false) {
                     HandleMaxUpgrade(coord, index)
                 }
 
+                PostUpgradeChecks(priorityNum)
+
                 if (!UnitManagerUpgradeSystem.Value) {
                     SendInput("X")
                 }
-
-                PostUpgradeChecks(priorityNum)
             }
         }
 
@@ -280,9 +279,7 @@ ProcessUpgrades(slot := false, priorityNum := false, singlePass := false) {
                     HandleMaxUpgrade(coord, index)
                 }
 
-                if (!UnitManagerUpgradeSystem.Value) {
-                    SendInput("X")
-                }
+                SendInput("X")
 
                 PostUpgradeChecks(priorityNum)
             }

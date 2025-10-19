@@ -17,8 +17,6 @@ UseCustomPoints() {
         points.Push({x: coord.x, y: coord.y})
     }
 
-    AddToLog("Total Points: " points.Length)
-
     return points
 }
 

@@ -93,10 +93,6 @@ SelectCards(eventName) {
         SetTimer(CheckAutoAbility, 0) ; Pause auto ability checks
     }
 
-    if (NukeUnitSlotEnabled.Value) {
-        PauseNuke()
-    }
-
     SendInput("X") ; Close unit menu
 
     cardPriorities := cachedCardPriorities[eventName]
@@ -159,9 +155,6 @@ SelectCards(eventName) {
             if (AutoAbilityBox.Value) {
                 SetTimer(CheckAutoAbility, GetAutoAbilityTimer())
             }
-            if (NukeUnitSlotEnabled.Value) {
-                ResumeNuke()
-            }
             return true
         }
     }
@@ -170,9 +163,6 @@ SelectCards(eventName) {
 
     if (AutoAbilityBox.Value) {
         SetTimer(CheckAutoAbility, GetAutoAbilityTimer())
-    }
-    if (NukeUnitSlotEnabled.Value) {
-        ResumeNuke()
     }
     return false
 }

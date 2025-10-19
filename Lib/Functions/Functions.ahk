@@ -91,6 +91,15 @@ OnRaidChange(*) {
     }
 }
 
+OnPlacementChange(*) {
+    if (PlacementPatternDropdown.Text = "Custom") {
+        enabledPlacements := UseCustomPoints()
+        if (enabledPlacements.Length <= 0) {
+            AddToLog("No placements set, please set at least one placement!")
+        }
+    }
+}
+
 OnConfirmClick(*) {
     if (ModeDropdown.Text = "") {
         AddToLog("Please select a gamemode before confirming")
@@ -342,7 +351,7 @@ CloseLobbyPopups() {
 
 }
 
-ClickUnit(slot) {
+ClickUnit(slot, forNuke := false) {
     global totalUnits
     baseX := 585
     baseY := 175
@@ -375,8 +384,28 @@ ClickUnit(slot) {
     OpenMenu("Unit Manager")
     Sleep(500)
 
-    FixClick(clickX, clickY)
-    Sleep(150)
+    if (CheckForXp()) {
+        CloseMenu("Unit Manager")
+        return MonitorStage()
+    }
+
+    if (forNuke) {
+        while (!GetPixel(0x1034AC, 78, 362, 2, 2, 2)) {
+            CheckForCardSelection()
+
+            if (CheckForXp()) {
+                CloseMenu("Unit Manager")
+                ClearNuke()
+                return MonitorStage()
+            }
+
+            FixClick(clickX, clickY)
+            Sleep(250)
+        }
+    } else {
+        FixClick(clickX, clickY)
+        Sleep(150)
+    }
 }
 
 GetAutoAbilityTimer() {
@@ -621,4 +650,18 @@ SetCoordModeTracked(mode) {
     oldCoordMode := currentCoordMode
     CoordMode("Mouse", mode)
     currentCoordMode := mode
+}
+
+isConnectedToInternet() {
+    return DllCall("Wininet.dll\InternetGetConnectedState", "int*", 0, "int", 0)
+}
+
+GetPrivateServerCode(link) {
+    if RegExMatch(link, "privateServerLinkCode=([\w-]+)", &m)
+        return m[1]
+    return ""
+}
+
+isInLobby() {
+    return FindText(&X, &Y, 7, 590, 37, 618, 0, 0, LobbySettings)
 }

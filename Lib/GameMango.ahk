@@ -392,9 +392,6 @@ MonitorStage() {
 
         CheckForPortalSelection()
 
-        ; --- Check for wave 50 ---
-        HandleNuke()
-
         ; --- Fallback if disconnected ---
         Reconnect()
 
@@ -711,40 +708,59 @@ Reconnect(testing := false) {
     }
 
     if (FindText(&X, &Y, 202, 206, 601, 256, 0.10, 0.10, Disconnect) || testing) {
-        AddToLog("Disconnected! Attempting to reconnect...")
+
+        ; Wait until internet is available
+        while !isConnectedToInternet() {
+            AddToLog("❌ No internet connection. Waiting to reconnect...")
+            Sleep(5000) ; wait 5 seconds before checking again
+        }
+
+        AddToLog("✅ Internet connection verified, attempting to reconnect...")
         sendDCWebhook()
 
-        ; Use PrivateServerURLBox.Value instead of file
-        psLink := PrivateServerURLBox.Value
-
-        ; Reconnect to PS
-        if (psLink != "") {
-            AddToLog("Connecting to private server...")
-            Run(psLink)
+        if (PrivateServerEnabled.Value) {
+            psLink := PrivateServerURLBox.Value
+            if (psLink != "") {
+                serverCode := GetPrivateServerCode(psLink)
+                deepLink := "roblox://experiences/start?placeId=12886143095&linkCode=" serverCode
+                if (WinExist("ahk_exe RobloxPlayerBeta.exe")) {
+                    WinClose("ahk_exe RobloxPlayerBeta.exe")
+                    Sleep(3000)
+                }
+                AddToLog("Connecting to your private server...")
+                Run(serverCode = "" ? psLink : deepLink)
+                loop {
+                    if WinWait("ahk_exe RobloxPlayerBeta.exe", , 15) {
+                        AddToLog("New Roblox Window Found!")
+                        break
+                    } else {
+                        AddToLog("Waiting for new Roblox Window...")
+                        Sleep(1000)
+                    }
+                }
+            }
         } else {
             Run("roblox://placeID=12886143095")
+            while (isInLobby()) {
+                Sleep(100)
+            }
         }
 
-        Sleep 2000
+        AddToLog("Reconnecting to " GameName "...")
 
-        if WinExist(rblxID) {
-            WinActivate(rblxID)
-            Sleep 1000
-        }
-
-        loop {
-            FixClick(490, 400)
-            AddToLog("Reconnecting to Anime Last Stand...")
-            Sleep 15000
+        while (!isInLobby()) {
             if (WinExist(rblxID)) {
                 WinActivate(rblxID)
+                sizeDown()
             }
-            if (ok := FindText(&X, &Y, 7, 590, 37, 618, 0, 0, LobbySettings)) {
-                AddToLog("Reconnected Successfully!")
-                return StartSelectedMode()
-            } else {
-                Reconnect()
-            }
+            Sleep(1000)
+        }
+
+        if (isInLobby()) {
+            AddToLog("Reconnected Successfully!")
+            return StartSelectedMode()
+        } else {
+            Reconnect()
         }
     }
 }
@@ -901,12 +917,9 @@ CheckLoaded() {
 }
 
 StartedGame() {
-    global alreadyNuked
-    Sleep(500)
     AddToLog("Game started")
     global stageStartTime := A_TickCount
-    alreadyNuked := false
-    HandleNuke()
+    StartNukeTimer()
 }
 
 StartSelectedMode() {
@@ -1167,7 +1180,7 @@ HasCards(ModeName) {
 
 isMenuOpen(name := "") {
     if (name = "Unit Manager") {
-        return FindText(&X, &Y, 700, 142, 789, 166, 0.20, 0.20, UnitManager)
+        return FindText(&X, &Y, 700, 142, 789, 166, 0.20, 0.20, UnitManager) or FindText(&X, &Y, 679, 595, 782, 616, 0.20, 0.20, UnitManagerDark)
     }
     else if (name = "Ability Manager") {
         return FindText(&X, &Y, 675, 594, 785, 616, 0.20, 0.20, AbilityManager)
@@ -1183,5 +1196,8 @@ isMenuOpen(name := "") {
     }
     else if (name = "Survival") {
         return FindText(&X, &Y, 284, 443, 328, 462, 0.20, 0.20, SurvivalSelect)
+    }
+    else if (name = "Card Selection") {
+        return GetPixel(0x4A4747, 436, 383, 2, 2, 3)
     }
 }

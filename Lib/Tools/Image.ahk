@@ -30,6 +30,7 @@ Cleared:="|<>**50$66.00000000000DXs0000003zzyM0000006TkCM0000006N06M0000006M7CPz
 Retry:="|<>*115$29.000000000000000w20024+0047nzk9802EE09l0U2GW194ZY1zzmE0004U000600000000004"
 Settings:="|<>*110$17.zzzzDzs7zX7zjTzSzwMzy7zyTzzzzzzk"
 UnitManager:="|<>*108$56.zzzzzzzzzzzzzzzzzzyRwjjTzzzzbTvlXzzzztnkQ0zzzzyQ470032AEm5/k1G5+4w12Qw4UEVDWKbzF/6AHzzzzzzzXzzzzzzzzxzy"
+UnitManagerDark:="|<>*53$31.zzzzzzzzzzwDUykQ7kS8C60D47U0703s03U1sFVm0yQqznTzzzzzzzzzz"
 PortalSelection:="|<>*108$56.zzzzzzzzzzzzzzzzzzyRwjjTzzzzbTvlXzzzztnkQ0zzzzyQ470032AEm5/k1G5+4w12Qw4UEVDWKbzF/6AHzzzzzzzXzzzzzzzzxzy"
 LobbyIcon:="|<>**50$11.TwX9SGwZ1/mLYX+"
 AutoOff:="|<>*51$13.zzw1w0Q060301U0k0M0A060301k1w1zzw"

@@ -4,8 +4,9 @@
 #Include %A_ScriptDir%/lib/Functions/Functions.ahk
 
 ; Application Info
-global GameTitle := "Ryn's Anime Last Stand Macro "
-global version := "v1.6.9"
+global GameName := "Anime Last Stand"
+global GameTitle := "Ryn's " GameName " Macro "
+global version := "v1.7.0"
 global rblxID := "ahk_exe RobloxPlayerBeta.exe"
 ;Coordinate and Positioning Variables
 global targetWidth := 816
@@ -218,7 +219,7 @@ WinSetTransColor(uiColors["RobloxBox"], MainUI)
 OpenGuide(*) {
     GuideGUI := Gui("+AlwaysOnTop")
     GuideGUI.SetFont("s10 bold", "Segoe UI")
-    GuideGUI.Title := "Anime Last Stand Guide"
+    GuideGUI.Title := "Ryn's " GameName " Guide"
 
     GuideGUI.BackColor := "0c000a"
     GuideGUI.MarginX := 20
@@ -229,6 +230,30 @@ OpenGuide(*) {
     GuideGUI.Add("Text", "x0 w800 cWhite +Center", "1 - In your ROBLOX settings, make sure your graphics are set to 1")
     GuideGUI.Add("Picture", "x50 w700   cWhite +Center", "Images\graphics1.png")
     GuideGUI.Show("w800")
+}
+
+OpenPrivateServerGuide(*) {
+    GuideGUI := Gui("+AlwaysOnTop +Resize", "Ryn's Private Server Guide")
+    GuideGUI.BackColor := "0c000a"
+    GuideGUI.MarginX := 20
+    GuideGUI.MarginY := 20
+
+    ; Reset font for steps
+    GuideGUI.SetFont("s12 bold", "Segoe UI")
+
+    ; Add each step individually
+    GuideGUI.Add("Text", "cWhite", "Step 1. Create a private server")
+    GuideGUI.Add("Text", "cWhite", "Step 2. Name the server however you like")
+    GuideGUI.Add("Text", "cWhite", "Step 3. Configure the private server")
+    GuideGUI.Add("Text", "cWhite", "Step 4. Generate a link for the server")
+    GuideGUI.Add("Text", "cWhite", "Step 5. Paste the link into your browser")
+    GuideGUI.Add("Text", "cWhite", "Step 6. Wait for the link to change into the new version")
+    GuideGUI.Add("Text", "cWhite", "Step 7. Copy the URL")
+    GuideGUI.Add("Text", "cWhite", "Step 8. Paste the URL into the private server section of the macro")
+    GuideGUI.Add("Text", "cWhite", "It should look like this at the end: privateServerLinkCode=12345")
+
+    ; Show GUI
+    GuideGUI.Show("AutoSize Center")
 }
 
 MainUI.SetFont("s9 Bold c" uiTheme[1])
@@ -322,10 +347,12 @@ global WebhookLogsEnabled := MainUI.Add("CheckBox", "x825 y130 Hidden cffffff", 
 global WebhookURLBox := MainUI.Add("Edit", "x1000 y108 w260 h20 Hidden c" uiTheme[6], "")
 
 global PrivateSettingsBorder := MainUI.Add("GroupBox", "x808 y145 w550 h296 +Center Hidden c" uiTheme[1], "Reconnection Settings")
-global PrivateServerEnabled := MainUI.Add("CheckBox", "x825 y175 Hidden cffffff", "Reconnect to Private Server")
-global PrivateServerURLBox := MainUI.Add("Edit", "x1050 y173 w160 h20 Hidden c" uiTheme[6], "")
-PrivateServerTestButton := MainUI.Add("Button", "x1225 y173 w80 h20 Hidden", "Test Link")
+global PrivateServerEnabled := MainUI.Add("CheckBox", "x825 y165 Hidden cffffff", "Reconnect to Private Server")
+global PrivateServerURLBox := MainUI.Add("Edit", "x1050 y163 w160 h20 Hidden c" uiTheme[6], "")
+PrivateServerTestButton := MainUI.Add("Button", "x1225 y163 w50 h20 Hidden", "Test")
 PrivateServerTestButton.OnEvent("Click", (*) => Reconnect(true))
+PrivateServerGuideButton := MainUI.Add("Button", "x1285 y163 w50 h20 Hidden", "Guide")
+PrivateServerGuideButton.OnEvent("Click", OpenPrivateServerGuide)
 ; === End of Settings GUI ===
 
 ; HotKeys
@@ -437,6 +464,7 @@ ModeDropdown.OnEvent("Change", OnModeChange)
 StoryDropdown.OnEvent("Change", OnStoryChange)
 LegendDropDown.OnEvent("Change", OnLegendChange)
 RaidDropdown.OnEvent("Change", OnRaidChange)
+PlacementPatternDropdown.OnEvent("Change", OnPlacementChange)
 ConfirmButton.OnEvent("Click", OnConfirmClick)
 ;------MAIN UI------;
 
@@ -612,28 +640,56 @@ getElapsedTime() {
 ;Basically the code to move roblox, below
 
 sizeDown() {
-    global rblxID
-    if !WinExist(rblxID)
+    global rblxID, targetWidth, targetHeight
+
+    if !WinExist(rblxID) {
         return
+    }
 
     WinActivate(rblxID)
     WinGetPos(&X, &Y, &OutWidth, &OutHeight, rblxID)
 
-    if (OutWidth >= A_ScreenWidth && OutHeight >= A_ScreenHeight) {
+    if (OutWidth == targetWidth && OutHeight == targetHeight) {
+        return
+    }
+
+    AddToLog("Initial window size: " OutWidth "x" OutHeight)
+
+    ; Check if in fullscreen
+    isFullscreen := (OutWidth >= A_ScreenWidth && OutHeight >= A_ScreenHeight)
+    if (isFullscreen) {
         Send "{F11}"
-        Sleep(150)
-    }
+        Sleep(300)
 
-    Loop 3 {
-        WinMove(X, Y, targetWidth, targetHeight, rblxID)
-        Sleep(100)
+        ; Recheck size
         WinGetPos(&X, &Y, &OutWidth, &OutHeight, rblxID)
-        if (OutWidth == targetWidth && OutHeight == targetHeight)
+        if (OutWidth >= A_ScreenWidth && OutHeight >= A_ScreenHeight) {
             return
+        }
     }
 
-    AddToLog("Failed to resize Roblox window")
+    loop 3 {
+        if (debugMessages) {
+            AddToLog("Attempt " A_Index ": current size: " OutWidth "x" OutHeight)
+        }
+        WinMove(X, Y, targetWidth, targetHeight, rblxID)
+        Sleep(150)
+
+        WinGetPos(&X, &Y, &OutWidth, &OutHeight, rblxID)
+        if (debugMessages) {
+            AddToLog("Resulting size: " OutWidth "x" OutHeight)
+        }
+        if (OutWidth == targetWidth && OutHeight == targetHeight) {
+            AddToLog("Resize successful on attempt " A_Index)
+            return
+        }
+    }
+    if (debugMessages) {
+        AddToLog("Failed to resize after 3 attempts. Final size: " OutWidth "x" OutHeight)
+    }
 }
+
+
 
 moveRobloxWindow() {
     global MainUIHwnd, offsetX, offsetY, rblxID
@@ -890,7 +946,7 @@ InitControlGroups() {
 
     ControlGroups["Settings"] := [
         WebhookBorder, WebhookEnabled, WebhookLogsEnabled, WebhookURLBox,
-        PrivateSettingsBorder, PrivateServerEnabled, PrivateServerURLBox, PrivateServerTestButton,
+        PrivateSettingsBorder, PrivateServerEnabled, PrivateServerURLBox, PrivateServerTestButton, PrivateServerGuideButton,
         KeybindBorder, F1Text, F1Box, F2Text, F2Box, F3Text, F3Box, F4Text, F4Box, keybindSaveBtn,
         ZoomSettingsBorder, ZoomText, ZoomBox,
         MiscSettingsBorder, UnitConfigText, UnitImportButton, UnitExportButton, CustomPlacementText, CustomPlacementImportButton, CustomPlacementExportButton
@@ -964,6 +1020,8 @@ SetUnitCardVisibility(visible) {
 }
 
 ValidateWebhook() {
+    global WebhookURLBox
+
     url := WebhookURLBox.Value
     
     if (url == "") {
