@@ -544,7 +544,7 @@ OnPriorityChange(type, priorityNumber, newPriorityNumber) {
 }
 
 CheckForCardSelection() {
-    if GetPixel(0x4A4747, 436, 383, 2, 2, 3) {
+    if GetPixel(0x4A4747, 436, 383, 2, 2, 5) {
         SelectCardsByMode()
         return true
     }

@@ -1,0 +1,12 @@
+
+==Ryn's Anime Last Stand Macro v1.7.1==
+Start Time: [11:24:03 PM]
+Settings successfully loaded for mode: Default 00:00
+Initial window size: 1936x1048 00:01
+Resize successful on attempt 1 00:01
+Imported settings from external file! 00:06
+Imported preset into slot 1! 00:13
+Saved settings for mode: Default 00:15
+Displaying: Unit Settings UI 00:17
+Displaying: Default UI 00:18
+Displaying: Settings UI 00:22

@@ -22,7 +22,7 @@ StartNukeCapture() {
 }
 
 PrepareToNuke(force := false) {
-    global successfulCoordinates, maxedCoordinates, NukeUnitSlotEnabled, NukeUnitSlot
+    global successfulCoordinates, maxedCoordinates, nukeTimerActive
 
     if (force) {
         ClickUnit(1, true)
@@ -44,6 +44,10 @@ PrepareToNuke(force := false) {
                 return true
             }
         }
+
+        nukeTimerActive := false
+        SetTimer(Nuke, 2500)
+
         ; Not found in either list
         return false
     }
@@ -59,10 +63,10 @@ GetNukeDelay() {
 Nuke() {
     global nukeCoords, alreadyNuked, nukeTimerActive, nukeScheduledTime, waitingToNuke
 
-    nukeTimerActive := true
-
     if (nukeTimerActive)
         return
+
+    nukeTimerActive := true
 
     if (PrepareToNuke()) {
         Sleep(150)
@@ -140,7 +144,7 @@ StartNukeTimer() {
         if (NukeAtSpecificWave.Value) {
             ; Start checking for the wave every X ms
             SetTimer(WatchForTargetWave, 1000)  ; Adjust interval as needed
-            AddToLog("Started watching for wave " NukeWave.Value "...")
+            AddToLog("Started watching for wave " NukeWave.Text "...")
         } else {
             ; Schedule regular time-based nuke
             HandleNuke()
@@ -154,18 +158,15 @@ HandleSpecificWaveNuke() {
 
     switch wave {
         case "50":
-            if (!CheckForWave50())
-                return false
-            return true
+            if (CheckForWave50())
+                return true
 
         case "20":
-            if (!CheckForWave20())
-                return false
-            return true
+            if (CheckForWave20())
+                return true
 
         default:
-            AddToLog("Nuke at specific wave is set to unsupported wave: " wave)
-            return false
+            return true
     }
 }
 
@@ -192,7 +193,7 @@ WatchForTargetWave() {
     }
 
     if (HandleSpecificWaveNuke() && !waitingToNuke) {
-        AddToLog("Wave " NukeWave.Value " found. Nuking...")
+        AddToLog("Wave " NukeWave.Text " found. Nuking...")
         Nuke()
         alreadyNuked := true
         SetTimer(WatchForTargetWave, 0) ; stop checking after nuke

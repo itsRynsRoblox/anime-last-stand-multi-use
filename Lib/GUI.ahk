@@ -6,7 +6,7 @@
 ; Application Info
 global GameName := "Anime Last Stand"
 global GameTitle := "Ryn's " GameName " Macro "
-global version := "v1.7.0"
+global version := "v1.7.1"
 global rblxID := "ahk_exe RobloxPlayerBeta.exe"
 ;Coordinate and Positioning Variables
 global targetWidth := 816
@@ -34,7 +34,7 @@ global waitingForClick := false
 global savedCoords := [[], []]  ; Index-based: one array for each preset
 global savedWalkCoords := [[], []]  ; Index-based: one array for each preset
 ;Nuke Ability
-global nukeCoords := []
+global nukeCoords := { x: 282, y: 291 }
 ;Hotkeys
 global F1Key := "F1"
 global F2Key := "F2"

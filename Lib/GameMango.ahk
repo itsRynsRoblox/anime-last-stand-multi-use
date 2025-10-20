@@ -238,7 +238,6 @@ StartPlacingUnits(untilSuccessful := true) {
                                 HandleAutoAbility(slotNum)
                             }
                             SendInput("X")
-                            ;AttemptUpgrade()
                             UpgradePlacedUnits()
                             break ; Move to the next placement spot
                         }
