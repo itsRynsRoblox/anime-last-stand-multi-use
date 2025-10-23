@@ -67,7 +67,7 @@ SaveSettingsForMode(*) {
         ; Start building the content
         content := "[Unit Settings]"
 
-        for settingType in ["Enabled", "Placement", "Priority", "UpgradePriority", "UpgradeEnabled", "UpgradeLimit", "UpgradeLimitEnabled"] {
+        for settingType in ["Enabled", "Placement", "Priority", "UpgradePriority", "UpgradeEnabled", "AbilityEnabled", "UpgradeLimit", "UpgradeLimitEnabled"] {
             loop 6 {
                 index := A_Index
                 setting := %settingType%%index%
@@ -84,7 +84,6 @@ SaveSettingsForMode(*) {
         content .= "`nZoomLevel=" ZoomBox.Value
 
         content .= "`n`n[Upgrade Settings]"
-        content .= "`nUnit Manager Auto Upgrade=" UnitManagerAutoUpgrade.Value
         content .= "`nUnit Manager Upgrade System=" UnitManagerUpgradeSystem.Value
         content .= "`nPriority Upgrade=" PriorityUpgrade.Value
 
@@ -170,87 +169,6 @@ LoadUnitSettingsByMode() {
     AddToLog("✅ Settings successfully loaded for mode: " mode)
 }
 
-
-
-SaveCustomPlacements() {
-    global savedCoords
-
-    ; Ensure Settings folder exists
-    settingsDir := A_ScriptDir "\Settings"
-    if !DirExist(settingsDir)
-        DirCreate(settingsDir)
-
-    placementFile := settingsDir "\CustomPlacements.txt"
-
-    ; Optionally delete the old file first
-    if FileExist(placementFile)
-        FileDelete(placementFile)
-
-    placementData := "[SavedCoordinates]`n"
-
-    for presetIndex, _ in [1, 2, 3, 4, 5, 6, 7, 8, 9, 10] {
-        placementData .= Format("[Preset {1}]`n", presetIndex)
-
-        if (IsSet(savedCoords) && savedCoords.Length >= presetIndex && savedCoords[presetIndex].Length > 0) {
-            for coord in savedCoords[presetIndex] {
-                placementData .= Format("X={1}, Y={2}`n", coord.x, coord.y)
-            }
-        } else {
-            placementData .= "NoCoordinatesSaved`n"
-        }
-    }
-    FileAppend(placementData, placementFile)
-}
-
-LoadCustomPlacements() {
-    global savedCoords
-
-    savedCoords := []  ; Reinitialize
-    placementFile := A_ScriptDir "\Settings\CustomPlacements.txt"
-
-    ; Create the file with a default header if it doesn't exist
-    if !FileExist(placementFile) {
-        ; Ensure the directory exists
-        if !DirExist(A_ScriptDir "\Settings")
-            DirCreate(A_ScriptDir "\Settings")
-        SaveCustomPlacements()
-    }
-
-    content := FileRead(placementFile)
-    lines := StrSplit(content, "`n")
-
-    currentPreset := 0
-
-    for line in lines {
-        line := Trim(line)
-        if (line = "" || line = "[SavedCoordinates]")
-            continue
-
-        ; Detect preset header
-        if RegExMatch(line, "^\[Preset (\d+)\]$", &match) {
-            currentPreset := match[1] + 0
-
-            ; Ensure array size
-            while (savedCoords.Length < currentPreset)
-                savedCoords.Push([])
-
-            continue
-        }
-
-        if (line = "NoCoordinatesSaved") {
-            savedCoords[currentPreset] := []
-            continue
-        }
-
-        ; Parse "X=..., Y=..." format
-        coordParts := StrSplit(line, ", ")
-        x := StrReplace(coordParts[1], "X=")
-        y := StrReplace(coordParts[2], "Y=")
-
-        savedCoords[currentPreset].Push({ x: x, y: y })
-    }
-}
-
 LoadUniversalSettings() {
     universalFile := A_ScriptDir "\Settings\Modes\Universal_Configuration.txt"
     if !FileExist(universalFile) {
@@ -294,7 +212,6 @@ LoadUniversalSettings() {
             case "Nightmare Difficulty": NightmareDifficulty.Value := value
             case "Placement Pattern": PlacementPatternDropdown.Value := value
             case "Placement Order": PlacementSelection.Value := value
-            case "Placement Profile": PlacementProfiles.Value := value
             case "Placement Speed": PlaceSpeed.Value := value
         }
     }
@@ -328,89 +245,9 @@ SaveUniversalSettings() {
         content .= "`n`n[Placement Settings]"
         content .= "`nPlacement Pattern=" PlacementPatternDropdown.Value
         content .= "`nPlacement Order=" PlacementSelection.Value
-        content .= "`nPlacement Profile=" PlacementProfiles.Value
         content .= "`nPlacement Speed=" PlaceSpeed.Value
 
         FileAppend(content, universalFile)
-    }
-}
-
-SaveCustomWalk() {
-    global savedWalkCoords
-
-    ; Ensure Settings folder exists
-    settingsDir := A_ScriptDir "\Settings"
-    if !DirExist(settingsDir)
-        DirCreate(settingsDir)
-
-    placementFile := settingsDir "\CustomWalk.txt"
-
-    ; Optionally delete the old file first
-    if FileExist(placementFile)
-        FileDelete(placementFile)
-
-    placementData := "[SavedWalkCoordinates]`n"
-
-    for presetIndex, _ in [1, 2, 3, 4, 5, 6, 7, 8, 9, 10] {
-        placementData .= Format("[Preset {1}]`n", presetIndex)
-
-        if (IsSet(savedWalkCoords) && savedWalkCoords.Length >= presetIndex && savedWalkCoords[presetIndex].Length > 0) {
-            for coord in savedWalkCoords[presetIndex] {
-                placementData .= Format("X={1}, Y={2}, Delay={3}`n", coord.x, coord.y, coord.delay)
-            }
-        } else {
-            placementData .= "NoCoordinatesSaved`n"
-        }
-    }
-    FileAppend(placementData, placementFile)
-}
-
-LoadCustomWalk() {
-    global savedWalkCoords
-
-    savedWalkCoords := []  ; Reinitialize
-    placementFile := A_ScriptDir "\Settings\CustomWalk.txt"
-
-    ; Create the file with a default header if it doesn't exist
-    if !FileExist(placementFile) {
-        ; Ensure the directory exists
-        if !DirExist(A_ScriptDir "\Settings")
-            DirCreate(A_ScriptDir "\Settings")
-        SaveCustomWalk()
-    }
-
-    content := FileRead(placementFile)
-    lines := StrSplit(content, "`n")
-
-    currentPreset := 0
-
-    for line in lines {
-        line := Trim(line)
-        if (line = "" || line = "[SavedWalkCoordinates]")
-            continue
-
-        ; Detect preset header
-        if RegExMatch(line, "^\[Preset (\d+)\]$", &match) {
-            currentPreset := match[1] + 0
-
-            ; Ensure array size
-            while (savedWalkCoords.Length < currentPreset)
-                savedWalkCoords.Push([])
-
-            continue
-        }
-
-        if (line = "NoCoordinatesSaved") {
-            savedWalkCoords[currentPreset] := []
-            continue
-        }
-
-        ; Parse "X=..., Y=..." format
-        coordParts := StrSplit(line, ", ")
-        x := StrReplace(coordParts[1], "X=")
-        y := StrReplace(coordParts[2], "Y=")
-        delay := StrReplace(coordParts[3], "Delay=")
-        savedWalkCoords[currentPreset].Push({ x: x, y: y, delay: delay })
     }
 }
 
@@ -489,7 +326,7 @@ ExportCoordinatesPreset(presetIndex) {
     AddToLog("✅ Preset " presetIndex " exported to: Settings\Export\Preset" presetIndex ".txt")
 }
 
-ImportCoordinatesPreset() {
+ImportCoordinatesPreset1() {
     global savedCoords, MainUI
 
     ; Allow file dialog to appear
@@ -597,6 +434,7 @@ InitSettings() {
         i := A_Index
         UnitConfigMap["Enabled" i] := { control: enabled%i%, prop: "Value" }
         UnitConfigMap["UpgradeEnabled" i] := { control: upgradeEnabled%i%, prop: "Value" }
+        UnitConfigMap["AbilityEnabled" i] := { control: abilityEnabled%i%, prop: "Value" }
         UnitConfigMap["UpgradeLimitEnabled" i] := { control: upgradeLimitEnabled%i%, prop: "Value" }
         UnitConfigMap["UpgradeLimit" i] := { control: UpgradeLimit%i%, prop: "Text" }
         UnitConfigMap["Placement" i] := { control: placement%i%, prop: "Text" }
@@ -609,7 +447,6 @@ InitSettings() {
     UnitConfigMap["AutoAbilityTimer"] := { control: AutoAbilityTimer, prop: "Text" }
 
     UnitConfigMap["ZoomLevel"] := { control: ZoomBox, prop: "Text" }
-    UnitConfigMap["Unit Manager Auto Upgrade"] := { control: UnitManagerAutoUpgrade, prop: "Value" }
     UnitConfigMap["Unit Manager Upgrade System"] := { control: UnitManagerUpgradeSystem, prop: "Value" }
     UnitConfigMap["Priority Upgrade"] := { control: PriorityUpgrade, prop: "Value" }
     UnitConfigMap["Start Portal In Lobby"] := { control: PortalLobby, prop: "Value" }

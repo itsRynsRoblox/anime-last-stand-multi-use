@@ -31,15 +31,20 @@ global scriptInitialized := false
 #Include %A_ScriptDir%/lib/Modes/Siege.ahk
 
 ; === Limited Time Game Modes ===
+#Include %A_ScriptDir%/lib/Modes/Limited/Events.ahk
 #Include %A_ScriptDir%/lib/Modes/Limited/HalloweenEvent.ahk
 
 ; === Core Mechanics ===
 #Include %A_ScriptDir%/lib/Functions/Functions.ahk
 #Include %A_ScriptDir%/lib/Functions/Upgrading.ahk
+#Include %A_ScriptDir%/lib/Functions/UnitPlacement.ahk
+#Include %A_ScriptDir%/lib/Functions/AutoAbilityManager.ahk
 #Include %A_ScriptDir%/lib/Functions/WalkManager.ahk
 #Include %A_ScriptDir%/lib/PlacementPatterns.ahk
 #Include %A_ScriptDir%/lib/Functions/NukeManager.ahk
 #Include %A_ScriptDir%/lib/Functions/CardManager.ahk
+#Include %A_ScriptDir%/lib/Functions/TimerManager.ahk
+#Include %A_ScriptDir%/lib/Functions/CustomPlacements.ahk
 
 ; === Webhook Integration ===
 #Include %A_ScriptDir%/lib/WebhookSettings.ahk

@@ -1,25 +1,5 @@
 #Requires AutoHotkey v2.0
 
-UseCustomPoints() {
-    global savedCoords  ; Access the global saved coordinates
-    points := []
-
-    presetIndex := PlacementProfiles.Value  ; Get the currently selected preset index
-
-    ; Ensure presetIndex is valid
-    if (presetIndex < 1 || !savedCoords.Has(presetIndex)) {
-        AddToLog("⚠️ No placements set for Preset: " PlacementProfiles.Text)
-        return points  ; Return empty list if invalid index
-    }
-
-    ; Use saved coordinates for the selected preset
-    for coord in savedCoords[presetIndex] {
-        points.Push({x: coord.x, y: coord.y})
-    }
-
-    return points
-}
-
 GenerateRandomPoints() {
     points := []
     gridSize := 40  ; Minimum spacing between units

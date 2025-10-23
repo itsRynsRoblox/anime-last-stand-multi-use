@@ -33,11 +33,13 @@ getCurrentTime() {
 
 OnModeChange(*) {
     ; Hide all
-    for ctrl in [StoryDropdown, StoryActDropdown, BossRushDropdown, LegendDropDown, RaidDropdown, RaidActDropdown, DungeonDropdown, PortalDropdown, PortalRoleDropdown, SiegeDropdown, SurvivalDropdown]
+    for ctrl in [StoryDropdown, StoryActDropdown, BossRushDropdown, LegendDropDown, RaidDropdown, RaidActDropdown, DungeonDropdown, PortalDropdown, PortalRoleDropdown, SiegeDropdown, SurvivalDropdown, EventDropdown]
         ctrl.Visible := false
 
     ; Show based on selection
     switch ModeDropdown.Text {
+        case "Event":
+            EventDropdown.Visible := true
         case "Story":
             StoryDropdown.Visible := true
             StoryActDropdown.Visible := true
@@ -150,6 +152,7 @@ OnConfirmClick(*) {
     BossRushDropdown.Visible := false
     SiegeDropdown.Visible := false
     SurvivalDropdown.Visible := false
+    EventDropdown.Visible := false
     ConfirmButton.Visible := false
     modeSelectionGroup.Visible := false
     Hotkeytext.Visible := true
@@ -226,7 +229,7 @@ OpenGithub() {
 }
 
 OpenDiscord() {
-    Run("https://discord.gg/6DWgB9XMTV")
+    Run("https://discord.gg/ycYNunvEzX")
 }
 
 StringJoin(array, delimiter := ", ") {
@@ -352,17 +355,14 @@ CloseLobbyPopups() {
 }
 
 ClickUnit(slot, forNuke := false) {
-    global totalUnits
+    global totalUnits := successfulCoordinates.Length
     baseX := 585
     baseY := 175
     colSpacing := 80
     rowSpacing := 115
     maxCols := 3
 
-    totalCount := 0
-    for _, count in totalUnits {
-        totalCount += count
-    }
+    totalCount := totalUnits
 
     fullRows := Floor(totalCount / maxCols)
     lastRowUnits := Mod(totalCount, maxCols)
@@ -406,11 +406,6 @@ ClickUnit(slot, forNuke := false) {
         FixClick(clickX, clickY)
         Sleep(150)
     }
-}
-
-GetAutoAbilityTimer() {
-    seconds := AutoAbilityTimer.Value
-    return Round(seconds * 1000)
 }
 
 ToggleMenu(name := "") {
@@ -478,33 +473,6 @@ OpenMenu(name := "") {
     }
 }
 
-CheckAutoAbility() {
-    global successfulCoordinates
-    global totalUnits
-
-    AddToLog("Checking for unactive abilities...")
-    if (!NukeUnitSlotEnabled.Value) {
-        OpenMenu("Ability Manager")
-    }
-    Sleep (1000)
-
-    if (CheckForXP()) {
-        AddToLog("Stopping auto ability check because the game ended")
-        CloseMenu("Ability Manager")
-        SetTimer(CheckAutoAbility, 0)  ; Stop the timer
-        return
-    }
-
-    if (NukeUnitSlotEnabled.Value) {
-        CheckUnitAbilities()
-    } else {
-        HandleAutoAbilityUnitManager()
-    }
-    Sleep (1000)
-    CloseMenu("Ability Manager")
-    AddToLog("Finished looking for abilities")
-}
-
 CleanString(str) {
     ; Remove emojis and any adjacent spaces (handles gaps)
     return RegExReplace(str, "\s*[^\x00-\x7F]+\s*", "")
@@ -563,7 +531,7 @@ SearchForImage(X1, Y1, X2, Y2, image) {
 }
 
 OpenCardConfig() {
-    if (ModeDropdown.Text = "Halloween Event") {
+    if (EventDropdown.Text = "Halloween") {
         SwitchCardMode("Halloween")
     }
     else if (ModeDropdown.Text = "Boss Rush") {
@@ -636,7 +604,7 @@ CheckUnitAbilities() {
         FixClick(coord.x, coord.y)
         Sleep(500)
 
-        HandleAutoAbility(slot)
+        HandleAutoAbility()
     }
 }
 
@@ -664,4 +632,8 @@ GetPrivateServerCode(link) {
 
 isInLobby() {
     return FindText(&X, &Y, 7, 590, 37, 618, 0, 0, LobbySettings)
+}
+
+UpdateActiveConfiguration(*) {
+    ToggleControlGroup(ConfigurationDropdown.Text)
 }

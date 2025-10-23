@@ -65,7 +65,7 @@ SendWebhookWithTime(isWin, stageLength) {
     sessionData := "⌛ Macro Runtime: " macroLength "`n"
     . "⏱️ Stage Length: " stageLength "`n"
     . "🔄 Current Streak: " (currentStreak > 0 ? currentStreak " Win Streak" : Abs(currentStreak) " Loss Streak") "`n"
-    . ":video_game: Current Mode: " (ModeDropdown.Text = "" ? "No Mode Selected" : ModeDropdown.Text) "`n"
+    . ":video_game: Current Mode: " (ModeDropdown.Text = "" ? "No Mode Selected" : GetTextForMode(ModeDropdown.Text)) "`n"
     . ":white_check_mark: Successful Runs: " Wins "`n"
     . "❌ Failed Runs: " loss "`n"
     . ":bar_chart: Total Runs: " (loss+Wins) "`n"
@@ -120,7 +120,19 @@ CropImage(pBitmap, x, y, width, height) {
 }
 
 TextWebhook() {
-    global lastlog
+    global lastlog, WebhookURL, webhook
+
+    ; Check if WebhookURL is initialized and valid
+    if (!IsSet(WebhookURL) || WebhookURL = "" || !(WebhookURL ~=
+        "i)^https?:\/\/discord\.com\/api\/webhooks\/(\d{18,19})\/[\w-]{68}$")) {
+        AddToLog("Webhook URL is missing or invalid - skipping webhook")
+        return
+    }
+
+    ; Build webhook object if not already initialized
+    if !IsObject(webhook) {
+        webhook := WebHookBuilder(WebhookURL)
+    }
 
     ; Calculate the runtime
     ElapsedTimeMs := A_TickCount - StartTime
@@ -145,9 +157,7 @@ TextWebhook() {
 }
 
 WebhookLog() {
-    if (webhookURL ~= 'i)https?:\/\/discord\.com\/api\/webhooks\/(\d{18,19})\/[\w-]{68}') {
-        TextWebhook()
-    } 
+    TextWebhook()
 }
 
 WebhookScreenshot(title, description, color := 0x0dffff, status := "") {
@@ -280,4 +290,13 @@ sendDCWebhook() {
 sendTestWebhook() {
     global Wins := 1
     SendWebhookWithTime(true, 1)
+}
+
+GetTextForMode(mode) {
+    switch mode {
+        case "Event":
+            return EventDropdown.Text " Event"
+        default:
+            return mode
+    }
 }

@@ -29,11 +29,11 @@ StartMacro(*) {
     if (!ValidateMode()) {
         return
     }
-    if (StartsInLobby(ModeDropdown.Text)) {
+    if (StartsInLobby(ModeDropdown.Text) || StartsInLobby(EventDropdown.Text)) {
         if (ok := FindText(&X, &Y, 7, 590, 37, 618, 0, 0, LobbySettings)) {
             StartSelectedMode()
         } else {
-            AddToLog("You need to be in the lobby to start " ModeDropdown.Text " mode")
+            AddToLog("You need to be in the lobby to start " ModeDropdown.Text)
         }
     } else {
         StartSelectedMode()
@@ -51,258 +51,9 @@ TogglePause(*) {
     }
 }
 
-StartPlacingUnits(untilSuccessful := true) {
-    global successfulCoordinates, maxedCoordinates
-    successfulCoordinates := []
-    maxedCoordinates := []
-    placedCounts := Map()  
-
-    ; --- Priority Setup ---
-    global slotPriority := Map(1, 2, 2, 1, 3, 3)  ; Customize as needed
-    usePriorityPlacement := true  ; <- Toggle to enable/disable priority mode
-
-    ; --- Check if any slot is enabled ---
-    anyEnabled := false
-    for slotNum in [1, 2, 3, 4, 5, 6] {
-        enabled := "enabled" slotNum
-        enabled := %enabled%
-        enabled := enabled.Value
-        if (enabled) {
-            anyEnabled := true
-            break
-        }
-    }
-
-    if (!anyEnabled) {
-        AddToLog("No units enabled - skipping to monitoring")
-        return MonitorStage()
-    }
-
-    ; --- Placement Order Logic ---
-    if (PlacementSelection.Text = "By Priority") {
-        global slotPriorityList := []
-
-        ; Build list of enabled slots and their priorities
-        for slotNum in [1, 2, 3, 4, 5, 6] {
-            priorityVar := "priority" slotNum
-            enabledVar := "enabled" slotNum
-
-            priority := %priorityVar%
-            enabled := %enabledVar%
-
-            if (enabled.Value) {
-                slotPriorityList.Push({slot: slotNum, priority: priority.Value})
-            }
-        }
-
-        ; Manually sort the list by priority (ascending)
-        Loop slotPriorityList.Length {
-            for i, item in slotPriorityList {
-                if (i = slotPriorityList.Length)
-                    continue
-                if (slotPriorityList[i].priority > slotPriorityList[i + 1].priority) {
-                    temp := slotPriorityList[i]
-                    slotPriorityList[i] := slotPriorityList[i + 1]
-                    slotPriorityList[i + 1] := temp
-                }
-            }
-        }
-
-        ; Extract sorted slot numbers into placementOrder
-        placementOrder := []
-
-        for item in slotPriorityList {
-            placementOrder.Push(item.slot)
-        }
-    } else {
-        placementOrder := PlacementSelection.Text = "Slot #2 First" ? [2, 1, 3, 4, 5, 6] : [1, 2, 3, 4, 5, 6]
-    }
-
-    placementStrategies := Map(
-        "Map Specific", UseRecommendedPoints,
-        "Custom", UseCustomPoints,
-        "Circle", GenerateCirclePoints,
-        "Grid", GenerateGridPoints,
-        "Spiral", GenerateSpiralPoints,
-        "Up and Down", GenerateUpandDownPoints
-    )
-
-    ; Get the selected text
-    selection := PlacementPatternDropdown.Text
-
-    ; Call mapped function if it exists, else use fallback
-    if placementStrategies.Has(selection)
-        placementPoints := placementStrategies[selection].Call()
-    else
-        placementPoints := GenerateRandomPoints()
-
-    ; Use user-defined placement order to iterate through slots
-    for slotNum in placementOrder {
-        enabled := "enabled" slotNum
-        enabled := %enabled%
-        enabled := enabled.Value
-
-        ; Get number of placements wanted for this slot
-        placements := "placement" slotNum
-        placements := %placements%
-        placements := Integer(placements.Text)
-
-        ; Initialize count if not exists
-        if !placedCounts.Has(slotNum)
-            placedCounts[slotNum] := 0
-
-        ; If enabled, place all units for this slot
-        if (enabled && placements > 0) {
-            HandleStartButton() ; Check for start button if placement failed
-            AddToLog("Placing Unit " slotNum " (0/" placements ")")
-            
-            for point in placementPoints {
-                ; Skip if this coordinate was already used successfully
-                alreadyUsed := false
-                for coord in successfulCoordinates {
-                    if (coord.x = point.x && coord.y = point.y) {
-                        alreadyUsed := true
-                        break
-                    }
-                }
-                for coord in maxedCoordinates {
-                    if (coord.x = point.x && coord.y = point.y) {
-                        alreadyUsed := true
-                        break
-                    }
-                }
-                if (alreadyUsed)
-                    continue
-
-                ; If untilSuccessful is false, try once and move on
-                if (!untilSuccessful) {
-                    if (placedCounts[slotNum] < placements) {
-                        if PlaceUnit(point.x, point.y, slotNum) {
-                            placementIndex := successfulCoordinates.Length + 1
-                            if (HasMinionInSlot(slotNum)) {
-                                successfulCoordinates.Push({
-                                    x: point.x,
-                                    y: point.y,
-                                    slot: slotNum,
-                                    upgradePriority: GetUpgradePriority(slotNum),
-                                    placementIndex: placementIndex
-                                })
-                                placementIndex += 1
-                            }
-                            successfulCoordinates.Push({
-                                x: point.x,
-                                y: point.y,
-                                slot: slotNum,
-                                upgradePriority: GetUpgradePriority(slotNum),
-                                placementIndex: placementIndex
-                            })
-                            placedCounts[slotNum] += 1
-                            AddToLog("Placed Unit " slotNum " (" placedCounts[slotNum] "/" placements ")")
-                            if (!NukeUnitSlotEnabled.Value && slotNum != NukeUnitSlot.Value) {
-                                HandleAutoAbility(slotNum)
-                            }
-                            SendInput("X")
-                            ;AttemptUpgrade()
-                            UpgradePlacedUnits()
-                        } else {
-                            PostPlacementChecks()
-                        }
-                    }
-                }
-                ; If untilSuccessful is true, keep trying the same point until it works
-                else {
-                    while (placedCounts[slotNum] < placements) {
-                        if PlaceUnit(point.x, point.y, slotNum) {
-                            placementIndex := successfulCoordinates.Length + 1
-
-                            if (HasMinionInSlot(slotNum)) {
-                                successfulCoordinates.Push({
-                                x: point.x,
-                                y: point.y,
-                                slot: slotNum,
-                                upgradePriority: GetUpgradePriority(slotNum),
-                                placementIndex: placementIndex
-                                })
-                            }
-
-                            successfulCoordinates.Push({
-                                x: point.x,
-                                y: point.y,
-                                slot: slotNum,
-                                upgradePriority: GetUpgradePriority(slotNum),
-                                placementIndex: placementIndex
-                            })
-                            placedCounts[slotNum] += 1
-                            AddToLog("Placed Unit " slotNum " (" placedCounts[slotNum] "/" placements ")")
-                            if (!NukeUnitSlotEnabled.Value && slotNum != NukeUnitSlot.Value) {
-                                HandleAutoAbility(slotNum)
-                            }
-                            SendInput("X")
-                            UpgradePlacedUnits()
-                            break ; Move to the next placement spot
-                        }
-                        UpgradePlacedUnits()
-                        PostPlacementChecks()
-                        Sleep(500) ; Prevents spamming clicks too fast
-                    }
-                }
-
-                if CheckForXp()
-                    return MonitorStage()
-            }
-        }
-    }
-
-    AddToLog("All units placed to requested amounts")
-    UpgradeUnits()
-}
-
-PlaceDungeonUnits() {
-    placementPoints := PlacementPatternDropdown.Text = "Custom" ? UseCustomPoints() : GenerateDungeonPoints()
-
-    ; Collect enabled slots
-    enabledSlots := []
-    for slotNum in [1, 2, 3, 4, 5, 6] {
-        enabled := "enabled" slotNum
-        enabled := %enabled%
-        enabled := enabled.Value
-        if (enabled) {
-            enabledSlots.Push(slotNum)
-        }
-    }
-
-    if (enabledSlots.Length = 0) {
-        if (debugMessages) {
-            AddToLog("No units enabled - exiting")
-        }
-        return
-    }
-
-    ; Loop through placement points and assign them to enabled slots in order
-    pointIndex := 1
-    while true {
-        for slotIndex, slotNum in enabledSlots {
-            point := placementPoints[pointIndex]
-            if PlaceUnit(point.x, point.y, slotNum) {
-                SendInput("{T}")
-                HandleAutoAbility(slotNum)
-                FixClick(700, 560) ; Move Click
-            }
-            Sleep(500) ; Prevent spamming
-
-            ; Move to the next placement point, loop back if at the end
-            pointIndex++
-            if (pointIndex > placementPoints.Length) {
-                pointIndex := 1
-            }
-        }
-    }
-}
-
 CheckForXp() {
     return FindText(&X, &Y, 225, 217, 356, 246, 0.20, 0.20, Results)
 }
-
 
 ChallengeMode() {    
     AddToLog("Moving to Challenge mode")
@@ -385,7 +136,7 @@ MonitorStage() {
         }
 
         ; --- Check for progression or special cases ---
-        if (HasCards(ModeDropdown.Text)) {
+        if (HasCards(ModeDropdown.Text) || HasCards(EventDropdown.Text)) {
             CheckForCardSelection()
         }
 
@@ -399,7 +150,7 @@ MonitorStage() {
             continue
 
         ; --- Handle Auto Ability ---
-        if (AutoAbilityBox.Value && UnitManagerAutoUpgrade.Value) {
+        if (AutoAbilityBox.Value) {
             SetTimer(CheckAutoAbility, 0)
         }
 
@@ -455,7 +206,7 @@ ClickThroughDrops() {
 CheckForPortalSelection() {
     if (ok := FindText(&X, &Y, 356, 436, 447, 455, 0, 0, ChoosePortal) or (ok := FindText(&X, &Y, 356, 436, 447, 455, 0.10, 0.10, ChoosePortalHighlighted))) {
         
-        if (AutoAbilityBox.Value && UnitManagerAutoUpgrade.Value) {
+        if (AutoAbilityBox.Value) {
             CloseMenu("Ability Manager")
             SetTimer(CheckAutoAbility, 0)
         }
@@ -621,7 +372,11 @@ BasicSetup(usedButton := false) {
     FixClick(487, 72) ; Closes Player leaderboard
     Sleep 300
 
-    WalkToCoords()
+    if (EventDropdown.Text = "Halloween P2") {
+        WalkToHalloweenPath()
+    } else {
+        WalkToCoords()
+    }
 
     if (SeamlessToggle.Value && !usedButton) {
         firstStartup := false
@@ -701,12 +456,12 @@ RestartCustomStage() {
     MonitorStage()
 }
 
-Reconnect(testing := false) {
+Reconnect(force := false) {
     if (WinExist(rblxID)) {
         WinActivate(rblxID)
     }
 
-    if (FindText(&X, &Y, 202, 206, 601, 256, 0.10, 0.10, Disconnect) || testing) {
+    if (FindText(&X, &Y, 202, 206, 601, 256, 0.10, 0.10, Disconnect) || force) {
 
         ; Wait until internet is available
         while !isConnectedToInternet() {
@@ -721,7 +476,7 @@ Reconnect(testing := false) {
             psLink := PrivateServerURLBox.Value
             if (psLink != "") {
                 serverCode := GetPrivateServerCode(psLink)
-                deepLink := "roblox://experiences/start?placeId=12886143095&linkCode=" serverCode
+                deepLink := "roblox://experiences/start?placeId=107573139811370&linkCode=" serverCode
                 if (WinExist("ahk_exe RobloxPlayerBeta.exe")) {
                     WinClose("ahk_exe RobloxPlayerBeta.exe")
                     Sleep(3000)
@@ -739,7 +494,7 @@ Reconnect(testing := false) {
                 }
             }
         } else {
-            Run("roblox://placeID=12886143095")
+            Run("roblox://placeID=107573139811370")
             while (isInLobby()) {
                 Sleep(100)
             }
@@ -752,43 +507,30 @@ Reconnect(testing := false) {
                 WinActivate(rblxID)
                 sizeDown()
             }
-            Sleep(1000)
+
+            if (PrivateServerEnabled.Value) {
+                psLink := PrivateServerURLBox.Value
+                if (psLink != "") {
+                    serverCode := GetPrivateServerCode(psLink)
+                    deepLink := "roblox://experiences/start?placeId=12886143095&linkCode=" serverCode
+                    if (WinExist("ahk_exe RobloxPlayerBeta.exe")) {
+                        WinClose("ahk_exe RobloxPlayerBeta.exe")
+                        Sleep(3000)
+                    }
+                    AddToLog("Retrying private server connection...")
+                    Run(serverCode = "" ? psLink : deepLink)
+                    WinWait("ahk_exe RobloxPlayerBeta.exe", , 15)
+                }
+            } else {
+                Run("roblox://placeID=12886143095")
+                WinWait("ahk_exe RobloxPlayerBeta.exe", , 15)
+            }
         }
 
-        if (isInLobby()) {
-            AddToLog("Reconnected Successfully!")
-            return StartSelectedMode()
-        } else {
-            Reconnect()
-        }
+        Sleep(1000)
+        AddToLog("Reconnected Successfully!")
+        return StartSelectedMode()
     }
-}
-
-PlaceUnit(x, y, slot := 1) {
-    ; Select the unit slot
-    SendInput(slot)
-    Sleep 300  ; Slightly reduced for responsiveness
-
-    ; First click to prepare placement
-    FixClick(x, y)
-    Sleep 75
-
-    ; Confirm placement with 'x' key
-    SendInput("x")
-    Sleep 500
-
-    wiggle()
-
-    ; Second click to confirm the placement location
-    FixClick(x, y)
-    Sleep 75
-
-    ; Check if the unit was successfully placed
-    if (UnitPlaced()) {
-        return true
-    }
-
-    return false
 }
 
 MaxUpgrade() {
@@ -798,43 +540,6 @@ MaxUpgrade() {
         return true
     }
     return false
-}
-
-UnitPlaced() {
-    if (WaitForUpgradeText(GetPlacementSpeed())) { ; Wait up to 4.5 seconds for the upgrade text to appear
-        AddToLog("Unit Placed Successfully")
-        return true
-    }
-    return false
-}
-
-HandleAutoAbility(slotNum) {
-    if !AutoAbilityBox.Value
-        return
-
-    if (NukeUnitSlotEnabled.Value && slotNum == NukeUnitSlot.Value) {
-        return
-    }
-
-    wiggle()
-
-    pixelChecks := [
-        {color: 0xC22725, x: 539, y: 285},
-        {color: 0xC22725, x: 539, y: 268},
-        {color: 0xC22725, x: 539, y: 303},
-
-        {color: 0xC22725, x: 326, y: 284}, ; Left Side
-        {color: 0xC22725, x: 326, y: 265},
-        {color: 0xC22725, x: 326, y: 303}
-    ]
-
-    for pixel in pixelChecks {
-        if GetPixel(pixel.color, pixel.x, pixel.y, 4, 4, 20) {
-            AddToLog("Enabled Auto Ability")
-            FixClick(pixel.x, pixel.y)
-            Sleep(500)
-        }
-    }
 }
 
 HandleAutoAbilityUnitManager() {
@@ -923,33 +628,27 @@ StartedGame() {
 
 StartSelectedMode() {
 
-    if (ModeDropdown.Text != "Custom") {
+    if (StartsInLobby(ModeDropdown.Text) || StartsInLobby(EventDropdown.Text)) {
         CloseLobbyPopups()
     }
 
-    if (ModeDropdown.Text = "Dungeon") {
-        StartDungeonMode
-    }
-    else if (ModeDropdown.Text = "Story") {
-        StartStoryMode()
-    }
-    else if (ModeDropdown.Text = "Boss Rush") {
-        StartBossRush()
-    }
-    else if (ModeDropdown.Text = "Raid") {
-        StartRaidMode()
-    }
-    else if (ModeDropdown.Text = "Custom") {
-        CustomMode()
-    }
-    else if (ModeDropdown.Text = "Portal") {
-        StartPortalMode()
-    }
-    else if (ModeDropdown.Text = "Survival") {
-        StartSurvivalMode()
-    }
-    else if (ModeDropdown.Text = "Halloween Event") {
-        StartHalloweenEvent()
+    switch (ModeDropdown.Text) {
+        case "Dungeon":
+            StartDungeonMode()
+        case "Story":
+            StartStoryMode()
+        case "Boss Rush":
+            StartBossRush()
+        case "Raid":
+            StartRaidMode()
+        case "Custom":
+            CustomMode()
+        case "Portal":
+            StartPortalMode()
+        case "Survival":
+            StartSurvivalMode()
+        case "Event":
+            StartEvent()
     }
 }
 
@@ -990,14 +689,6 @@ ClickUntilGone(x, y, searchX1, searchY1, searchX2, searchY2, textToFind, offsetX
         }
         Sleep(1000)
     }
-}
-
-GetPlacementSpeed() {
-    speeds := [1000, 1500, 2000, 2500, 3000, 4000]  ; Array of sleep values
-    speedIndex := PlaceSpeed.Value  ; Get the selected speed value
-
-    if speedIndex is number  ; Ensure it's a number
-        return speeds[speedIndex]  ; Use the value directly from the array
 }
 
 ClickReturnToLobby() {
@@ -1102,39 +793,10 @@ DetectAngle(mode := "Story") {
     return 0
 }
 
-PostPlacementChecks() {
-    HandleStartButton()
-
-    if (CheckForLobby()) {
-        AddToLog("Found in lobby, restarting mode if possible")
-        return CheckLobby()
-    }
-
-    if CheckForXp() {
-        return MonitorStage()
-    }
-
-    if (HasCards(ModeDropdown.Text)) {
-        CheckForCardSelection()
-    }
-
-    CheckForPortalSelection()
-
-    Reconnect()
-
-}
-
 HandleStageEnd(waveRestart := false) {
-    global challengeStartTime
     AddToLog("Stage ended during upgrades, proceeding to results")
     ResetPlacementTracking()
     return MonitorStage()
-}
-
-ResetPlacementTracking() {
-    global successfulCoordinates, maxedCoordinates
-    successfulCoordinates := []
-    maxedCoordinates := []
 }
 
 CheckForStartButton() {
@@ -1151,7 +813,7 @@ HandleStartButton() {
 
 StartsInLobby(ModeName) {
     ; Array of modes that usually start in lobby
-    static modes := ["Story", "Boss Rush", "Raid", "Challenge", "Dungeon", "Portal", "Survival", "Halloween Event"]
+    static modes := ["Story", "Boss Rush", "Raid", "Challenge", "Dungeon", "Portal", "Survival", "Event"]
     
     ; Special case: If PortalLobby.Value is set, don't start in lobby for "Portal"
     if (ModeName = "Portal" && !PortalLobby.Value)
@@ -1167,7 +829,7 @@ StartsInLobby(ModeName) {
 
 HasCards(ModeName) {
     ; Array of modes that have card selection
-    static modesWithCards := ["Boss Rush", "Halloween Event"]
+    static modesWithCards := ["Boss Rush", "Halloween", "Halloween P2"]
     
     ; Check if current mode is in the array
     for mode in modesWithCards {

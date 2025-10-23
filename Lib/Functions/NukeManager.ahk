@@ -60,7 +60,7 @@ GetNukeDelay() {
     return Round(ms * 1000)
 }
 
-Nuke() {
+Nuke(lookingForWave := false, testing := false) {
     global nukeCoords, alreadyNuked, nukeTimerActive, nukeScheduledTime, waitingToNuke
 
     if (nukeTimerActive)
@@ -68,12 +68,17 @@ Nuke() {
 
     nukeTimerActive := true
 
-    if (PrepareToNuke()) {
+    if (PrepareToNuke() || testing) {
         Sleep(150)
 
         if (isMenuOpen("End Screen")) {
             ClearNuke()
             return MonitorStage()
+        }
+
+        if (lookingForWave) {
+            AddToLog("Waiting " GetNukeDelay() / 1000 "s before nuking...")
+            Sleep(GetNukeDelay())
         }
 
         FixClick(nukeCoords.x, nukeCoords.y) ; click nuke
@@ -85,8 +90,6 @@ Nuke() {
         nukeScheduledTime := A_TickCount + GetNukeDelay() ; For logging purposes
     }
 }
-
-
 
 HandleNuke() {
     global alreadyNuked, nukeTimerActive, nukeScheduledTime
@@ -194,7 +197,7 @@ WatchForTargetWave() {
 
     if (HandleSpecificWaveNuke() && !waitingToNuke) {
         AddToLog("Wave " NukeWave.Text " found. Nuking...")
-        Nuke()
+        Nuke(true, false)
         alreadyNuked := true
         SetTimer(WatchForTargetWave, 0) ; stop checking after nuke
     }

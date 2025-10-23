@@ -46,7 +46,7 @@ OpenCardPriorityPicker() {
 
 
 SelectCardsByMode() {
-    if (ModeDropdown.Text = "Halloween Event") {
+    if (EventDropdown.Text = "Halloween") {
         return SelectCards("Halloween")
     }
     else if (ModeDropdown.Text = "Boss Rush") {
@@ -420,15 +420,48 @@ LoadAllCardConfig() {
 ; === Helper Functions ===
 
 OnDropDownChange(ctrl, index) {
-    if (index >= 0 and index <= 19) {
+    if (index >= 0 && index <= dropDowns.Length) {
         newPriority := ctrl.Text
+        used := Map()
+        originalOptions := currentConfig["options"].Clone()
+
+        ; First, collect all selected options (after change)
         for i, dropdown in dropDowns {
-            if (i != index && dropdown.Text = newPriority) {
-                AddToLog(Format("{} already exists for priority {}, don't forget to change it!", newPriority, i))
-                break
+            if (i == index) {
+                used[newPriority] := i  ; new value just selected
+            } else {
+                used[dropdown.Text] := i
             }
         }
-        currentConfig["options"][index] := newPriority
+
+        ; Find missing option(s)
+        missing := []
+        for _, opt in originalOptions {
+            if !used.Has(opt) {
+                missing.Push(opt)
+            }
+        }
+
+        ; Check for duplicates and fix them
+        for i, dropdown in dropDowns {
+            if (i != index && dropdown.Text = newPriority) {
+                if (missing.Length > 0) {
+                    replacement := missing.Pop()
+                    dropdown.Text := replacement
+                    if (debugMessages) {
+                        AddToLog(Format("Card '{}' replaced with '{}'", newPriority, replacement))
+                    }
+                } else {
+                    AddToLog("Warning: No available replacement for duplicate value.")
+                }
+            }
+        }
+
+        ; Update options based on new dropdown states
+        for i, dropdown in dropDowns {
+            currentConfig["options"][i] := dropdown.Text
+        }
+
         AddToLog(Format("Priority {} set to {}", index, newPriority))
         RemoveEmptyStrings(priorityOrder)
         SaveNewCardConfigToFile(currentConfig["filePath"])
@@ -630,11 +663,11 @@ ImportCardConfig(modeName) {
         FileAppend("[CardPriority]`n", targetFile)
         for index, name in loadedOptions {
             FileAppend(name "=" index "`n", targetFile)
-            AddToLog("Added " name " with priority " index)
         }
 
         config["options"] := loadedOptions
         AddToLog("✅ Imported and replaced card config for mode: " modeName)
+        SaveNewCardConfigToFile(modeName)
 
         ; Update all the dropdowns
         for index, dd in dropDowns {
@@ -644,7 +677,6 @@ ImportCardConfig(modeName) {
         AddToLog("❌ Failed to write new card config: " e.Message)
     }
 }
-
 
 ExportAllCardConfigs() {
     global CardModeConfigs

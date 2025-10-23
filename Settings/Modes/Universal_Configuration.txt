@@ -19,5 +19,4 @@ Nightmare Difficulty=0
 [Placement Settings]
 Placement Pattern=1
 Placement Order=2
-Placement Profile=1
 Placement Speed=3
