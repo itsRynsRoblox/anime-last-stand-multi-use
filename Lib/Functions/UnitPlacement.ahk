@@ -85,6 +85,11 @@ StartPlacingUnits(untilSuccessful := true) {
     else
         placementPoints := GenerateRandomPoints()
 
+    if (!placementPoints) {
+        AddToLog("No placement points - skipping to monitoring")
+        return MonitorStage()
+    }
+
     ; Use user-defined placement order to iterate through slots
     for slotNum in placementOrder {
         enabled := "enabled" slotNum
@@ -296,6 +301,8 @@ PostPlacementChecks() {
     if (HasCards(ModeDropdown.Text) || HasCards(EventDropdown.Text)) {
         CheckForCardSelection()
     }
+
+    CheckShouldRestart()
 
     CheckForPortalSelection()
 

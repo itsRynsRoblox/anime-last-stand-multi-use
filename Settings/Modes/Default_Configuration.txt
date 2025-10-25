@@ -1,9 +1,9 @@
 [Unit Settings]
 Enabled1=1
 Enabled2=1
-Enabled3=1
-Enabled4=1
-Enabled5=1
+Enabled3=0
+Enabled4=0
+Enabled5=0
 Enabled6=1
 Placement1=1
 Placement2=1
@@ -13,22 +13,22 @@ Placement5=1
 Placement6=1
 Priority1=1
 Priority2=2
-Priority3=3
+Priority3=2
 Priority4=4
 Priority5=5
-Priority6=6
+Priority6=1
 UpgradePriority1=1
 UpgradePriority2=2
-UpgradePriority3=3
+UpgradePriority3=1
 UpgradePriority4=4
 UpgradePriority5=5
-UpgradePriority6=6
-UpgradeEnabled1=0
-UpgradeEnabled2=0
+UpgradePriority6=1
+UpgradeEnabled1=1
+UpgradeEnabled2=1
 UpgradeEnabled3=0
 UpgradeEnabled4=0
 UpgradeEnabled5=0
-UpgradeEnabled6=0
+UpgradeEnabled6=1
 AbilityEnabled1=0
 AbilityEnabled2=0
 AbilityEnabled3=0
@@ -54,9 +54,11 @@ AutoAbilityTimer=60
 
 [Zoom Settings]
 ZoomLevel=20
+Use Zoom Tech=1
+Zoom In Then Out=0
+Teleport To Spawn=0
 
 [Upgrade Settings]
-Unit Manager Auto Upgrade=1
 Unit Manager Upgrade System=1
 Priority Upgrade=1
 
@@ -78,3 +80,6 @@ Slot 3 Minion=0
 Slot 4 Minion=0
 Slot 5 Minion=0
 Slot 6 Minion=0
+[Halloween Settings]
+Halloween Restart Enabled=1
+Halloween Restart Timer=240

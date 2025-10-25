@@ -1,60 +1,8 @@
 #Requires AutoHotkey v2.0
 
-;Custom Walk
-global waitingForWalk := false
-global walkStartTime := 0
-
-StartWalkCapture() {
-    global savedWalkCoords
-
-    ; Make sure savedWalkCoords exists
-    if !IsSet(savedWalkCoords) || !(savedWalkCoords is Map)
-        savedWalkCoords := Map()
-
-    ; Get current map from dropdown
-    mapName := WalkMapDropdown.Text
-
-    ; Clear only this map's data before capturing
-    if mapName != ""
-        savedWalkCoords[mapName] := []
-
-    ; Activate Roblox window
-    if (WinExist(rblxID)) {
-        WinActivate(rblxID)
-    }
-
-    AddWaitingFor("Walk")
-    AddToLog("Press LShift to stop coordinate capture")
-    SetTimer UpdateTooltip, 50  ; Update tooltip position
-}
-
-WalkToCoords() {
-    global savedWalkCoords
-
-    mapName := GetMapForMode(ModeDropdown.Text)
-
-    if (waitingForClick) {
-        AddToLog("⚠️ Cannot test walk while capturing coordinates.")
-        return
-    }
-
-    if (!savedWalkCoords.Has(mapName) || savedWalkCoords[mapName].Length = 0) {
-        return
-    }
-
-    for coord in savedWalkCoords[mapName] {
-        Sleep(coord.delay)
-        AddToLog("Walking to: x: " coord.x ", y: " coord.y ", delay: " coord.delay "ms")
-        FixClick(coord.x, coord.y, "Right")
-    }
-}
-
-GetOrInitWalkCoords(mapName) {
-    global savedWalkCoords
-    if !savedWalkCoords.Has(mapName)
-        savedWalkCoords[mapName] := []
-    return savedWalkCoords[mapName]
-}
+global movementKeys := ["w", "a", "s", "d"]
+global activeHotkeys := []
+global firstKeyPressed := false
 
 Walk(direction, duration) {
     key := "{" . direction . " down}"
@@ -64,89 +12,6 @@ Walk(direction, duration) {
     SendInput(key)
     KeyWait direction
     Sleep(1000)  ; Optional pause after each movement
-}
-
-SaveCustomWalk() {
-    global savedWalkCoords
-
-    filePath := A_ScriptDir "\Settings\CustomWalk.txt"
-
-    file := FileOpen(filePath, "w")  ; 'w' = write mode (clears file)
-    if !IsObject(file) {
-        AddToLog("❌ Failed to open file for writing: " filePath)
-        return
-    }
-
-    for mapName, coords in savedWalkCoords {
-        for _, point in coords {
-            line := mapName "," point.x "," point.y "," point.delay "`n"
-            file.Write(line)
-        }
-    }
-
-    file.Close()
-}
-
-LoadCustomWalk() {
-    global savedWalkCoords
-    savedWalkCoords := Map()  ; clear before loading
-
-    filePath := A_ScriptDir "\Settings\CustomWalk.txt"
-
-    if !FileExist(filePath) {
-        AddToLog("❌ Save file not found: " filePath)
-        return
-    }
-
-    file := FileOpen(filePath, "r")
-    if !IsObject(file) {
-        AddToLog("❌ Failed to open file: " filePath)
-        return
-    }
-
-    while !file.AtEOF {
-        line := file.ReadLine()
-        if (line = "")  ; skip blank lines
-            continue
-
-        parts := StrSplit(line, ",")
-        if (parts.Length < 4)
-            continue
-
-        mapName := parts[1]
-        x := parts[2] + 0
-        y := parts[3] + 0
-        delay := parts[4] + 0
-
-        if !savedWalkCoords.Has(mapName)
-            savedWalkCoords[mapName] := []
-
-        savedWalkCoords[mapName].Push({ x: x, y: y, delay: delay, mapName: mapName })
-    }
-    file.Close()
-}
-
-PrintSavedCoordsSummary() {
-    global savedWalkCoords
-    for mapName, coords in savedWalkCoords {
-        AddToLog("Map: " mapName " has " coords.Length() " coordinates saved.")
-    }
-}
-
-DeleteWalkCoordsForPreset(mapName) {
-    global savedWalkCoords
-
-    if !(savedWalkCoords is Map)
-        savedWalkCoords := Map()
-
-    ; If the map exists and has coords, remove it
-    if savedWalkCoords.Has(mapName) && savedWalkCoords[mapName].Length > 0 {
-        savedWalkCoords.Delete(mapName)
-        AddToLog("🗑️ Removed all walk data for map: " mapName)
-        SaveCustomWalk()
-    } else {
-        AddToLog("⚠️ No walk coordinates to remove for map: " mapName)
-    }
 }
 
 GetMapForMode(mode) {
@@ -159,90 +24,274 @@ GetMapForMode(mode) {
             return RaidDropdown.Text
         case "Portal":
             return PortalDropdown.Text
+        case "Event":
+            return EventDropdown.Text
         case "Custom":
-            return "Custom" 
+            return WalkMapDropdown.Text
     }
     return ""
 }
 
-ExportWalkCoords(mapName) {
-    global savedWalkCoords
+; === Start of new walk functions ===
 
-    mapName := Trim(mapName)
-    if mapName = "" || !savedWalkCoords.Has(mapName) || savedWalkCoords[mapName].Length = 0 {
-        AddToLog("⚠️ No coordinates found for map: " mapName)
-        return
+StartRecordingWalk(*) {
+    global recording, allWalks, keyDownTimes, lastActionTime, activeHotkeys, movementKeys, firstKeyPressed
+
+    mapName := WalkMapDropdown.Text
+
+    if !allWalks.Has(mapName)
+        allWalks[mapName] := []
+    allWalks[mapName] := [] ; clear old recording
+    recording := true
+    keyDownTimes := Map()
+    lastActionTime := A_TickCount
+    firstKeyPressed := false
+    AddToLog("Starting map movement recording for: " mapName)
+    AddToLog("Press LShift to stop recording")
+    for key in movementKeys {
+        downHK := Hotkey("~*" key, RecordKeyDown.Bind(key))
+        upHK := Hotkey("~*" key " up", RecordKeyUp.Bind(key))
+        activeHotkeys.Push(downHK)
+        activeHotkeys.Push(upHK)
     }
 
-    exportDir := A_ScriptDir "\Settings\Export"
-    exportFile := exportDir "\" mapName " Coords.txt"
-
-    file := FileOpen(exportFile, "w")
-    if !IsObject(file) {
-        AddToLog("❌ Failed to export file for map: " mapName)
-        return
+    if (!WinActivate(rblxID)) {
+        WinActivate(rblxID)
     }
-
-    for _, point in savedWalkCoords[mapName] {
-        line := mapName "," point.x "," point.y "," point.delay "`n"
-        file.Write(line)
-    }
-
-    file.Close()
-    AddToLog("📤 Exported " savedWalkCoords[mapName].Length " coords to → Settings\Export")
 }
 
-ImportWalkCoordsFromFile() {
-    global savedWalkCoords, MainUI
+StopRecordingWalk(*) {
+    global recording, activeHotkeys
 
-    ; Ensure savedWalkCoords is initialized
-    if !IsSet(savedWalkCoords) || !(savedWalkCoords is Map)
-        savedWalkCoords := Map()
+    if !recording
+        return
 
-    ; Temporarily disable AlwaysOnTop for file dialog
+    recording := false
+    AddToLog("Movement recording stopped, saving...")
+
+    for hk in activeHotkeys {
+        try hk.Delete
+    }
+    activeHotkeys := []  ; clear list
+    SaveAllMovements()
+}
+
+RecordKeyDown(key, *) {
+    global recording, keyDownTimes
+    if !recording
+        return
+    if !keyDownTimes.Has(key)
+        keyDownTimes[key] := A_TickCount
+}
+
+RecordKeyUp(key, *) {
+    global recording, allWalks, keyDownTimes, lastActionTime, firstKeyPressed
+    if !recording || !keyDownTimes.Has(key)
+        return
+
+    currentMap := WalkMapDropdown.Text
+    now := A_TickCount
+    pressStart := keyDownTimes[key]
+    duration := now - pressStart
+
+    if !firstKeyPressed {
+        delay := 0
+        firstKeyPressed := true
+    } else {
+        delay := pressStart - lastActionTime
+    }
+
+    lastActionTime := now
+    keyDownTimes.Delete(key)
+    entry := { key: key, duration: duration, delay: delay }
+    allWalks[currentMap].Push(entry)
+    AddToLog("Registered Key: " key " (" duration " ms, +" delay " ms delay)")
+}
+
+StartWalk(testing := false) {
+    global allWalks
+
+    currentMap := testing ? WalkMapDropdown.Text : GetMapForMode(ModeDropdown.Text)
+
+    if !allWalks.Has(currentMap) || allWalks[currentMap].Length = 0 {
+        if (debugMessages) {
+            AddToLog("No recording for map: " currentMap)
+        }
+        return false
+    }
+
+    if (!WinActivate(rblxID)) {
+        WinActivate(rblxID)
+    }
+
+    data := allWalks[currentMap]
+
+    for entry in data {
+        AddToLog("[Walking] Sending Key: " entry.key ", Duration: " entry.duration "ms , Delay: " entry.delay "ms")
+        Sleep(entry.delay)
+        Send("{" entry.key " down}")
+        Sleep(entry.duration)
+        Send("{" entry.key " up}")
+        KeyWait entry.key
+    }
+    return true
+}
+
+SaveAllMovements(*) {
+    global allWalks
+    try {
+        folder := A_ScriptDir "\Settings"
+        if !DirExist(folder)
+            DirCreate(folder)
+
+        file := FileOpen(folder "\CustomMovements.txt", "w", "UTF-8")
+        for mapName, actions in allWalks {
+            for entry in actions {
+                line := Format("{},{},{},{}`n", mapName, entry.key, entry.duration, entry.delay)
+                file.Write(line)
+            }
+        }
+        file.Close()
+    } catch Error {
+        AddToLog("Error saving custom movements: " Error)
+    }
+}
+
+LoadAllMovements(*) {
+    global allWalks
+    if !FileExist(A_ScriptDir "\Settings\CustomMovements.txt") {
+        FileAppend("", A_ScriptDir "\Settings\CustomMovements.txt")
+        return
+    }
+
+    allWalks := Map()
+    for line in StrSplit(FileRead(A_ScriptDir "\Settings\CustomMovements.txt", "UTF-8"), "`n") {
+        if (Trim(line) = "")
+            continue
+        parts := StrSplit(line, ",")
+        if (parts.Length < 4)
+            continue
+
+        mapName := parts[1]
+        key := parts[2]
+        duration := parts[3]
+        delay := parts[4]
+
+        if !allWalks.Has(mapName)
+            allWalks[mapName] := []
+
+        allWalks[mapName].Push({ key: key, duration: duration, delay: delay })
+    }
+}
+
+ExportMovements(mapName := "") {
+    global allWalks
+
+    exportDir := A_ScriptDir "\Settings\Export"
+    if !DirExist(exportDir)
+        DirCreate(exportDir)
+
+    ; Default: export all maps
+    if (mapName = "") {
+        filePath := exportDir "\Exported Movements - All.txt"
+        AddToLog("Exporting all maps to " filePath)
+        entries := allWalks
+    } else if !allWalks.Has(mapName) {
+        AddToLog("No recording found for map: " mapName)
+        return
+    } else {
+        filePath := exportDir "\Exported Movements - " mapName ".txt"
+        AddToLog("Exporting map '" mapName "' to " filePath)
+        entries := Map()
+        entries[mapName] := allWalks[mapName]
+    }
+
+    try {
+        file := FileOpen(filePath, "w", "UTF-8")
+        for mName, actions in entries {
+            for entry in actions {
+                line := Format("{},{},{},{}`n", mName, entry.key, entry.duration, entry.delay)
+                file.Write(line)
+            }
+        }
+        file.Close()
+        AddToLog("✅ Export successful.")
+    } catch Error {
+        AddToLog("❌ Export failed: " Error)
+    }
+}
+
+ImportMovements(*) {
+    global allWalks
+
+    ; Ensure allWalks exists
+    if !IsObject(allWalks)
+        allWalks := Map()
+
     MainUI.Opt("-AlwaysOnTop")
     Sleep(100)
 
-    file := FileSelect(3, , "Select a walk path to import", "Text Documents (*.txt)")
+    ; Prompt user to select file
+    filePath := FileSelect("Select a movement file to import", "", A_ScriptDir "\Settings", "Text Files (*.txt)")
+
     MainUI.Opt("+AlwaysOnTop")
 
-    if !file
+    if filePath = ""
         return
 
-    content := FileRead(file)
-    lines := StrSplit(content, "`n")
-
-    importedMap := ""
-    coordList := []
-
-    for line in lines {
-        line := Trim(line)
-        if (line = "")
-            continue
-
-        parts := StrSplit(line, ",")
-        if parts.Length < 4
-            continue
-
-        mapName := Trim(parts[1])
-        x := parts[2] + 0
-        y := parts[3] + 0
-        delay := parts[4] + 0
-
-        if importedMap = ""
-            importedMap := mapName  ; Use map from first line
-
-        coordList.Push({ x: x, y: y, delay: delay, mapName: mapName })
-    }
-
-    if coordList.Length = 0 {
-        AddToLog("⚠️ No valid coordinates found in the file.")
+    if !FileExist(filePath) {
         return
     }
 
-    savedWalkCoords[importedMap] := coordList
-    AddToLog("📥 Imported " coordList.Length " coords for map: " importedMap)
+    try {
+        content := FileRead(filePath, "UTF-8")
+        lines := StrSplit(content, "`n")
+        importedCount := 0
+        replacedMaps := Map()  ; keep track of which maps are replaced
 
-    ; Optional: Save after importing
-    SaveCustomWalk()
+        for line in lines {
+            line := Trim(line, "`r`n ") ; remove CRLF and spaces
+            if (line = "")
+                continue
+
+            parts := StrSplit(line, ",")
+            if (parts.Length < 4) {
+                AddToLog("⚠ Skipping malformed line: " line)
+                continue
+            }
+
+            mapName := parts[1]
+            key := parts[2]
+            duration := parts[3]
+            delay := parts[4]
+
+            ; If this is the first time we see this map in this import, clear old data
+            if !replacedMaps.Has(mapName) {
+                allWalks[mapName] := []  ; replace existing map
+                replacedMaps[mapName] := true
+            }
+
+            allWalks[mapName].Push({ key: key, duration: duration, delay: delay })
+            importedCount++
+        }
+
+        AddToLog("✅ Imported " importedCount " movement(s)")
+        SaveAllMovements()
+    } catch Error {
+        AddToLog("❌ Import failed")
+    }
+}
+
+ClearMovement(*) {
+    global allWalks
+    mapName := WalkMapDropdown.Text
+
+    if !allWalks.Has(mapName) {
+        AddToLog("No recording found for map: " mapName)
+        return
+    }
+
+    AddToLog("Clearing movements for map: " mapName)
+    allWalks.Delete(mapName)
+    SaveAllMovements()
 }

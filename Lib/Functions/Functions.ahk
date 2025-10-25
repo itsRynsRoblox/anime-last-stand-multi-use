@@ -36,6 +36,10 @@ OnModeChange(*) {
     for ctrl in [StoryDropdown, StoryActDropdown, BossRushDropdown, LegendDropDown, RaidDropdown, RaidActDropdown, DungeonDropdown, PortalDropdown, PortalRoleDropdown, SiegeDropdown, SurvivalDropdown, EventDropdown]
         ctrl.Visible := false
 
+    if (ActiveControlGroup = "Mode") {
+        ToggleControlGroup(ModeDropdown.Text)
+    }
+
     ; Show based on selection
     switch ModeDropdown.Text {
         case "Event":
@@ -96,7 +100,7 @@ OnRaidChange(*) {
 OnPlacementChange(*) {
     if (PlacementPatternDropdown.Text = "Custom") {
         enabledPlacements := UseCustomPoints()
-        if (enabledPlacements.Length <= 0) {
+        if (!enabledPlacements) {
             AddToLog("No placements set, please set at least one placement!")
         }
     }
@@ -355,14 +359,17 @@ CloseLobbyPopups() {
 }
 
 ClickUnit(slot, forNuke := false) {
-    global totalUnits := successfulCoordinates.Length
+    global totalUnits
     baseX := 585
     baseY := 175
     colSpacing := 80
     rowSpacing := 115
     maxCols := 3
 
-    totalCount := totalUnits
+    totalCount := 0
+    for _, count in totalUnits {
+        totalCount += count
+    }
 
     fullRows := Floor(totalCount / maxCols)
     lastRowUnits := Mod(totalCount, maxCols)
@@ -636,4 +643,16 @@ isInLobby() {
 
 UpdateActiveConfiguration(*) {
     ToggleControlGroup(ConfigurationDropdown.Text)
+}
+
+CloseLeaderboard(inLobby := true) {
+    if (inLobby) {
+        if (ok := FindText(&X, &Y, 632, 93, 656, 115, 0.1, 0.1, OpenLeaderboard)) {
+            SendInput("{Tab}")
+        }
+    } else {
+        if (ok := FindText(&X, &Y, 482, 97, 499, 111, 0.15, 0.15, OpenLeaderboard)) {
+            SendInput("{Tab}")
+        }
+    }
 }

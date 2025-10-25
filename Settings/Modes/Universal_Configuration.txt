@@ -1,7 +1,7 @@
 [Universal Settings]
 Next Level=0
 Return To Lobby=1
-Seamless Replay=1
+Seamless Replay=0
 Using Mode Configurations=0
 
 [Webhook Settings]
@@ -17,6 +17,6 @@ Private Server URL=
 Nightmare Difficulty=0
 
 [Placement Settings]
-Placement Pattern=1
+Placement Pattern=2
 Placement Order=2
 Placement Speed=3

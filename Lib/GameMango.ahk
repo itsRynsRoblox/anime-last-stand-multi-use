@@ -10,7 +10,7 @@ Hotkey(F3Key, (*) => Reload())
 Hotkey(F4Key, (*) => TogglePause())
 
 F5:: {
-
+    HandleStartButton()
 }
 
 F6:: {
@@ -18,7 +18,7 @@ F6:: {
 }
 
 F7:: {
-    CopyMouseCoords(false)
+    CopyMouseCoords(true)
 }
 
 F8:: {
@@ -145,6 +145,8 @@ MonitorStage() {
         ; --- Fallback if disconnected ---
         Reconnect()
 
+        CheckShouldRestart()
+
         ; --- Wait for XP/Results screen ---
         if (!CheckForXp())
             continue
@@ -152,6 +154,10 @@ MonitorStage() {
         ; --- Handle Auto Ability ---
         if (AutoAbilityBox.Value) {
             SetTimer(CheckAutoAbility, 0)
+        }
+
+        if (EventDropdown.Text = "Halloween P2" && HalloweenRestart.Value) {
+            SetTimer(StartRestartStage, 0)
         }
 
         if (NukeUnitSlotEnabled.Value) {
@@ -304,15 +310,16 @@ PlayHere(mode := "Story") {
 Zoom() {
     WinActivate(rblxID)
     Sleep 100
+
     MouseMove(400, 300)
     Sleep 100
 
-    ; Zoom in smoothly
-    Scroll(20, "WheelUp", 50)
-
-    ; Look down
-    Click
-    MouseMove(400, 400)  ; Move mouse down to angle camera down
+    if (ZoomInOption.Value) {
+        Scroll(20, "WheelUp", 50)
+        ; Look down
+        Click
+        MouseMove(400, 400)  ; Move mouse down to angle camera down
+    }
     
     ; Zoom back out smoothly
     Scroll(Integer(ZoomBox.Value), "WheelDown", 50)
@@ -347,6 +354,10 @@ CloseChat() {
 BasicSetup(usedButton := false) {
     global firstStartup
 
+    if (!WinActivate(rblxID)) {
+        WinActivate(rblxID)
+    }
+
     ; Skip setup entirely if Seamless is enabled
     if (SeamlessToggle.Value) {
         if (!firstStartup) {
@@ -358,24 +369,26 @@ BasicSetup(usedButton := false) {
     ; Close various UI elements
 
     CloseChat()
-    Sleep 300
+    Sleep 250
+    CloseLeaderboard(false)
+    Sleep 250
 
     if (ModeDropdown.Text = "Custom" && SeamlessToggle.Value && !usedButton || ModeDropdown.Text == "Portal" && SeamlessToggle.Value) {
         return
     }
 
-    Zoom()
+    if (ZoomTech.Value) {
+        Zoom()
+    }
 
-    ; Teleport to spawn
-    TeleportToSpawn()
-
-    FixClick(487, 72) ; Closes Player leaderboard
-    Sleep 300
-
-    if (EventDropdown.Text = "Halloween P2") {
-        WalkToHalloweenPath()
-    } else {
-        WalkToCoords()
+    if (ZoomTeleport.Value) {
+        TeleportToSpawn()
+    }
+    
+    if (!StartWalk(usedButton)) {
+        if (ModeDropdown.Text = "Event" && !usedButton) {
+            HandleEventMovement()
+        }
     }
 
     if (SeamlessToggle.Value && !usedButton) {
@@ -419,6 +432,10 @@ RestartStage() {
     
     ; Wait for loading
     CheckLoaded()
+
+    if (EventDropdown.Text = "Halloween P2" && HalloweenRestart.Value) {
+        TimerManager.Start("RestartStage", HalloweenRestartTimer.Value * 1000)
+    }
 
     BasicSetup()
 
@@ -612,7 +629,6 @@ CheckLoaded() {
         
         if (ok := FindText(&X, &Y, 14, 596, 39, 616, 0.20, 0.20, IngameQuests)) {
             AddToLog("Successfully Loaded In")
-            Sleep(500)
             break
         }
 
@@ -621,8 +637,9 @@ CheckLoaded() {
 }
 
 StartedGame() {
-    AddToLog("Game started")
     global stageStartTime := A_TickCount
+    HandleStartButton()
+    AddToLog("Game started")
     StartNukeTimer()
 }
 

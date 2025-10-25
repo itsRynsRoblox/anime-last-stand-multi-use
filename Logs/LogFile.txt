@@ -1,0 +1,51 @@
+
+==Ryn's Anime Last Stand Macro v1.7.8==
+Start Time: [10:33:51 AM]
+Settings successfully loaded for mode: Default 00:00
+
+==Ryn's Anime Last Stand Macro v1.7.8==
+Start Time: [10:34:49 AM]
+Settings successfully loaded for mode: Default 00:00
+Start button found, clicking to start stage 00:02
+
+==Ryn's Anime Last Stand Macro v1.7.8==
+Start Time: [10:35:31 AM]
+Settings successfully loaded for mode: Default 00:00
+Saved settings for mode: Default 00:08
+Saved settings for mode: Default 00:10
+Selected Custom 00:13
+Press LShift to stop coordinate capture 00:17
+[Map: Custom] SavedX: 592, Y: 309 | Set: 1 00:19
+[Map: Custom] SavedX: 559, Y: 401 | Set: 2 00:19
+Stopping coordinate capture 00:19
+Saved settings for mode: Default 00:20
+Starting Custom Mode 00:22
+Successfully Loaded In 00:22
+Game started 00:24
+Points: 2 00:25
+Placing Unit 1 (0/1) 00:25
+Unit Placed Successfully 00:26
+Placed Unit 1 (1/1) 00:26
+Enabled auto-upgrade for unit 1 00:27
+Opening Unit Manager 00:27
+Click 1 at X690.0, Y215 00:28
+Enabled auto-upgrade for unit 1 00:28
+Closing Unit Manager 00:28
+Placing Unit 6 (0/1) 00:29
+Unit Placed Successfully 00:39
+Placed Unit 6 (1/1) 00:39
+Enabled auto-upgrade for unit 6 00:39
+Opening Unit Manager 00:39
+Click 1 at X730.0, Y215 00:40
+Enabled auto-upgrade for unit 2 00:41
+Closing Unit Manager 00:41
+Placing Unit 2 (0/1) 00:42
+All units placed to requested amounts 00:42
+Opening Unit Manager 00:42
+Using priority upgrade system 00:43
+All units maxed, proceeding to monitor stage 00:43
+Closing Unit Manager 00:43
+
+==Ryn's Anime Last Stand Macro v1.7.8==
+Start Time: [10:38:30 AM]
+Settings successfully loaded for mode: Default 00:00

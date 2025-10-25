@@ -8,3 +8,10 @@ StartEvent() {
             StartHalloweenEvent(true)
     }
 }
+
+HandleEventMovement() {
+    switch (EventDropdown.Text) {
+        case "Halloween P2":
+            WalkToHalloweenPath()
+    }
+}

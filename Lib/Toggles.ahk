@@ -4,3 +4,4 @@ global debugMessages := false
 
 global autoAbilityDisabled := false
 global unitUpgradeLimitDisabled := false
+global testingHalloween := false

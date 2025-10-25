@@ -82,6 +82,9 @@ SaveSettingsForMode(*) {
 
         content .= "`n`n[Zoom Settings]"
         content .= "`nZoomLevel=" ZoomBox.Value
+        content .= "`nUse Zoom Tech=" ZoomTech.Value
+        content .= "`nZoom In Then Out=" ZoomInOption.Value
+        content .= "`nTeleport To Spawn=" ZoomTeleport.Value
 
         content .= "`n`n[Upgrade Settings]"
         content .= "`nUnit Manager Upgrade System=" UnitManagerUpgradeSystem.Value
@@ -106,9 +109,14 @@ SaveSettingsForMode(*) {
         content .= "`nSlot 5 Minion=" MinionSlot5.Value
         content .= "`nSlot 6 Minion=" MinionSlot6.Value
 
+        content .= "`n[Halloween Settings]"
+        content .= "`nHalloween Restart Enabled=" HalloweenRestart.Value
+        content .= "`nHalloween Restart Timer=" HalloweenRestartTimer.Value
+
+
         FileAppend(content, settingsFile)
         SaveCustomPlacements()
-        SaveCustomWalk()
+        SaveAllMovements()
         SaveUniversalSettings()
         AddToLog("✅ Saved settings for mode: " gameMode)
         SaveAllConfigs()
@@ -163,7 +171,7 @@ LoadUnitSettingsByMode() {
     LoadCustomPlacements()
     InitControlGroups()
     LoadUniversalSettings()
-    LoadCustomWalk()
+    LoadAllMovements()
     LoadAllCardConfig()
 
     AddToLog("✅ Settings successfully loaded for mode: " mode)
@@ -446,7 +454,12 @@ InitSettings() {
     UnitConfigMap["AutoAbility"] := { control: AutoAbilityBox, prop: "Value" }
     UnitConfigMap["AutoAbilityTimer"] := { control: AutoAbilityTimer, prop: "Text" }
 
+    ; Zoom Tech Settings
     UnitConfigMap["ZoomLevel"] := { control: ZoomBox, prop: "Text" }
+    UnitConfigMap["Use Zoom Tech"] := { control: ZoomTech, prop: "Value" }
+    UnitConfigMap["Zoom In Then Out"] := { control: ZoomInOption, prop: "Value" }
+    UnitConfigMap["Teleport To Spawn"] := { control: ZoomTeleport, prop: "Value" }
+
     UnitConfigMap["Unit Manager Upgrade System"] := { control: UnitManagerUpgradeSystem, prop: "Value" }
     UnitConfigMap["Priority Upgrade"] := { control: PriorityUpgrade, prop: "Value" }
     UnitConfigMap["Start Portal In Lobby"] := { control: PortalLobby, prop: "Value" }
@@ -466,4 +479,7 @@ InitSettings() {
     UnitConfigMap["Slot 4 Minion"] := { control: MinionSlot4, prop: "Value" }
     UnitConfigMap["Slot 5 Minion"] := { control: MinionSlot5, prop: "Value" }
     UnitConfigMap["Slot 6 Minion"] := { control: MinionSlot6, prop: "Value" }
+
+    UnitConfigMap["Halloween Restart Enabled"] := { control: HalloweenRestart, prop: "Value" }
+    UnitConfigMap["Halloween Restart Timer"] := { control: HalloweenRestartTimer, prop: "Value" }
 }

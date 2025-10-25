@@ -370,27 +370,27 @@ SaveAllConfigs() {
 LoadAllCardConfig() {
     global CardModeConfigs
 
-    for modeName, config in CardModeConfigs {
+    allMsg := ""  ; Accumulate messages here
+
+    for modeName, currentConfig in CardModeConfigs {
         filePath := currentConfig["filePath"]
 
         if !FileExist(filePath) {
-            ; No config file yet, keep default options
             continue
         }
 
         file := FileOpen(filePath, "r")
         if !file {
-            MsgBox("Failed to open config file for " modeName)
+            allMsg .= "Failed to open config file for " modeName "`n"
             continue
         }
 
-        local loadedOptions := []
+        local loadedOptions := []  ; Will store objects {name:, priority:}
         section := ""
 
         while !file.AtEOF {
             line := Trim(file.ReadLine())
 
-            ; Skip empty lines or comments
             if (line = "" || SubStr(line, 1, 1) = ";")
                 continue
 
@@ -402,8 +402,9 @@ LoadAllCardConfig() {
             if (section = "CardPriority") {
                 if RegExMatch(line, "(.+?)=(\d+)", &match) {
                     cardName := match.1
-                    ; index := match.2  ; Not really needed here, we keep order by file lines
-                    loadedOptions.Push(cardName)
+                    priority := match.2 + 0
+                    loadedOptions.Push({ name: cardName, priority: priority })
+                    allMsg .= modeName " - Card: " cardName " | Priority: " priority "`n"
                 }
             }
         }
@@ -411,10 +412,29 @@ LoadAllCardConfig() {
         file.Close()
 
         if (loadedOptions.Length > 0) {
-            ; Replace the options list with loaded one
-            currentConfig["options"] := loadedOptions
+            ; Manual sort by priority
+            for i, outer in loadedOptions {
+                for j, inner in loadedOptions {
+                    if (i < j && outer.priority > inner.priority) {
+                        temp := loadedOptions[i]
+                        loadedOptions[i] := loadedOptions[j]
+                        loadedOptions[j] := temp
+                    }
+                }
+            }
+
+            ; Extract just the names in sorted order
+            namesSorted := []
+            for card in loadedOptions
+                namesSorted.Push(card.name)
+
+            currentConfig["options"] := namesSorted
         }
     }
+
+    ; Show all cards and priorities at once
+    if (allMsg != "" && debugMessages)
+        MsgBox(allMsg, "Loaded Card Priorities")
 }
 
 ; === Helper Functions ===

@@ -31,7 +31,6 @@ UseCustomPoints() {
     mapName := GetPlacementsForMode(ModeDropdown.Text)
 
     if (!savedCoords.Has(mapName) || savedCoords[mapName].Length = 0) {
-        AddToLog("No coordinates set for map: " mapName ", skipping...")
         return
     }
 
@@ -39,6 +38,8 @@ UseCustomPoints() {
     for coord in savedCoords[mapName] {
         points.Push({ x: coord.x, y: coord.y })
     }
+
+    AddToLog("Points: " points.Length)
 
     return points
 }
@@ -94,13 +95,12 @@ LoadCustomPlacements() {
             continue
 
         parts := StrSplit(line, ",")
-        if (parts.Length < 4)
+        if (parts.Length < 3)
             continue
 
         mapName := parts[1]
         x := parts[2] + 0
         y := parts[3] + 0
-        delay := parts[4] + 0
 
         if !savedCoords.Has(mapName)
             savedCoords[mapName] := []
@@ -146,9 +146,9 @@ GetPlacementsForMode(mode) {
         case "Event":
             return EventDropdown.Text    
         case "Custom":
-            return CustomPlacementMap.Text    
+            return CustomPlacementMapDropdown.Text    
     }
-    return ""
+    return CustomPlacementMapDropdown.Text
 }
 
 ExportCustomCoords(mapName) {
@@ -170,7 +170,7 @@ ExportCustomCoords(mapName) {
     }
 
     for _, point in savedCoords[mapName] {
-        line := mapName "," point.x "," point.y "," point.delay "`n"
+        line := mapName "," point.x "," point.y "`n"
         file.Write(line)
     }
 
@@ -207,18 +207,17 @@ ImportCustomCoords() {
             continue
 
         parts := StrSplit(line, ",")
-        if parts.Length < 4
+        if parts.Length < 3
             continue
 
         mapName := Trim(parts[1])
         x := parts[2] + 0
         y := parts[3] + 0
-        delay := parts[4] + 0
 
         if importedMap = ""
             importedMap := mapName  ; Use map from first line
 
-        coordList.Push({ x: x, y: y, delay: delay, mapName: mapName })
+        coordList.Push({ x: x, y: y, mapName: mapName })
     }
 
     if coordList.Length = 0 {

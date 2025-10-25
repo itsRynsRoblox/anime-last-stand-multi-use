@@ -2,6 +2,8 @@
 
 UpgradeUnits() {
 
+    SetTotalUnits()
+
     if (ShouldOpenUnitManager()) {
         OpenMenu("Unit Manager")
     }
@@ -205,6 +207,11 @@ ProcessUpgrades(slot := false, priorityNum := false) {
         slotDone := true
 
         for index, coord in successfulCoordinates {
+
+            if (coord.autoUpgrade) {
+                continue
+            }
+
             if ((!slot || coord.slot = slot) && (!priorityNum || coord.upgradePriority = priorityNum)) {
                 slotDone := false  ; Found unit to upgrade => not done yet
 
@@ -322,6 +329,8 @@ PostUpgradeChecks(coord) {
         return HandleStageEnd()
     }
 
+    CheckShouldRestart()
+
     if ((!NukeUnitSlotEnabled.Value || coord.slot != NukeUnitSlot.Value) && coord.hasAbility) {
         HandleAutoAbility()
     }
@@ -374,7 +383,7 @@ ShouldOpenUnitManager() {
 
 HasUnitsInSlot(slot, priorityNum, coordinates) {
     for coord in coordinates {
-        if (coord.slot = slot && coord.upgradePriority = priorityNum)
+        if (coord.slot = slot && coord.upgradePriority = priorityNum && !coord.autoUpgrade)
             return true
     }
     return false
@@ -448,3 +457,10 @@ SetAutoUpgradeForSingleUnit(unitIndex := 1) {
     }
 }
 
+SetTotalUnits() {
+    global totalUnits, successfulCoordinates
+
+    for coord in successfulCoordinates {
+        totalUnits[coord.slot] := (totalUnits.Has(coord.slot) ? totalUnits[coord.slot] + 1 : 1)
+    }
+}
