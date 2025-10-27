@@ -1,7 +1,6 @@
 #Requires AutoHotkey v2.0
 
 global alreadyNuked := false
-global nukeTimerActive := false
 global waitingToNuke := false
 global nukeScheduledTime := 0
 
@@ -22,30 +21,64 @@ StartNukeCapture() {
 }
 
 PrepareToNuke(force := false) {
-    global successfulCoordinates, maxedCoordinates, nukeTimerActive
+    global successfulCoordinates, maxedCoordinates
 
-    if (force) {
-        ClickUnit(1, true)
-        return true
-    }
+    unitManagerWasOpen := false
 
     if (NukeUnitSlotEnabled.Value) {
         ; try to find in successfulCoordinates
         for index, coord in successfulCoordinates {
             if (coord.slot == NukeUnitSlot.Value) {
-                ClickUnit(index, true)
+                if (isMenuOpen("Unit Manager")) {
+                    unitManagerWasOpen := true
+                }
+                CloseMenu("Unit Manager")
+                Sleep(150)
+                SendInput("X")
+                Sleep(150)
+                while (!GetPixel(0x1034AC, 78, 362, 2, 2, 2)) {
+                    CheckForCardSelection()
+
+                    if (CheckForXp()) {
+                        CloseMenu("Unit Manager")
+                        ClearNuke()
+                        return MonitorStage()
+                    }
+
+                FixClick(coord.x, coord.y)
+                Sleep(250)
+                }
+                OpenMenu("Unit Manager")
                 return true
             }
         }
         ; try to find in maxedCoordinates
         for index, coord in maxedCoordinates {
+            if (isMenuOpen("Unit Manager")) {
+                unitManagerWasOpen := true
+            }
             if (coord.slot == NukeUnitSlot.Value) {
-                ClickUnit(index, true)
+                CloseMenu("Unit Manager")
+                Sleep(150)
+                SendInput("X")
+                Sleep(150)
+                while (!GetPixel(0x1034AC, 78, 362, 2, 2, 2)) {
+                    CheckForCardSelection()
+
+                    if (CheckForXp()) {
+                        CloseMenu("Unit Manager")
+                        ClearNuke()
+                        return MonitorStage()
+                    }
+
+                    FixClick(coord.x, coord.y)
+                    Sleep(250)
+                }
+                OpenMenu("Unit Manager")
                 return true
             }
         }
 
-        nukeTimerActive := false
         SetTimer(Nuke, 2500)
 
         ; Not found in either list
@@ -61,12 +94,10 @@ GetNukeDelay() {
 }
 
 Nuke(lookingForWave := false, testing := false) {
-    global nukeCoords, alreadyNuked, nukeTimerActive, nukeScheduledTime, waitingToNuke
+    global nukeCoords, alreadyNuked, nukeScheduledTime, waitingToNuke
 
-    if (nukeTimerActive)
+    if (alreadyNuked)
         return
-
-    nukeTimerActive := true
 
     if (PrepareToNuke() || testing) {
         Sleep(150)
@@ -80,38 +111,31 @@ Nuke(lookingForWave := false, testing := false) {
             AddToLog("Waiting " GetNukeDelay() / 1000 "s before nuking...")
             Sleep(GetNukeDelay())
         }
-
+        AddToLog("Nuking...")
+        Sleep(750)
         FixClick(nukeCoords.x, nukeCoords.y) ; click nuke
         Sleep(150)
         SendInput("X") ;close unit menu
         alreadyNuked := true
-        nukeTimerActive := false  ; reset the flag
     } else {
         nukeScheduledTime := A_TickCount + GetNukeDelay() ; For logging purposes
     }
 }
 
 HandleNuke() {
-    global alreadyNuked, nukeTimerActive, nukeScheduledTime
+    global alreadyNuked, nukeScheduledTime
 
     if (!NukeUnitSlotEnabled.Value)
         return false
 
-    if (nukeTimerActive) {
-        nukeScheduledTime := A_TickCount + GetNukeDelay()
-        return
-    }
-
     nukeScheduledTime := A_TickCount + GetNukeDelay()
-    nukeTimerActive := true
     SetTimer(Nuke, GetNukeDelay())
-    AddToLog("Nuke scheduled for " nukeScheduledTime " (in " GetNukeDelay() " ms)")
+    AddToLog("Nuke scheduled in " GetNukeDelay() " ms)")
 }
 
 ClearNuke() {
-    global alreadyNuked, nukeTimerActive
+    global alreadyNuked, nukePaused
     alreadyNuked := false
-    nukeTimerActive := false
     nukePaused := false
     SetTimer(WatchForTargetWave, 0)
     SetTimer(Nuke, 0)
@@ -138,10 +162,9 @@ CheckWaveText(waveNumber) {
 }
 
 StartNukeTimer() {
-    global nukeTimerActive, alreadyNuked
+    global alreadyNuked
 
     alreadyNuked := false
-    nukeTimerActive := false
 
     if (NukeUnitSlotEnabled.Value) {
         if (NukeAtSpecificWave.Value) {

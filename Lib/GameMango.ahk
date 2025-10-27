@@ -10,7 +10,7 @@ Hotkey(F3Key, (*) => Reload())
 Hotkey(F4Key, (*) => TogglePause())
 
 F5:: {
-    HandleStartButton()
+    CloseLobbyPopups()
 }
 
 F6:: {
@@ -157,7 +157,7 @@ MonitorStage() {
         }
 
         if (EventDropdown.Text = "Halloween P2" && HalloweenRestart.Value) {
-            SetTimer(StartRestartStage, 0)
+            TimerManager.Clear("Restart Failsafe")
         }
 
         if (NukeUnitSlotEnabled.Value) {
@@ -195,17 +195,6 @@ MonitorStage() {
         HandleEndScreen(result)
         Reconnect()
         return
-    }
-}
-
-ClickThroughDrops() {
-    AddToLog("Clicking through item drops...")
-    Loop 10 {
-        FixClick(400, 495)
-        Sleep(500)
-        if CheckForXp() {
-            return
-        }
     }
 }
 
@@ -370,7 +359,7 @@ BasicSetup(usedButton := false) {
 
     CloseChat()
     Sleep 250
-    CloseLeaderboard(false)
+    FixClick(487, 71)
     Sleep 250
 
     if (ModeDropdown.Text = "Custom" && SeamlessToggle.Value && !usedButton || ModeDropdown.Text == "Portal" && SeamlessToggle.Value) {
@@ -417,19 +406,17 @@ HandleMapMovement(MapName) {
     AddToLog("Executing Movement for: " MapName)
     
     switch MapName {
-        case "Central City":
-            MoveForCentralCity()
-    }
-}
 
-MoveForCentralCity() {
-    Fixclick(390, 29, "Right")
-    Sleep (5000)
+    }
 }
 
     
 RestartStage() {
     
+    if (TeleportFailsafe.Value) {
+        TimerManager.Start("Teleport Failsafe", TeleportFailsafeTimer.Value * 1000)
+    }
+
     ; Wait for loading
     CheckLoaded()
 
@@ -478,7 +465,7 @@ Reconnect(force := false) {
         WinActivate(rblxID)
     }
 
-    if (FindText(&X, &Y, 202, 206, 601, 256, 0.10, 0.10, Disconnect) || force) {
+    if (FindText(&X, &Y, 202, 206, 601, 256, 0.10, 0.10, Disconnect) || force || TeleportFailsafe.Value && TimerManager.HasExpired("Teleport Failsafe")) {
 
         ; Wait until internet is available
         while !isConnectedToInternet() {
@@ -493,7 +480,7 @@ Reconnect(force := false) {
             psLink := PrivateServerURLBox.Value
             if (psLink != "") {
                 serverCode := GetPrivateServerCode(psLink)
-                deepLink := "roblox://experiences/start?placeId=107573139811370&linkCode=" serverCode
+                deepLink := "roblox://experiences/start?placeId=12886143095&linkCode=" serverCode
                 if (WinExist("ahk_exe RobloxPlayerBeta.exe")) {
                     WinClose("ahk_exe RobloxPlayerBeta.exe")
                     Sleep(3000)
@@ -511,7 +498,7 @@ Reconnect(force := false) {
                 }
             }
         } else {
-            Run("roblox://placeID=107573139811370")
+            Run("roblox://placeID=12886143095")
             while (isInLobby()) {
                 Sleep(100)
             }
@@ -524,70 +511,14 @@ Reconnect(force := false) {
                 WinActivate(rblxID)
                 sizeDown()
             }
-
-            if (PrivateServerEnabled.Value) {
-                psLink := PrivateServerURLBox.Value
-                if (psLink != "") {
-                    serverCode := GetPrivateServerCode(psLink)
-                    deepLink := "roblox://experiences/start?placeId=12886143095&linkCode=" serverCode
-                    if (WinExist("ahk_exe RobloxPlayerBeta.exe")) {
-                        WinClose("ahk_exe RobloxPlayerBeta.exe")
-                        Sleep(3000)
-                    }
-                    AddToLog("Retrying private server connection...")
-                    Run(serverCode = "" ? psLink : deepLink)
-                    WinWait("ahk_exe RobloxPlayerBeta.exe", , 15)
-                }
-            } else {
-                Run("roblox://placeID=12886143095")
-                WinWait("ahk_exe RobloxPlayerBeta.exe", , 15)
-            }
+            Sleep(750)
         }
-
+        if (TeleportFailsafe.Value) {
+            TimerManager.Clear("Teleport Failsafe")
+        }
         Sleep(1000)
         AddToLog("Reconnected Successfully!")
         return StartSelectedMode()
-    }
-}
-
-MaxUpgrade() {
-    Sleep 500
-    ; Check for max text
-    if (ok := FindText(&X, &Y, 97, 387, 166, 407, 0.20, 0.20, MaxUpgradeText)) {
-        return true
-    }
-    return false
-}
-
-HandleAutoAbilityUnitManager() {
-    if !AutoAbilityBox.Value
-        return
-
-    wiggle()
-
-    ; Grid configuration
-    baseX    := 675            ; Left column starting X
-    xOffset  := 95             ; Distance between columns
-    baseY    := 130            ; Top row starting Y
-    yStep    := 60             ; Vertical gap between rows
-    numRows  := 8              ; Total rows to scan
-    numCols  := 2              ; Columns per row
-    color    := 0xC22725       ; Target pixel color
-
-    ; Scan grid
-    Loop numRows {
-        rowIndex := A_Index - 1
-        rowY := baseY + rowIndex * yStep
-
-        Loop numCols {
-            colIndex := A_Index - 1
-            colX := baseX + colIndex * xOffset
-
-            if GetPixel(color, colX, rowY, 4, 4, 20) {
-                FixClick(colX, rowY)
-                Sleep(100)
-            }
-        }
     }
 }
 
@@ -595,16 +526,6 @@ wiggle() {
     MouseMove(1, 1, 5, "R")
     Sleep(30)
     MouseMove(-1, -1, 5, "R")
-}
-
-UpgradeUnit(x, y) {
-    FixClick(x, y)
-    SendInput ("{T}")
-    Sleep (50)
-    SendInput ("{T}")
-    Sleep (50)
-    SendInput ("{T}")
-    Sleep (50)
 }
 
 CheckLobby() {
@@ -629,6 +550,9 @@ CheckLoaded() {
         
         if (ok := FindText(&X, &Y, 14, 596, 39, 616, 0.20, 0.20, IngameQuests)) {
             AddToLog("Successfully Loaded In")
+            if (TeleportFailsafe.Value) {
+                TimerManager.Clear("Teleport Failsafe")
+            }
             break
         }
 
@@ -794,8 +718,8 @@ DetectAngle(mode := "Story") {
             }
 
         case "Raid":
-            firstAngle := GetPixel(0xB74D0D, 414, 49, 2, 2, 10)
-            secondAngle := GetPixel(0x71250F, 414, 49, 2, 2, 10)
+            firstAngle := GetPixel(0xA85028, 414, 49, 2, 2, 10)
+            secondAngle := GetPixel(0x723129, 414, 49, 2, 2, 10)
             if (firstAngle) {
                 AddToLog("Spawn Angle: Left")
                 return 1
@@ -838,18 +762,6 @@ StartsInLobby(ModeName) {
 
     ; Check if current mode is in the array
     for mode in modes {
-        if (mode = ModeName)
-            return true
-    }
-    return false
-}
-
-HasCards(ModeName) {
-    ; Array of modes that have card selection
-    static modesWithCards := ["Boss Rush", "Halloween", "Halloween P2"]
-    
-    ; Check if current mode is in the array
-    for mode in modesWithCards {
         if (mode = ModeName)
             return true
     }

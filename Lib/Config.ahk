@@ -113,6 +113,10 @@ SaveSettingsForMode(*) {
         content .= "`nHalloween Restart Enabled=" HalloweenRestart.Value
         content .= "`nHalloween Restart Timer=" HalloweenRestartTimer.Value
 
+        content .= "`n[Failsafe Settings]"
+        content .= "`nTeleport Failsafe Enabled=" TeleportFailsafe.Value
+        content .= "`nTeleport Failsafe Timer=" TeleportFailsafeTimer.Value
+
 
         FileAppend(content, settingsFile)
         SaveCustomPlacements()
@@ -482,4 +486,7 @@ InitSettings() {
 
     UnitConfigMap["Halloween Restart Enabled"] := { control: HalloweenRestart, prop: "Value" }
     UnitConfigMap["Halloween Restart Timer"] := { control: HalloweenRestartTimer, prop: "Value" }
+
+    UnitConfigMap["Teleport Failsafe Enabled"] := { control: TeleportFailsafe, prop: "Value" }
+    UnitConfigMap["Teleport Failsafe Timer"] := { control: TeleportFailsafeTimer, prop: "Value" }
 }

@@ -705,3 +705,15 @@ ExportAllCardConfigs() {
         ExportCardConfig(modeName)
     }
 }
+
+HasCards(ModeName) {
+    ; Array of modes that have card selection
+    static modesWithCards := ["Boss Rush", "Halloween", "Halloween P2"]
+
+    ; Check if current mode is in the array
+    for mode in modesWithCards {
+        if (mode = ModeName)
+            return true
+    }
+    return false
+}

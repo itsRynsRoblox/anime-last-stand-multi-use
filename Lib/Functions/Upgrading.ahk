@@ -464,3 +464,22 @@ SetTotalUnits() {
         totalUnits[coord.slot] := (totalUnits.Has(coord.slot) ? totalUnits[coord.slot] + 1 : 1)
     }
 }
+
+MaxUpgrade() {
+    Sleep 500
+    ; Check for max text
+    if (ok := FindText(&X, &Y, 97, 387, 166, 407, 0.20, 0.20, MaxUpgradeText)) {
+        return true
+    }
+    return false
+}
+
+UpgradeUnit(x, y) {
+    FixClick(x, y)
+    SendInput ("{T}")
+    Sleep (50)
+    SendInput ("{T}")
+    Sleep (50)
+    SendInput ("{T}")
+    Sleep (50)
+}

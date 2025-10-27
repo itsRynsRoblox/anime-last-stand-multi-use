@@ -349,8 +349,8 @@ RotateCameraAngle() {
 }
 
 CloseLobbyPopups() {
-    Send("{Tab}") ; Close any open popups
-    FixClick(623, 147) ; Update UI
+    CloseLeaderboard(true)
+    FixClick(632, 150) ; Update UI
     Sleep(500)
     FixClick(400,340)
     Sleep(500)
@@ -647,12 +647,16 @@ UpdateActiveConfiguration(*) {
 
 CloseLeaderboard(inLobby := true) {
     if (inLobby) {
-        if (ok := FindText(&X, &Y, 632, 93, 656, 115, 0.1, 0.1, OpenLeaderboard)) {
+        if (ok := FindText(&X, &Y, 632, 93, 656, 115, 0.15, 0.15, OpenLeaderboard)) {
             SendInput("{Tab}")
+        } else {
+            FixClick(641, 72)
         }
     } else {
         if (ok := FindText(&X, &Y, 482, 97, 499, 111, 0.15, 0.15, OpenLeaderboard)) {
             SendInput("{Tab}")
+        } else {
+            FixClick(487, 71)
         }
     }
 }

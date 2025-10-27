@@ -36,24 +36,12 @@ RaidMovement() {
 
 WalkToRaidRoom(angle) {
     switch angle {
-        case 2:
-            SendInput("{a down}")
-            Sleep(800)
-            SendInput("{a up}")
-            KeyWait "a"  ; Wait for the key to be fully processed
-            SendInput("{w down}")
-            Sleep(2000)
-            SendInput("{w up}")
-            KeyWait "w"  ; Wait for the key to be fully processed
         case 1:
-            SendInput("{s down}")
-            Sleep(800)
-            SendInput("{s up}")
-            KeyWait "s"  ; Wait for the key to be fully processed
-            SendInput("{a down}")
-            Sleep(2000)
-            SendInput("{a up}")
-            KeyWait "a"  ; Wait for the key to be fully processed
+            Walk("s", 800)
+            Walk("a", 2000)
+        case 2:
+            Walk("a", 800)
+            Walk("w", 2000)
     }
 }
 

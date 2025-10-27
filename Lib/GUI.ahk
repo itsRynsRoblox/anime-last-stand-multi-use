@@ -6,7 +6,7 @@
 ; Application Info
 global GameName := "Anime Last Stand"
 global GameTitle := "Ryn's " GameName " Macro "
-global version := "v1.7.8"
+global version := "v1.8.0"
 global rblxID := "ahk_exe RobloxPlayerBeta.exe"
 ;Coordinate and Positioning Variables
 global targetWidth := 816
@@ -501,6 +501,9 @@ PrivateServerTestButton := MainUI.Add("Button", "x1225 y163 w50 h20 Hidden", "Te
 PrivateServerTestButton.OnEvent("Click", (*) => Reconnect(true))
 PrivateServerGuideButton := MainUI.Add("Button", "x1285 y163 w50 h20 Hidden", "Guide")
 PrivateServerGuideButton.OnEvent("Click", OpenPrivateServerGuide)
+global TeleportFailsafe := MainUI.Add("CheckBox", "x825 y185 Hidden cffffff", "Enable Teleport Failsafe")
+global TeleportFailsafeTimerText := MainUI.Add("Text", "x1050 y188 h20 Hidden c" uiTheme[1], "Time until reconnect:")
+global TeleportFailsafeTimer := MainUI.Add("Edit", "x1195 y186 w50 h20 Hidden Number c" uiTheme[6], "60")
 ; === End of Settings GUI ===
 
 ; HotKeys
@@ -1007,6 +1010,7 @@ InitControlGroups() {
     ControlGroups["Settings"] := [
         WebhookBorder, WebhookEnabled, WebhookLogsEnabled, WebhookURLBox,
         PrivateSettingsBorder, PrivateServerEnabled, PrivateServerURLBox, PrivateServerTestButton, PrivateServerGuideButton,
+        TeleportFailsafe, TeleportFailsafeTimerText, TeleportFailsafeTimer,
         KeybindBorder, F1Text, F1Box, F2Text, F2Box, F3Text, F3Box, F4Text, F4Box, keybindSaveBtn,
         ZoomSettingsBorder, ZoomText, ZoomBox, ZoomTech, ZoomInOption, ZoomTeleport,
         MiscSettingsBorder, UnitConfigText, UnitImportButton, UnitExportButton
