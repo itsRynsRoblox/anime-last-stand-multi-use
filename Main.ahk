@@ -18,6 +18,8 @@ global scriptInitialized := false
 #Include %A_ScriptDir%/lib/Tools/FindText.ahk
 #Include %A_ScriptDir%/lib/Tools/Image.ahk
 #Include %A_ScriptDir%\Lib\OCR-main\Lib\OCR.ahk
+#Include Lib\RapidOcr\ImagePut.ahk
+#Include %A_ScriptDir%/lib/Tools/RapidOcr.ahk
 
 ; === Game Modes ===
 #Include %A_ScriptDir%/lib/Modes/BossRush.ahk
@@ -45,6 +47,9 @@ global scriptInitialized := false
 #Include %A_ScriptDir%/lib/Functions/CardManager.ahk
 #Include %A_ScriptDir%/lib/Functions/TimerManager.ahk
 #Include %A_ScriptDir%/lib/Functions/CustomPlacements.ahk
+
+; === Update Checker ===
+#Include %A_ScriptDir%/lib/Functions/UpdateChecker.ahk
 
 ; === Webhook Integration ===
 #Include %A_ScriptDir%/lib/WebhookSettings.ahk

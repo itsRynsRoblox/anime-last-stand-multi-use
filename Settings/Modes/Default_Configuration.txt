@@ -25,7 +25,7 @@ UpgradePriority5=5
 UpgradePriority6=6
 UpgradeEnabled1=0
 UpgradeEnabled2=0
-UpgradeEnabled3=1
+UpgradeEnabled3=0
 UpgradeEnabled4=0
 UpgradeEnabled5=0
 UpgradeEnabled6=0
@@ -49,7 +49,7 @@ UpgradeLimitEnabled5=0
 UpgradeLimitEnabled6=0
 
 [Auto Ability Settings]
-AutoAbility=0
+AutoAbility=1
 AutoAbilityTimer=60
 
 [Zoom Settings]
@@ -71,18 +71,20 @@ Sunwoo Nuke Slot=6
 Nuke Enabled=0
 Nuke Slot=1
 Nuke Coords=282,291
-Nuke At Specific Wave=1
+Nuke At Specific Wave=0
 Nuke Wave=1
-Nuke Delay=1
+Nuke Delay=10
 Slot 1 Minion=0
 Slot 2 Minion=0
 Slot 3 Minion=0
 Slot 4 Minion=0
 Slot 5 Minion=0
 Slot 6 Minion=0
+
 [Halloween Settings]
 Halloween Restart Enabled=1
-Halloween Restart Timer=240
+Halloween Restart Timer=25
+
 [Failsafe Settings]
 Teleport Failsafe Enabled=1
 Teleport Failsafe Timer=120

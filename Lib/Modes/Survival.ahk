@@ -14,7 +14,7 @@ StartSurvivalMode() {
 
 WalkToSurvivalRoom(angle) {
     switch angle {
-    case 2:
+    case 1:
         SendInput("{d down}")
         Sleep(800)
         SendInput("{d up}")
@@ -23,7 +23,7 @@ WalkToSurvivalRoom(angle) {
         Sleep(800)
         SendInput("{s up}")
         KeyWait "s"  ; Wait for the key to be fully processed
-    case 1:
+    case 2:
         SendInput("{w down}")
         Sleep(800)
         SendInput("{w up}")

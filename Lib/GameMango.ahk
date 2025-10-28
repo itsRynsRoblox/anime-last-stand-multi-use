@@ -4,13 +4,15 @@ global macroStartTime := A_TickCount
 global stageStartTime := A_TickCount
 global cachedCardPriorities := Map()
 LoadKeybindSettings()  ; Load saved keybinds
+CheckForUpdates()
+StartRapidOcr()
 Hotkey(F1Key, (*) => moveRobloxWindow())
 Hotkey(F2Key, (*) => StartMacro())
 Hotkey(F3Key, (*) => Reload())
 Hotkey(F4Key, (*) => TogglePause())
 
 F5:: {
-    CloseLobbyPopups()
+
 }
 
 F6:: {
@@ -420,10 +422,6 @@ RestartStage() {
     ; Wait for loading
     CheckLoaded()
 
-    if (EventDropdown.Text = "Halloween P2" && HalloweenRestart.Value) {
-        TimerManager.Start("RestartStage", HalloweenRestartTimer.Value * 1000)
-    }
-
     BasicSetup()
 
     ; Wait for game to actually start
@@ -499,9 +497,6 @@ Reconnect(force := false) {
             }
         } else {
             Run("roblox://placeID=12886143095")
-            while (isInLobby()) {
-                Sleep(100)
-            }
         }
 
         AddToLog("Reconnecting to " GameName "...")
@@ -511,7 +506,7 @@ Reconnect(force := false) {
                 WinActivate(rblxID)
                 sizeDown()
             }
-            Sleep(750)
+            Sleep(1250)
         }
         if (TeleportFailsafe.Value) {
             TimerManager.Clear("Teleport Failsafe")
@@ -704,31 +699,19 @@ ZoomOut() {
 DetectAngle(mode := "Story") {
     switch mode {
         case "Story":
-            firstAngle := GetPixel(0xAC7841, 407, 92, 2, 2, 10)
-            secondAngle := GetPixel(0xD77106, 407, 92, 2, 2, 10)
-            if (firstAngle) {
-                AddToLog("Spawn Angle: Left")
+            angle := GetPixel(0xA77EFF, 319, 40, 2, 2, 10)
+            if (angle) {
                 return 1
-            } else if (secondAngle) {
-                AddToLog("Spawn Angle: Right")
-                return 2
             } else {
-                AddToLog("Spawn Angle: Unknown | Color: " PixelGetColor(407, 92) )
-                return 3
+                return 2
             }
 
         case "Raid":
-            firstAngle := GetPixel(0xA85028, 414, 49, 2, 2, 10)
-            secondAngle := GetPixel(0x723129, 414, 49, 2, 2, 10)
-            if (firstAngle) {
-                AddToLog("Spawn Angle: Left")
+            angle := GetPixel(0x008BFF, 154, 192, 2, 2, 10)
+            if (angle) {
                 return 1
-            } else if (secondAngle) {
-                AddToLog("Spawn Angle: Right")
-                return 2
             } else {
-                AddToLog("Spawn Angle: Unknown | Color: " PixelGetColor(414, 49) )
-                return 3
+                return 2
             }
     }
     return 0

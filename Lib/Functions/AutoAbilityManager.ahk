@@ -103,22 +103,22 @@ HandleAutoAbility() {
     wiggle()
 
     pixelChecks := [
-        {color: 0xC22725, x: 539, y: 285},
-        {color: 0xC22725, x: 539, y: 268},
-        {color: 0xC22725, x: 539, y: 303},
-
-        {color: 0xC22725, x: 326, y: 284}, ; Left Side
-        {color: 0xC22725, x: 326, y: 265},
-        {color: 0xC22725, x: 326, y: 303}
+        {color: 0xC82521, x: 326, y: 284},
+        {color: 0xC82521, x: 326, y: 265},
+        {color: 0xC82521, x: 326, y: 303}
     ]
 
+    foundAbility := false
+
     for pixel in pixelChecks {
-        if GetPixel(pixel.color, pixel.x, pixel.y, 4, 4, 20) {
+        if GetPixel(pixel.color, pixel.x, pixel.y, 2, 2, 20) {
             FixClick(pixel.x, pixel.y)
             Sleep(500)
+            foundAbility := true
         }
-        return true
     }
+
+    return foundAbility
 }
 
 HandleAutoAbilityUnitManager() {

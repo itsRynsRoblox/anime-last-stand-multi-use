@@ -37,11 +37,11 @@ RaidMovement() {
 WalkToRaidRoom(angle) {
     switch angle {
         case 1:
-            Walk("s", 800)
-            Walk("a", 2000)
-        case 2:
             Walk("a", 800)
             Walk("w", 2000)
+        case 2:
+            Walk("s", 800)
+            Walk("a", 2000)
     }
 }
 

@@ -10,7 +10,7 @@ SiegeMovement() {
 
 WalkToSiegeRoom(angle) {
     switch angle {
-        case 2:
+        case 1:
             SendInput("{a down}")
             Sleep(800)
             SendInput("{a up}")
@@ -19,7 +19,7 @@ WalkToSiegeRoom(angle) {
             Sleep(2000)
             SendInput("{s up}")
             KeyWait "s"  ; Wait for the key to be fully processed
-        case 1:
+        case 2:
             SendInput("{s down}")
             Sleep(1000)
             SendInput("{s up}")

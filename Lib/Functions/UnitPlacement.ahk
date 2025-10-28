@@ -177,7 +177,7 @@ StartPlacingUnits(untilSuccessful := true) {
                                     }
                                 }
                             }
-                            FixClick(341, 226) ; close unit ui
+                            SendInput("X")
                         } else {
                             PostPlacementChecks()
                         }
@@ -225,7 +225,7 @@ StartPlacingUnits(untilSuccessful := true) {
                                     }
                                 }
                             }
-                            FixClick(341, 226) ; close unit ui
+                            SendInput("X")
                             break ; Move to the next placement spot
                         }
                         PostPlacementChecks()

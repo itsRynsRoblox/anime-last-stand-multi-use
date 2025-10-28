@@ -113,7 +113,7 @@ SelectCards(eventName) {
         Sleep(500)
 
         ; OCR
-        orcResult := OCRFromFile(slot.ocrX1, slot.ocrY1, slot.ocrX2, slot.ocrY2, 10.0, false)
+        orcResult := ReadText(slot.ocrX1, slot.ocrY1, slot.ocrX2, slot.ocrY2, 10.0, false)
         ocrCleaned := RegExReplace(orcResult, "\\s+|!", "")
         ocrCleaned := RegExReplace(ocrCleaned, "[^a-zA-Z]", "")
         ocrCleaned := RegExReplace(ocrCleaned, "i)(IV|III|II|I)$", "")
@@ -223,7 +223,9 @@ OCRFromFile(x1, y1, x2, y2, scale, keepImage := false) {
             return ""
         }
 
-        result := OCR.FromFile(fullPath, true)
+        result := OCR.FromFile(fullPath, { grayscale: true, monochrome: 255})
+
+
         Sleep 100
 
         Gdip_DeleteGraphics(g)
@@ -270,8 +272,6 @@ SaveNewCardConfigToFile(filePath) {
     if (debugMessages)
         AddToLog("Card configuration saved to: " filePath)
 }
-
-
 
 LoadNewCardConfigFromFile(filePath) {
     global dropDowns, currentConfig, priorityOrder

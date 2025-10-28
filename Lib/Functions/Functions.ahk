@@ -660,3 +660,38 @@ CloseLeaderboard(inLobby := true) {
         }
     }
 }
+
+ClaimBingo() {
+    ; Base starting coordinate
+    startX := 190
+    startY := 420
+
+    ; Number of clicks in each direction
+    horizontalClicks := 6
+    verticalClicks := 6
+
+    ; Spacing in pixels between clicks
+    spacing := 50
+
+    while (true) {
+        ; --- Redeem Stamp ---
+        loop 25 {
+            FixClick(543, 423)
+        }
+
+        ; --- Horizontal row ---
+        loop horizontalClicks {
+            FixClick(startX + (A_Index - 1) * spacing, startY)
+        }
+
+        ; --- Vertical column ---
+        finalX := startX + (horizontalClicks - 1) * spacing
+        loop verticalClicks {
+            FixClick(finalX, startY - (A_Index - 1) * spacing)
+        }
+
+        ; --- Claim Bingo ---
+        FixClick(543, 423)
+        Sleep(1500)
+    }
+}

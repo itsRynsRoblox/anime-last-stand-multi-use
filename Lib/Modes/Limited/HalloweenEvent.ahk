@@ -63,7 +63,7 @@ isSeamlessEnabled() {
 CheckShouldRestart() {
     global stageStartTime
     if (EventDropdown.Text = "Halloween P2" && HalloweenRestart.Value) {
-        if (TimerManager.HasExpired("RestartStage")) {
+        if (CheckWaveText(HalloweenRestartTimer.Value)) {
 
             stageEndTime := A_TickCount
             stageLength := FormatStageTime(stageEndTime - stageStartTime)

@@ -2,7 +2,6 @@
 
 global alreadyNuked := false
 global waitingToNuke := false
-global nukeScheduledTime := 0
 
 StartNukeCapture() {
     global nukeCoords
@@ -94,7 +93,7 @@ GetNukeDelay() {
 }
 
 Nuke(lookingForWave := false, testing := false) {
-    global nukeCoords, alreadyNuked, nukeScheduledTime, waitingToNuke
+    global nukeCoords, alreadyNuked, waitingToNuke
 
     if (alreadyNuked)
         return
@@ -108,27 +107,26 @@ Nuke(lookingForWave := false, testing := false) {
         }
 
         if (lookingForWave) {
-            AddToLog("Waiting " GetNukeDelay() / 1000 "s before nuking...")
-            Sleep(GetNukeDelay())
+            while (!TimerManager.HasExpired("Nuke")) {
+                Sleep(100)
+            }
         }
         AddToLog("Nuking...")
-        Sleep(750)
+        Sleep(150)
         FixClick(nukeCoords.x, nukeCoords.y) ; click nuke
         Sleep(150)
         SendInput("X") ;close unit menu
         alreadyNuked := true
-    } else {
-        nukeScheduledTime := A_TickCount + GetNukeDelay() ; For logging purposes
+        TimerManager.Clear("Nuke")
     }
 }
 
 HandleNuke() {
-    global alreadyNuked, nukeScheduledTime
+    global alreadyNuked
 
     if (!NukeUnitSlotEnabled.Value)
         return false
 
-    nukeScheduledTime := A_TickCount + GetNukeDelay()
     SetTimer(Nuke, GetNukeDelay())
     AddToLog("Nuke scheduled in " GetNukeDelay() " ms)")
 }
@@ -142,18 +140,16 @@ ClearNuke() {
 }
 
 CheckWaveText(waveNumber) {
-    static coord := [{ x1: 255, y1: 52, x2: 310, y2: 70 }]
+    static coord := [{ x1: 265, y1: 32, x2: 299, y2: 55 }]
 
     for coords in coord {
-        ocrText := OCRFromFile(coords.x1, coords.y1, coords.x2, coords.y2, 2.0, true)
-        ocrText := RegExReplace(ocrText, "[^\d\w\s]", "")
+        ocrText := ReadText(coords.x1, coords.y1, coords.x2, coords.y2, 3.0, false)
         if (debugMessages) {
-            AddToLog("Wave Text: " ocrText)
+            AddToLog("OCR: " ocrText)
         }
 
-        if (InStr(ocrText, "Wave " waveNumber) || InStr(ocrText, "WAVE " waveNumber) || InStr(ocrText, "wave " waveNumber
-        ) | InStr(ocrText, "Wave" waveNumber) || RegExMatch(ocrText, "Wave\s*" waveNumber)) {
-            AddToLog("Wave " waveNumber " found.")
+        if (InStr(ocrText, waveNumber)) {
+            AddToLog("Wave " waveNumber " found")
             return true
         }
         Sleep 50
@@ -163,51 +159,19 @@ CheckWaveText(waveNumber) {
 
 StartNukeTimer() {
     global alreadyNuked
-
     alreadyNuked := false
 
-    if (NukeUnitSlotEnabled.Value) {
-        if (NukeAtSpecificWave.Value) {
-            ; Start checking for the wave every X ms
-            SetTimer(WatchForTargetWave, 1000)  ; Adjust interval as needed
-            AddToLog("Started watching for wave " NukeWave.Text "...")
-        } else {
-            ; Schedule regular time-based nuke
-            HandleNuke()
-        }
+    if (!NukeUnitSlotEnabled.Value)
+        return
+
+    if (NukeAtSpecificWave.Value) {
+        AddToLog("Watching for wave " NukeWave.Text)
+        SetTimer(WatchForTargetWave, 1000)
+    } else {
+        delay := GetNukeDelay()
+        AddToLog("Nuke scheduled in " delay " ms")
+        SetTimer(Nuke, delay)
     }
-}
-
-HandleSpecificWaveNuke() {
-    NukeDelay := GetNukeDelay()
-    wave := NukeWave.Text
-
-    switch wave {
-        case "50":
-            if (CheckForWave50())
-                return true
-
-        case "20":
-            if (CheckForWave20())
-                return true
-
-        default:
-            return true
-    }
-}
-
-CheckForWave50() {
-    if (ok := FindText(&X, &Y, 259, 35, 294, 52, 0.10, 0.10, Wave50)) {
-        return true
-    }
-    return false
-}
-
-CheckForWave20() {
-    if (ok := FindText(&X, &Y, 259, 35, 294, 52, 0.10, 0.10, Wave20)) {
-        return true
-    }
-    return false
 }
 
 WatchForTargetWave() {
@@ -218,8 +182,9 @@ WatchForTargetWave() {
         return
     }
 
-    if (HandleSpecificWaveNuke() && !waitingToNuke) {
+    if (CheckWaveText(NukeWave.Text) && !waitingToNuke) {
         AddToLog("Wave " NukeWave.Text " found. Nuking...")
+        TimerManager.Start("Nuke", GetNukeDelay())
         Nuke(true, false)
         alreadyNuked := true
         SetTimer(WatchForTargetWave, 0) ; stop checking after nuke

@@ -109,14 +109,13 @@ SaveSettingsForMode(*) {
         content .= "`nSlot 5 Minion=" MinionSlot5.Value
         content .= "`nSlot 6 Minion=" MinionSlot6.Value
 
-        content .= "`n[Halloween Settings]"
+        content .= "`n`n[Halloween Settings]"
         content .= "`nHalloween Restart Enabled=" HalloweenRestart.Value
         content .= "`nHalloween Restart Timer=" HalloweenRestartTimer.Value
 
-        content .= "`n[Failsafe Settings]"
+        content .= "`n`n[Failsafe Settings]"
         content .= "`nTeleport Failsafe Enabled=" TeleportFailsafe.Value
         content .= "`nTeleport Failsafe Timer=" TeleportFailsafeTimer.Value
-
 
         FileAppend(content, settingsFile)
         SaveCustomPlacements()
@@ -225,6 +224,7 @@ LoadUniversalSettings() {
             case "Placement Pattern": PlacementPatternDropdown.Value := value
             case "Placement Order": PlacementSelection.Value := value
             case "Placement Speed": PlaceSpeed.Value := value
+            case "Check For Updates": UpdateChecker.Value := value
         }
     }
 }
@@ -258,6 +258,9 @@ SaveUniversalSettings() {
         content .= "`nPlacement Pattern=" PlacementPatternDropdown.Value
         content .= "`nPlacement Order=" PlacementSelection.Value
         content .= "`nPlacement Speed=" PlaceSpeed.Value
+
+        content .= "`n`n[Update Settings]"
+        content .= "`nCheck For Updates=" UpdateChecker.Value
 
         FileAppend(content, universalFile)
     }

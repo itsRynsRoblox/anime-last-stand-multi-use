@@ -1,13 +1,16 @@
 #Requires AutoHotkey v2.0
 #SingleInstance Force
-#Include %A_ScriptDir%/lib/Tools/Image.ahk
-#Include %A_ScriptDir%/lib/Functions/Functions.ahk
+#Include %A_ScriptDir%/Lib/Tools/Image.ahk
+#Include %A_ScriptDir%/Lib/Functions/Functions.ahk
 
 ; Application Info
 global GameName := "Anime Last Stand"
 global GameTitle := "Ryn's " GameName " Macro "
-global version := "v1.8.0"
+global version := "v1.8.4"
 global rblxID := "ahk_exe RobloxPlayerBeta.exe"
+; Update Checker
+global repoOwner := "itsRynsRoblox"
+global repoName := "anime-last-stand-multi-use"
 ;Coordinate and Positioning Variables
 global targetWidth := 816
 global targetHeight := 638
@@ -476,7 +479,7 @@ fixCameraButton.OnEvent("Click", (*) => BasicSetup(true))
 
 ; === Event Configuration ===
 global EventBorder := MainUI.Add("GroupBox", "x808 y85 w550 h296 +Center Hidden c" uiTheme[1], "Event Configuration")
-global HalloweenRestart := MainUI.Add("Checkbox", "x825 y110 Hidden cffffff", "Restart Halloween stage every: " )
+global HalloweenRestart := MainUI.Add("Checkbox", "x825 y110 Hidden cffffff", "Restart Halloween on wave: " )
 global HalloweenRestartTimer := MainUI.Add("Edit", "x1060 y108 Hidden w45 h20 Hidden cBlack Number", "80")
 
 placementSaveText := MainUI.Add("Text", "x807 y451 w80 h20", "Save Config")
@@ -532,12 +535,8 @@ global ZoomInOption := MainUI.Add("Checkbox", "x1018 y290 Hidden Checked c" uiTh
 global ZoomTeleport := MainUI.Add("Checkbox", "x1018 y320 Hidden Checked c" uiTheme[1], "Teleport to spawn")
 ZoomBox.OnEvent("Change", (*) => ValidateEditBox(ZoomBox))
 
-global MiscSettingsBorder := MainUI.Add("GroupBox", "x1163 y205 w195 h176 +Center Hidden c" uiTheme[1], "Import/Export")
-global UnitConfigText := MainUI.Add("Text", "x1200 y230 w120 h20 Hidden cffffff", "Unit Configuration")
-global UnitImportButton := MainUI.Add("Button", "x1180 y258 w80 h20 Hidden", "Import")
-UnitImportButton.OnEvent("Click", (*) => ImportSettingsFromFile())
-global UnitExportButton := MainUI.Add("Button", "x1265 y258 w80 h20 Hidden", "Export")
-UnitExportButton.OnEvent("Click", (*) => ExportUnitConfig())
+global MiscSettingsBorder := MainUI.Add("GroupBox", "x1163 y205 w195 h176 +Center Hidden c" uiTheme[1], "Update Settings")
+global UpdateChecker := MainUI.Add("Checkbox", "x1175 y230 Hidden cffffff Checked", "Enable update checker")
 
 global ModeBorder := MainUI.Add("GroupBox", "x808 y85 w550 h296 +Center Hidden c" uiTheme[1], "Mode Configuration")
 global ModeConfigurations := MainUI.Add("CheckBox", "x825 y110 Hidden cffffff", "Enable Per-Mode Unit Settings")
@@ -837,8 +836,6 @@ sizeDown() {
     }
 }
 
-
-
 moveRobloxWindow() {
     global MainUIHwnd, offsetX, offsetY, rblxID
     
@@ -1013,7 +1010,7 @@ InitControlGroups() {
         TeleportFailsafe, TeleportFailsafeTimerText, TeleportFailsafeTimer,
         KeybindBorder, F1Text, F1Box, F2Text, F2Box, F3Text, F3Box, F4Text, F4Box, keybindSaveBtn,
         ZoomSettingsBorder, ZoomText, ZoomBox, ZoomTech, ZoomInOption, ZoomTeleport,
-        MiscSettingsBorder, UnitConfigText, UnitImportButton, UnitExportButton
+        MiscSettingsBorder, UpdateChecker
     ]
 
     ControlGroups["Upgrade"] := [
