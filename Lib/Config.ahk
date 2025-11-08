@@ -1,312 +1,343 @@
 ﻿#Include %A_ScriptDir%\Lib\GUI.ahk
 
-SaveKeybindSettings(*) {
-    AddToLog("Saving Keybind Configuration")
-    
-    if FileExist("Settings\Keybinds.txt")
-        FileDelete("Settings\Keybinds.txt")
-        
-    FileAppend(Format("F1={}`nF2={}`nF3={}`nF4={}", F1Box.Value, F2Box.Value, F3Box.Value, F4Box.Value), "Settings\Keybinds.txt", "UTF-8")
-    
-    ; Update globals
-    global F1Key := F1Box.Value
-    global F2Key := F2Box.Value
-    global F3Key := F3Box.Value
-    global F4Key := F4Box.Value
-    
-    ; Update hotkeys
-    Hotkey(F1Key, (*) => moveRobloxWindow())
-    Hotkey(F2Key, (*) => StartMacro())
-    Hotkey(F3Key, (*) => Reload())
-    Hotkey(F4Key, (*) => TogglePause())
-}
-
-LoadKeybindSettings() {
-    if FileExist("Settings\Keybinds.txt") {
-        fileContent := FileRead("Settings\Keybinds.txt", "UTF-8")
-        Loop Parse, fileContent, "`n" {
-            parts := StrSplit(A_LoopField, "=")
-            if (parts[1] = "F1")
-                global F1Key := parts[2]
-            else if (parts[1] = "F2")
-                global F2Key := parts[2]
-            else if (parts[1] = "F3")
-                global F3Key := parts[2]
-            else if (parts[1] = "F4")
-                global F4Key := parts[2]
-        }
-    }
-}
-
-SaveSettingsForMode(*) {
+SaveSettingsForMode(toExport := false, sendMessage := true) {
     try {
-        ; Create the Settings directory if it doesn't exist
-        settingsDir := A_ScriptDir "\Settings\Modes"
-        if !DirExist(settingsDir)
-            DirCreate(settingsDir)
-
-        ; Use ModeDropdown.Text to determine the filename
-
-        if (!ModeConfigurations.Value) {
+        ; Determine mode name
+        gameMode := (ModeConfigurations.Value ? ModeDropdown.Text : "Default")
+        if !gameMode
             gameMode := "Default"
+
+        safeMode := RegExReplace(gameMode, '[\\/:*?"<>|]', "_")
+
+        if (toExport) {
+            file := A_ScriptDir "\Settings\Export\" safeMode "_Configuration.json"
         } else {
-            gameMode := ModeDropdown.Text
+            file := A_ScriptDir "\Settings\Modes\" safeMode "_Configuration.json"
         }
 
-        if !gameMode {
-            gameMode := "Default"
-        }
+        ; Build JSON data map
+        data := {
+            Unit_Settings: {
+                Slot_1_Enabled: Enabled1.Value, Slot_2_Enabled: Enabled2.Value, Slot_3_Enabled: Enabled3.Value,
+                Slot_4_Enabled: Enabled4.Value, Slot_5_Enabled: Enabled5.Value, Slot_6_Enabled: Enabled6.Value,
+                Slot_1_Placements: Placement1.Value, Slot_2_Placements: Placement2.Value, 
+                Slot_3_Placements: Placement3.Value, Slot_4_Placements: Placement4.Value, 
+                Slot_5_Placements: Placement5.Value, Slot_6_Placements: Placement6.Value,
+                Slot_1_Priority: Priority1.Value, Slot_2_Priority: Priority2.Value, 
+                Slot_3_Priority: Priority3.Value, Slot_4_Priority: Priority4.Value, 
+                Slot_5_Priority: Priority5.Value, Slot_6_Priority: Priority6.Value,
+                Slot_1_Upgrade_Priority: UpgradePriority1.Text, Slot_2_Upgrade_Priority: UpgradePriority2.Text,
+                Slot_3_Upgrade_Priority: UpgradePriority3.Text, Slot_4_Upgrade_Priority: UpgradePriority4.Text, 
+                Slot_5_Upgrade_Priority: UpgradePriority5.Text, Slot_6_Upgrade_Priority: UpgradePriority6.Text,
+                Slot_1_Upgrade_Enabled: UpgradeEnabled1.Value, Slot_2_Upgrade_Enabled: UpgradeEnabled2.Value,
+                Slot_3_Upgrade_Enabled: UpgradeEnabled3.Value, Slot_4_Upgrade_Enabled: UpgradeEnabled4.Value, 
+                Slot_5_Upgrade_Enabled: UpgradeEnabled5.Value, Slot_6_Upgrade_Enabled: UpgradeEnabled6.Value,
+                Slot_1_Ability_Enabled: AbilityEnabled1.Value, Slot_2_Ability_Enabled: AbilityEnabled2.Value,
+                Slot_3_Ability_Enabled: AbilityEnabled3.Value, Slot_4_Ability_Enabled: AbilityEnabled4.Value, 
+                Slot_5_Ability_Enabled: AbilityEnabled5.Value, Slot_6_Ability_Enabled: AbilityEnabled6.Value,
+                Slot_1_Upgrade_Limit: UpgradeLimit1.Text, Slot_2_Upgrade_Limit: UpgradeLimit2.Text,
+                Slot_3_Upgrade_Limit: UpgradeLimit3.Text, Slot_4_Upgrade_Limit: UpgradeLimit4.Text,
+                Slot_5_Upgrade_Limit: UpgradeLimit5.Text, Slot_6_Upgrade_Limit: UpgradeLimit6.Text,
+                Slot_1_Upgrade_Limit_Enabled: UpgradeLimitEnabled1.Value, Slot_2_Upgrade_Limit_Enabled: UpgradeLimitEnabled2.Value,
+                Slot_3_Upgrade_Limit_Enabled: UpgradeLimitEnabled3.Value, Slot_4_Upgrade_Limit_Enabled: UpgradeLimitEnabled4.Value,
+                Slot_5_Upgrade_Limit_Enabled: UpgradeLimitEnabled5.Value, Slot_6_Upgrade_Limit_Enabled: UpgradeLimitEnabled6.Value
+            },
+            Auto_Ability: {
+                Enabled: AutoAbilityBox.Value,
+                Timer: AutoAbilityTimer.Text
+            },
+            Zoom_Settings: {
+                Level: ZoomBox.Value,
+                Enabled: ZoomTech.Value,
+                Zoom_In: ZoomInOption.Value,
+                Teleport: ZoomTeleport.Value
+            },
+            Upgrading: {
+                Enabled: EnableUpgrading.Value,
+                Use_Unit_Manager: UnitManagerUpgradeSystem.Value,
+                Use_Unit_Priority: PriorityUpgrade.Value
+            },
+            Custom_Recordings: {
+                Use: ShouldUseRecording.Value,
+                Setup: ShouldUseSetup.Value,
+                Loop: ShouldLoopRecording.Value,
+                HandleEnd: ShouldHandleGameEnd.Value
+            },
+            Nuke: {
+                Enabled: NukeUnitSlotEnabled.Value,
+                Slot: NukeUnitSlot.Value,
+                Coords: { X: nukeCoords.x, Y: nukeCoords.y },
+                AtSpecificWave: NukeAtSpecificWave.Value,
+                Wave: NukeWave.Value,
+                Delay: NukeDelay.Value
+            },
+            Unit_Manager_Fixes: {
+                Slot1AddsExtraUnit: MinionSlot1.Value,
+                Slot2AddsExtraUnit: MinionSlot2.Value,
+                Slot3AddsExtraUnit: MinionSlot3.Value,
+                Slot4AddsExtraUnit: MinionSlot4.Value,
+                Slot5AddsExtraUnit: MinionSlot5.Value,
+                Slot6AddsExtraUnit: MinionSlot6.Value
+            },
+            Modes: {
+                Portals: {
 
-        ; Sanitize the game mode name to avoid illegal filename characters
-        settingsFile := settingsDir "\" gameMode "_Configuration.txt"
-
-        ; Delete the existing file for this mode (optional)
-        if FileExist(settingsFile)
-            FileDelete(settingsFile)
-
-        ; Start building the content
-        content := "[Unit Settings]"
-
-        for settingType in ["Enabled", "Placement", "Priority", "UpgradePriority", "UpgradeEnabled", "AbilityEnabled", "UpgradeLimit", "UpgradeLimitEnabled"] {
-            loop 6 {
-                index := A_Index
-                setting := %settingType%%index%
-                value := (settingType = "UpgradeLimit" || settingType = "UpgradePriority") ? setting.Text : setting.Value
-                content .= "`n" settingType index "=" value
+                },
+                Events: {
+                    Halloween: {
+                        Restart: HalloweenRestart.Value,
+                        Wave: HalloweenRestartTimer.Value,
+                        Use_Premade_Movement: HalloweenPremadeMovement.Value
+                    }
+                }
+            },
+            Failsafe_Settings: {
+                Teleport_Failsafe: {
+                    Enabled: TeleportFailsafe.Value,
+                    Timer: TeleportFailsafeTimer.Value
+                }
+            },
+            Update_Checker: {
+                Enabled: UpdateChecker.Value
             }
         }
 
-        content .= "`n`n[Auto Ability Settings]"
-        content .= "`nAutoAbility=" AutoAbilityBox.Value
-        content .= "`nAutoAbilityTimer=" AutoAbilityTimer.Text
+        ; Convert to JSON
+        json := jsongo.Stringify(data, "", "    ")
 
-        content .= "`n`n[Zoom Settings]"
-        content .= "`nZoomLevel=" ZoomBox.Value
-        content .= "`nUse Zoom Tech=" ZoomTech.Value
-        content .= "`nZoom In Then Out=" ZoomInOption.Value
-        content .= "`nTeleport To Spawn=" ZoomTeleport.Value
+        ; Save to file
+        if FileExist(file)
+            FileDelete(file)
+        FileAppend(json, file, "UTF-8")
 
-        content .= "`n`n[Upgrade Settings]"
-        content .= "`nUnit Manager Upgrade System=" UnitManagerUpgradeSystem.Value
-        content .= "`nPriority Upgrade=" PriorityUpgrade.Value
+        if (toExport) {
+            AddToLog("✅ Successfully exported settings for mode: " gameMode)
+            return
+        }
 
-        content .= "`n`n[Portal Settings]"
-        content .= "`nStart Portal In Lobby=" PortalLobby.Value
+        if (sendMessage) {
+            AddToLog("✅ Saved settings for mode: " gameMode)
+        }
 
-        content .= "`n`n[Unit Settings]"
-        content .= "`nUse Sunwoo Nuke=" SJWNuke.Value
-        content .= "`nSunwoo Nuke Slot=" SJWSlot.Value
-        content .= "`nNuke Enabled=" NukeUnitSlotEnabled.Value
-        content .= "`nNuke Slot=" NukeUnitSlot.Value
-        content .= "`nNuke Coords=" nukeCoords.x "," nukeCoords.y
-        content .= "`nNuke At Specific Wave=" NukeAtSpecificWave.Value
-        content .= "`nNuke Wave=" NukeWave.Value
-        content .= "`nNuke Delay=" NukeDelay.Value
-        content .= "`nSlot 1 Minion=" MinionSlot1.Value
-        content .= "`nSlot 2 Minion=" MinionSlot2.Value
-        content .= "`nSlot 3 Minion=" MinionSlot3.Value
-        content .= "`nSlot 4 Minion=" MinionSlot4.Value
-        content .= "`nSlot 5 Minion=" MinionSlot5.Value
-        content .= "`nSlot 6 Minion=" MinionSlot6.Value
-
-        content .= "`n`n[Halloween Settings]"
-        content .= "`nHalloween Restart Enabled=" HalloweenRestart.Value
-        content .= "`nHalloween Restart Timer=" HalloweenRestartTimer.Value
-
-        content .= "`n`n[Failsafe Settings]"
-        content .= "`nTeleport Failsafe Enabled=" TeleportFailsafe.Value
-        content .= "`nTeleport Failsafe Timer=" TeleportFailsafeTimer.Value
-
-        FileAppend(content, settingsFile)
+        ; Save related components
         SaveCustomPlacements()
         SaveAllMovements()
+        SaveAllRecordings()
         SaveUniversalSettings()
-        AddToLog("✅ Saved settings for mode: " gameMode)
         SaveAllConfigs()
+    }
+    catch {
+        AddToLog("Error saving mode settings")
     }
 }
 
-LoadUnitSettingsByMode() {
-    global UnitConfigMap, nukeCoords
+LoadUnitSettingsByMode(fromFile := false) {
+    global nukeCoords
 
-    InitSettings()
-
-    local mode := ModeDropdown.Text
+    mode := ModeDropdown.Text
     if !mode
         mode := "Default"
 
-    ; Sanitize mode for filename safety
     safeMode := RegExReplace(mode, '[\\/:*?"<>|]', "_")
-    settingsFile := A_ScriptDir "\Settings\Modes\" safeMode "_Configuration.txt"
 
-    if !FileExist(settingsFile) {
-        AddToLog("⚠️ No configuration found for mode: " mode)
-        SaveSettingsForMode()  ; Save default settings if missing
-        return
+    if (fromFile) {
+        MainUI.Opt("-AlwaysOnTop")
+        Sleep(100)
+
+        file := FileSelect("Select a configuration file to import", "", A_ScriptDir "\Settings", "JSON Files (*.json)")
+
+        MainUI.Opt("+AlwaysOnTop")
+
+        if !file
+            return
+    } else {
+        file := A_ScriptDir "\Settings\Modes\" safeMode "_Configuration.json"
     }
 
-    content := FileRead(settingsFile)
-    lines := StrSplit(content, "`n")
-
-    for line in lines {
-        line := Trim(line)
-        if line = "" || InStr(line, "[")
-            continue
-
-        parts := StrSplit(line, "=")
-        if (parts.Length < 2)
-            continue
-
-        key := Trim(parts[1])
-        value := Trim(parts[2])
-
-        if UnitConfigMap.Has(key) {
-            ctrl := UnitConfigMap[key].control
-            prop := UnitConfigMap[key].prop
-            try ctrl.%prop% := value
-        } else if (key = "Nuke Coords") {
-            coords := StrSplit(value, ",")
-            if coords.Length >= 2
-                nukeCoords := { x: coords[1], y: coords[2] }
-        }
+    if !FileExist(file) {
+        AddToLog("⚠️ No configuration found for mode: " mode ", using default settings...")
+        SaveSettingsForMode(false, false)
+        file := A_ScriptDir "\Settings\Modes\" safeMode "_Configuration.json"
     }
+
+    json := FileRead(file, "UTF-8")
+
+    js := jsongo
+    js.silent_error := true
+    js.extract_objects := true
+
+    data := js.Parse(json)
+
+    if (data = "" || !IsObject(data)) {
+        AddToLog("⚠️ Failed to parse JSON, using empty config.")
+        data := {} ; fallback object
+    }
+
+    Enabled1.Value := GetValue(data, ["Unit_Settings", "Slot_1_Enabled"], 0)
+    Enabled2.Value := GetValue(data, ["Unit_Settings", "Slot_2_Enabled"], 0)
+    Enabled3.Value := GetValue(data, ["Unit_Settings", "Slot_3_Enabled"], 0)
+    Enabled4.Value := GetValue(data, ["Unit_Settings", "Slot_4_Enabled"], 0)
+    Enabled5.Value := GetValue(data, ["Unit_Settings", "Slot_5_Enabled"], 0)
+    Enabled6.Value := GetValue(data, ["Unit_Settings", "Slot_6_Enabled"], 0)
+
+    Placement1.Value := GetValue(data, ["Unit_Settings", "Slot_1_Placements"], 0)
+    Placement2.Value := GetValue(data, ["Unit_Settings", "Slot_2_Placements"], 0)
+    Placement3.Value := GetValue(data, ["Unit_Settings", "Slot_3_Placements"], 0)
+    Placement4.Value := GetValue(data, ["Unit_Settings", "Slot_4_Placements"], 0)
+    Placement5.Value := GetValue(data, ["Unit_Settings", "Slot_5_Placements"], 0)
+    Placement6.Value := GetValue(data, ["Unit_Settings", "Slot_6_Placements"], 0)
+
+    Priority1.Value := GetValue(data, ["Unit_Settings", "Slot_1_Priority"], 0)
+    Priority2.Value := GetValue(data, ["Unit_Settings", "Slot_2_Priority"], 0)
+    Priority3.Value := GetValue(data, ["Unit_Settings", "Slot_3_Priority"], 0)
+    Priority4.Value := GetValue(data, ["Unit_Settings", "Slot_4_Priority"], 0)
+    Priority5.Value := GetValue(data, ["Unit_Settings", "Slot_5_Priority"], 0)
+    Priority6.Value := GetValue(data, ["Unit_Settings", "Slot_6_Priority"], 0)
+
+    UpgradePriority1.Value := GetValue(data, ["Unit_Settings", "Slot_1_Upgrade_Priority"], 1)
+    UpgradePriority2.Value := GetValue(data, ["Unit_Settings", "Slot_2_Upgrade_Priority"], 2)
+    UpgradePriority3.Value := GetValue(data, ["Unit_Settings", "Slot_3_Upgrade_Priority"], 3)
+    UpgradePriority4.Value := GetValue(data, ["Unit_Settings", "Slot_4_Upgrade_Priority"], 4)
+    UpgradePriority5.Value := GetValue(data, ["Unit_Settings", "Slot_5_Upgrade_Priority"], 5)
+    UpgradePriority6.Value := GetValue(data, ["Unit_Settings", "Slot_6_Upgrade_Priority"], 6)
+
+    UpgradeEnabled1.Value := GetValue(data, ["Unit_Settings", "Slot_1_Upgrade_Enabled"], 0)
+    UpgradeEnabled2.Value := GetValue(data, ["Unit_Settings", "Slot_2_Upgrade_Enabled"], 0)
+    UpgradeEnabled3.Value := GetValue(data, ["Unit_Settings", "Slot_3_Upgrade_Enabled"], 0)
+    UpgradeEnabled4.Value := GetValue(data, ["Unit_Settings", "Slot_4_Upgrade_Enabled"], 0)
+    UpgradeEnabled5.Value := GetValue(data, ["Unit_Settings", "Slot_5_Upgrade_Enabled"], 0)
+    UpgradeEnabled6.Value := GetValue(data, ["Unit_Settings", "Slot_6_Upgrade_Enabled"], 0)
+
+    AbilityEnabled1.Value := GetValue(data, ["Unit_Settings", "Slot_1_Ability_Enabled"], 0)
+    AbilityEnabled2.Value := GetValue(data, ["Unit_Settings", "Slot_2_Ability_Enabled"], 0)
+    AbilityEnabled3.Value := GetValue(data, ["Unit_Settings", "Slot_3_Ability_Enabled"], 0)
+    AbilityEnabled4.Value := GetValue(data, ["Unit_Settings", "Slot_4_Ability_Enabled"], 0)
+    AbilityEnabled5.Value := GetValue(data, ["Unit_Settings", "Slot_5_Ability_Enabled"], 0)
+    AbilityEnabled6.Value := GetValue(data, ["Unit_Settings", "Slot_6_Ability_Enabled"], 0)
+
+    UpgradeLimit1.Value := GetValue(data, ["Unit_Settings", "Slot_1_Upgrade_Limit"], "")
+    UpgradeLimit2.Value := GetValue(data, ["Unit_Settings", "Slot_2_Upgrade_Limit"], "")
+    UpgradeLimit3.Value := GetValue(data, ["Unit_Settings", "Slot_3_Upgrade_Limit"], "")
+    UpgradeLimit4.Value := GetValue(data, ["Unit_Settings", "Slot_4_Upgrade_Limit"], "")
+    UpgradeLimit5.Value := GetValue(data, ["Unit_Settings", "Slot_5_Upgrade_Limit"], "")
+    UpgradeLimit6.Value := GetValue(data, ["Unit_Settings", "Slot_6_Upgrade_Limit"], "")
+
+    UpgradeLimitEnabled1.Value := GetValue(data, ["Unit_Settings", "Slot_1_Upgrade_Limit_Enabled"], 0)
+    UpgradeLimitEnabled2.Value := GetValue(data, ["Unit_Settings", "Slot_2_Upgrade_Limit_Enabled"], 0)
+    UpgradeLimitEnabled3.Value := GetValue(data, ["Unit_Settings", "Slot_3_Upgrade_Limit_Enabled"], 0)
+    UpgradeLimitEnabled4.Value := GetValue(data, ["Unit_Settings", "Slot_4_Upgrade_Limit_Enabled"], 0)
+    UpgradeLimitEnabled5.Value := GetValue(data, ["Unit_Settings", "Slot_5_Upgrade_Limit_Enabled"], 0)
+    UpgradeLimitEnabled6.Value := GetValue(data, ["Unit_Settings", "Slot_6_Upgrade_Limit_Enabled"], 0)
+
+    AutoAbilityBox.Value := GetValue(data, ["Auto_Ability", "Enabled"], 0)
+    AutoAbilityTimer.Text := GetValue(data, ["Auto_Ability", "Timer"], "")
+
+    ZoomBox.Value := GetValue(data, ["Zoom_Settings", "Level"], 20)
+    ZoomTech.Value := GetValue(data, ["Zoom_Settings", "Enabled"], 1)
+    ZoomInOption.Value := GetValue(data, ["Zoom_Settings", "Zoom_In"], 1)
+    ZoomTeleport.Value := GetValue(data, ["Zoom_Settings", "Teleport"], 0)
+
+    EnableUpgrading.Value := GetValue(data, ["Upgrading", "Enabled"], 0)
+    UnitManagerUpgradeSystem.Value := GetValue(data, ["Upgrading", "Use_Unit_Manager"], 0)
+    PriorityUpgrade.Value := GetValue(data, ["Upgrading", "Use_Unit_Priority"], 0)
+
+    ShouldUseRecording.Value := GetValue(data, ["Custom_Recordings", "Use"], 0)
+    ShouldUseSetup.Value := GetValue(data, ["Custom_Recordings", "Setup"], 0)
+    ShouldLoopRecording.Value := GetValue(data, ["Custom_Recordings", "Loop"], 0)
+    ShouldHandleGameEnd.Value := GetValue(data, ["Custom_Recordings", "HandleEnd"], 0)
+
+    NukeUnitSlotEnabled.Value := GetValue(data, ["Nuke", "Enabled"], 0)
+    NukeUnitSlot.Value := GetValue(data, ["Nuke", "Slot"], 0)
+    nukeCoords := { x: GetValue(data, ["Nuke", "Coords", "X"], 0), y: GetValue(data, ["Nuke", "Coords", "Y"], 0) }
+    NukeAtSpecificWave.Value := GetValue(data, ["Nuke", "AtSpecificWave"], 0)
+    NukeWave.Value := GetValue(data, ["Nuke", "Wave"], 0)
+    NukeDelay.Value := GetValue(data, ["Nuke", "Delay"], 0)
+
+    MinionSlot1.Value := GetValue(data, ["Unit_Manager_Fixes", "Slot1AddsExtraUnit"], 0)
+    MinionSlot2.Value := GetValue(data, ["Unit_Manager_Fixes", "Slot2AddsExtraUnit"], 0)
+    MinionSlot3.Value := GetValue(data, ["Unit_Manager_Fixes", "Slot3AddsExtraUnit"], 0)
+    MinionSlot4.Value := GetValue(data, ["Unit_Manager_Fixes", "Slot4AddsExtraUnit"], 0)
+    MinionSlot5.Value := GetValue(data, ["Unit_Manager_Fixes", "Slot5AddsExtraUnit"], 0)
+    MinionSlot6.Value := GetValue(data, ["Unit_Manager_Fixes", "Slot6AddsExtraUnit"], 0)
+
+    HalloweenRestart.Value := GetValue(data, ["Modes", "Events", "Halloween", "Restart"], 0)
+    HalloweenRestartTimer.Value := GetValue(data, ["Modes", "Events", "Halloween", "Wave"], 58)
+    HalloweenPremadeMovement.Value := GetValue(data, ["Modes", "Events", "Halloween", "Use_Premade_Movement"], 0)
+
+    TeleportFailsafe.Value := GetValue(data, ["Failsafe_Settings", "Teleport_Failsafe", "Enabled"], 0)
+    TeleportFailsafeTimer.Value := GetValue(data, ["Failsafe_Settings", "Teleport_Failsafe", "Timer"], 120)
+
+    UpdateChecker.Value := GetValue(data, ["Update_Checker", "Enabled"], true)
 
     LoadCustomPlacements()
     InitControlGroups()
     LoadUniversalSettings()
     LoadAllMovements()
+    LoadAllRecordings()
     LoadAllCardConfig()
+    LoadAllProfiles()
 
     AddToLog("✅ Settings successfully loaded for mode: " mode)
 }
 
 LoadUniversalSettings() {
-    universalFile := A_ScriptDir "\Settings\Modes\Universal_Configuration.txt"
-    if !FileExist(universalFile) {
-        AddToLog("⚠️ No universal settings found.")
+    file := A_ScriptDir "\Settings\Modes\Universal_Configuration.json"
+
+    if !FileExist(file) {
+        AddToLog("⚠️ No universal settings file found. Creating default JSON...")
+        SaveUniversalSettings()
         return
     }
 
-    content := FileRead(universalFile)
-    lines := StrSplit(content, "`n")
+    json := FileRead(file, "UTF-8")
+    data := jsongo.Parse(json)
 
-    for line in lines {
-        line := Trim(line)
-        if line = "" || InStr(line, "[")
-            continue
+    NextLevelBox.Value := GetValue(data, ["Universal", "NextLevel"], 0)
+    ReturnLobbyBox.Value := GetValue(data, ["Universal", "ReturnToLobby"], 0)
+    ModeConfigurations.Value := GetValue(data, ["Universal", "UsingModeConfigurations"], 0)
 
-        parts := StrSplit(line, "=")
-        key := parts[1]
-        value := ""
+    WebhookEnabled.Value := GetValue(data, ["Webhook", "Enabled"], 0)
+    WebhookURLBox.Text := GetValue(data, ["Webhook", "URL"], "")
+    WebhookLogsEnabled.Value := GetValue(data, ["Webhook", "LogsEnabled"], 0)
 
-        if (key = "Private Server URL") {
-            ; Join everything after the first '=' back together for the URL
-            for index, part in parts {
-                if (index > 1)
-                    value .= (value = "" ? "" : "=") . part
-            }
-        } else {
-            ; For other keys, take only the part after first '='
-            value := parts[2]
-        }
+    PrivateServerEnabled.Value := GetValue(data, ["PrivateServer", "Enabled"], 0)
+    PrivateServerURLBox.Text := GetValue(data, ["PrivateServer", "URL"], "")
 
-        switch key {
-            case "Return To Lobby": ReturnLobbyBox.Value := value
-            case "Next Level": NextLevelBox.Value := value
-            case "Seamless Replay": SeamlessToggle.Value := value
-            case "Using Mode Configurations": ModeConfigurations.Value := value
-            case "Webhook Enabled": WebhookEnabled.Value := value
-            case "Webhook URL": WebhookURLBox.Text := value
-            case "Webhook Logs Enabled": WebhookLogsEnabled.Value := value
-            case "Private Server Enabled": PrivateServerEnabled.Value := value
-            case "Private Server URL": PrivateServerURLBox.Value := value
-            case "Nightmare Difficulty": NightmareDifficulty.Value := value
-            case "Placement Pattern": PlacementPatternDropdown.Value := value
-            case "Placement Order": PlacementSelection.Value := value
-            case "Placement Speed": PlaceSpeed.Value := value
-            case "Check For Updates": UpdateChecker.Value := value
-        }
-    }
+    PlacementPatternDropdown.Value := GetValue(data, ["Placement", "Pattern"], 1)
+    PlacementSelection.Value := GetValue(data, ["Placement", "Order"], 1)
+    PlaceSpeed.Value := GetValue(data, ["Placement", "Speed"], 2)
 }
-
 
 SaveUniversalSettings() {
-    try {
-        universalFile := A_ScriptDir "\Settings\Modes\Universal_Configuration.txt"
-        if FileExist(universalFile)
-            FileDelete(universalFile)
-
-        content .= "[Universal Settings]"
-        content .= "`nNext Level=" NextLevelBox.Value
-        content .= "`nReturn To Lobby=" ReturnLobbyBox.Value
-        content .= "`nSeamless Replay=" SeamlessToggle.Value
-        content .= "`nUsing Mode Configurations=" ModeConfigurations.Value
-
-        content .= "`n`n[Webhook Settings]"
-        content .= "`nWebhook Enabled=" WebhookEnabled.Value
-        content .= "`nWebhook URL=" WebhookURLBox.Text
-        content .= "`nWebhook Logs Enabled=" WebhookLogsEnabled.Value
-
-        content .= "`n`n[Private Server Settings]"
-        content .= "`nPrivate Server Enabled=" PrivateServerEnabled.Value
-        content .= "`nPrivate Server URL=" PrivateServerURLBox.Value
-
-        content .= "`n`n[Story Settings]"
-        content .= "`nNightmare Difficulty=" NightmareDifficulty.Value
-
-        content .= "`n`n[Placement Settings]"
-        content .= "`nPlacement Pattern=" PlacementPatternDropdown.Value
-        content .= "`nPlacement Order=" PlacementSelection.Value
-        content .= "`nPlacement Speed=" PlaceSpeed.Value
-
-        content .= "`n`n[Update Settings]"
-        content .= "`nCheck For Updates=" UpdateChecker.Value
-
-        FileAppend(content, universalFile)
-    }
-}
-
-ImportSettingsFromFile() {
-    global MainUI, UnitConfigMap, nukeCoords
-
-    ; Temporarily disable AlwaysOnTop for file dialog
-    MainUI.Opt("-AlwaysOnTop")
-    Sleep(100)
-
-    file := FileSelect(3, , "Select a configuration file to import", "Text Documents (*.txt)")
-    MainUI.Opt("+AlwaysOnTop")
-
-    if !file
-        return
-
-    content := FileRead(file)
-    lines := StrSplit(content, "`n")
-
-    for line in lines {
-        line := Trim(line)
-        if (line = "" || InStr(line, "["))
-            continue
-
-        parts := StrSplit(line, "=")
-        if parts.Length < 2
-            continue
-
-        key := Trim(parts[1])
-        value := Trim(parts[2])
-
-        if UnitConfigMap.Has(key) {
-            ctrl := UnitConfigMap[key].control
-            prop := UnitConfigMap[key].prop
-            try ctrl.%prop% := value
-        } else if (key = "Nuke Coords") {
-            coords := StrSplit(value, ",")
-            if coords.Length >= 2
-                nukeCoords := { x: coords[1], y: coords[2] }
+    data := {
+        Universal: {
+            NextLevel: NextLevelBox.Value,
+            ReturnToLobby: ReturnLobbyBox.Value,
+            UsingModeConfigurations: ModeConfigurations.Value
+        },
+        Webhook: {
+            Enabled: WebhookEnabled.Value,
+            URL: WebhookURLBox.Text,
+            LogsEnabled: WebhookLogsEnabled.Value
+        },
+        PrivateServer: {
+            Enabled: PrivateServerEnabled.Value,
+            URL: PrivateServerURLBox.Text
+        },
+        Placement: {
+            Pattern: PlacementPatternDropdown.Value,
+            Order: PlacementSelection.Value,
+            Speed: PlaceSpeed.Value
         }
     }
 
-    ; Finalize
-    AddToLog("📥 Imported settings from external file!")
+    file := A_ScriptDir "\Settings\Modes\Universal_Configuration.json"
+    json := jsongo.Stringify(data, "", "    ")
+
+    if FileExist(file)
+        FileDelete(file)
+
+    FileAppend(json, file, "UTF-8")
 }
 
 ExportCoordinatesPreset(presetIndex) {
@@ -341,14 +372,14 @@ ExportCoordinatesPreset(presetIndex) {
     AddToLog("✅ Preset " presetIndex " exported to: Settings\Export\Preset" presetIndex ".txt")
 }
 
-ImportCoordinatesPreset1() {
+ImportCoordinatesPreset() {
     global savedCoords, MainUI
 
     ; Allow file dialog to appear
     MainUI.Opt("-AlwaysOnTop")
     Sleep(100)
 
-    file := FileSelect(3, , "Import a custom placement preset", "Text Documents (*.txt)")
+    file := FileSelect("Select a placement file to import", "", A_ScriptDir "\Settings", "Text Documents (*.txt)")
 
     if !file
         return
@@ -409,87 +440,59 @@ ImportCoordinatesPreset1() {
     AddToLog("✅ Imported preset into slot " targetSlot "!")
 }
 
-ExportUnitConfig() {
-    global UnitConfigMap, nukeCoords
+SaveKeybindSettings(*) {
+    AddToLog("Saving Keybind Configuration")
 
-    ; Set export directory and default file name
-    exportDir := A_ScriptDir "\Settings\Export"
-    if !DirExist(exportDir)
-        DirCreate(exportDir)
+    if FileExist("Settings\Keybinds.txt")
+        FileDelete("Settings\Keybinds.txt")
 
-    file := exportDir "\Exported_Unit_Config.txt"
-    configData := ""
+    FileAppend(Format("F1={}`nF2={}`nF3={}`nF4={}", F1Box.Value, F2Box.Value, F3Box.Value, F4Box.Value), "Settings\Keybinds.txt", "UTF-8")
 
-    ; Export all mapped settings
-    for key, obj in UnitConfigMap {
-        ctrl := obj.control
-        prop := obj.prop
-        try configData .= key "=" ctrl.%prop% "`n"
-    }
+    ; Update globals
+    global F1Key := F1Box.Value
+    global F2Key := F2Box.Value
+    global F3Key := F3Box.Value
+    global F4Key := F4Box.Value
 
-    ; Nuke coordinates (handled separately)
-    if IsSet(nukeCoords) {
-        configData .= "Nuke Coords=" nukeCoords.x "," nukeCoords.y "`n"
-    }
+    ; Update hotkeys
+    Hotkey(F1Key, (*) => moveRobloxWindow())
+    Hotkey(F2Key, (*) => StartMacro())
+    Hotkey(F3Key, (*) => Reload())
+    Hotkey(F4Key, (*) => TogglePause())
+}
 
-    ; Save to file
-    try {
-        if FileExist(file)
-            FileDelete(file)
-        FileAppend(configData, file)
-        AddToLog("✅ Unit configuration exported to Export\Exported_Unit_Config.txt")
-    } catch {
-        AddToLog("❌ Failed to export unit config.")
+LoadKeybindSettings() {
+    if FileExist("Settings\Keybinds.txt") {
+        fileContent := FileRead("Settings\Keybinds.txt", "UTF-8")
+        loop parse, fileContent, "`n" {
+            parts := StrSplit(A_LoopField, "=")
+            if (parts[1] = "F1")
+                global F1Key := parts[2]
+            else if (parts[1] = "F2")
+                global F2Key := parts[2]
+            else if (parts[1] = "F3")
+                global F3Key := parts[2]
+            else if (parts[1] = "F4")
+                global F4Key := parts[2]
+        }
     }
 }
 
+HasKey(obj, key) {
+    return (obj is Map) ? obj.Has(key) : obj.HasOwnProp(key)
+}
 
-InitSettings() {
-    loop 6 {
-        i := A_Index
-        UnitConfigMap["Enabled" i] := { control: enabled%i%, prop: "Value" }
-        UnitConfigMap["UpgradeEnabled" i] := { control: upgradeEnabled%i%, prop: "Value" }
-        UnitConfigMap["AbilityEnabled" i] := { control: abilityEnabled%i%, prop: "Value" }
-        UnitConfigMap["UpgradeLimitEnabled" i] := { control: upgradeLimitEnabled%i%, prop: "Value" }
-        UnitConfigMap["UpgradeLimit" i] := { control: UpgradeLimit%i%, prop: "Text" }
-        UnitConfigMap["Placement" i] := { control: placement%i%, prop: "Text" }
-        UnitConfigMap["Priority" i] := { control: priority%i%, prop: "Text" }
-        UnitConfigMap["UpgradePriority" i] := { control: UpgradePriority%i%, prop: "Text" }
+GetSection(obj, key) {
+    return (IsObject(obj) && HasKey(obj, key)) ? obj[key] : {}
+}
+
+; Traverse nested objects safely and return a value or fallback
+GetValue(obj, keys, fallback := "") {
+    current := obj
+    for key in keys {
+        if !(IsObject(current) && current.Has(key))
+            return fallback
+        current := current[key]
     }
-
-    ; Other controls
-    UnitConfigMap["AutoAbility"] := { control: AutoAbilityBox, prop: "Value" }
-    UnitConfigMap["AutoAbilityTimer"] := { control: AutoAbilityTimer, prop: "Text" }
-
-    ; Zoom Tech Settings
-    UnitConfigMap["ZoomLevel"] := { control: ZoomBox, prop: "Text" }
-    UnitConfigMap["Use Zoom Tech"] := { control: ZoomTech, prop: "Value" }
-    UnitConfigMap["Zoom In Then Out"] := { control: ZoomInOption, prop: "Value" }
-    UnitConfigMap["Teleport To Spawn"] := { control: ZoomTeleport, prop: "Value" }
-
-    UnitConfigMap["Unit Manager Upgrade System"] := { control: UnitManagerUpgradeSystem, prop: "Value" }
-    UnitConfigMap["Priority Upgrade"] := { control: PriorityUpgrade, prop: "Value" }
-    UnitConfigMap["Start Portal In Lobby"] := { control: PortalLobby, prop: "Value" }
-
-    UnitConfigMap["Use Sunwoo Nuke"] := { control: SJWNuke, prop: "Value" }
-    UnitConfigMap["Sunwoo Nuke Slot"] := { control: SJWSlot, prop: "Value" }
-    UnitConfigMap["Nuke Enabled"] := { control: NukeUnitSlotEnabled, prop: "Value" }
-    UnitConfigMap["Nuke Slot"] := { control: NukeUnitSlot, prop: "Value" }
-
-    UnitConfigMap["Nuke At Specific Wave"] := { control: NukeAtSpecificWave, prop: "Value" }
-    UnitConfigMap["Nuke Wave"] := { control: NukeWave, prop: "Value" }
-    UnitConfigMap["Nuke Delay"] := { control: NukeDelay, prop: "Value" }
-
-    UnitConfigMap["Slot 1 Minion"] := { control: MinionSlot1, prop: "Value" }
-    UnitConfigMap["Slot 2 Minion"] := { control: MinionSlot2, prop: "Value" }
-    UnitConfigMap["Slot 3 Minion"] := { control: MinionSlot3, prop: "Value" }
-    UnitConfigMap["Slot 4 Minion"] := { control: MinionSlot4, prop: "Value" }
-    UnitConfigMap["Slot 5 Minion"] := { control: MinionSlot5, prop: "Value" }
-    UnitConfigMap["Slot 6 Minion"] := { control: MinionSlot6, prop: "Value" }
-
-    UnitConfigMap["Halloween Restart Enabled"] := { control: HalloweenRestart, prop: "Value" }
-    UnitConfigMap["Halloween Restart Timer"] := { control: HalloweenRestartTimer, prop: "Value" }
-
-    UnitConfigMap["Teleport Failsafe Enabled"] := { control: TeleportFailsafe, prop: "Value" }
-    UnitConfigMap["Teleport Failsafe Timer"] := { control: TeleportFailsafeTimer, prop: "Value" }
+    return current
 }

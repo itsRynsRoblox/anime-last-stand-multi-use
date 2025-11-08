@@ -12,6 +12,8 @@ StartEvent() {
 HandleEventMovement() {
     switch (EventDropdown.Text) {
         case "Halloween P2":
-            WalkToHalloweenPath()
+            if (HalloweenPremadeMovement.Value) {
+                WalkToHalloweenPath()
+            }
     }
 }

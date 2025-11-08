@@ -451,7 +451,6 @@ SetAutoUpgradeForSingleUnit(unitIndex := 1) {
 
     ; Perform upgrade clicks
     loop priority {
-        AddToLog("🔹 Click " A_Index " at X" clickX ", Y" clickY)
         FixClick(clickX, clickY)
         Sleep(150)
     }

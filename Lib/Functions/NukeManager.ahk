@@ -1,7 +1,6 @@
 #Requires AutoHotkey v2.0
 
 global alreadyNuked := false
-global waitingToNuke := false
 
 StartNukeCapture() {
     global nukeCoords
@@ -22,69 +21,50 @@ StartNukeCapture() {
 PrepareToNuke(force := false) {
     global successfulCoordinates, maxedCoordinates
 
-    unitManagerWasOpen := false
+    if !NukeUnitSlotEnabled.Value
+        return false
 
-    if (NukeUnitSlotEnabled.Value) {
-        ; try to find in successfulCoordinates
-        for index, coord in successfulCoordinates {
-            if (coord.slot == NukeUnitSlot.Value) {
-                if (isMenuOpen("Unit Manager")) {
-                    unitManagerWasOpen := true
-                }
-                CloseMenu("Unit Manager")
-                Sleep(150)
-                SendInput("X")
-                Sleep(150)
-                while (!GetPixel(0x1034AC, 78, 362, 2, 2, 2)) {
-                    CheckForCardSelection()
-
-                    if (CheckForXp()) {
-                        CloseMenu("Unit Manager")
-                        ClearNuke()
-                        return MonitorStage()
-                    }
-
-                FixClick(coord.x, coord.y)
-                Sleep(250)
-                }
-                OpenMenu("Unit Manager")
-                return true
-            }
-        }
-        ; try to find in maxedCoordinates
-        for index, coord in maxedCoordinates {
-            if (isMenuOpen("Unit Manager")) {
-                unitManagerWasOpen := true
-            }
-            if (coord.slot == NukeUnitSlot.Value) {
-                CloseMenu("Unit Manager")
-                Sleep(150)
-                SendInput("X")
-                Sleep(150)
-                while (!GetPixel(0x1034AC, 78, 362, 2, 2, 2)) {
-                    CheckForCardSelection()
-
-                    if (CheckForXp()) {
-                        CloseMenu("Unit Manager")
-                        ClearNuke()
-                        return MonitorStage()
-                    }
-
-                    FixClick(coord.x, coord.y)
-                    Sleep(250)
-                }
-                OpenMenu("Unit Manager")
-                return true
-            }
-        }
-
+    ; Try to find the target slot in both coordinate sets
+    coord := GetNukeCoordinate()
+    if !coord {
+        AddToLog("⚠️ Nuke unit slot not found in coordinates.")
         SetTimer(Nuke, 2500)
-
-        ; Not found in either list
         return false
     }
 
-    return false  ; fallback if nothing is enabled
+    AddToLog("Preparing to nuke at slot " coord.slot)
+
+    unitManagerWasOpen := isMenuOpen("Unit Manager")
+
+    CloseMenu("Unit Manager")
+    Sleep(150)
+    SendInput("X")
+    Sleep(150)
+
+    ; Try clicking until the slot is properly selected
+    while (!GetPixel(0x1034AC, 78, 362, 2, 2, 2)) {
+
+        HandleNukeChecks()
+
+        FixClick(coord.x, coord.y)
+        Sleep(250)
+    }
+
+    OpenMenu("Unit Manager")
+    return true
+}
+
+GetNukeCoordinate() {
+    global successfulCoordinates, maxedCoordinates
+    for each, coord in successfulCoordinates {
+        if (coord.slot == NukeUnitSlot.Value)
+            return coord
+    }
+    for each, coord in maxedCoordinates {
+        if (coord.slot == NukeUnitSlot.Value)
+            return coord
+    }
+    return false
 }
 
 GetNukeDelay() {
@@ -93,7 +73,7 @@ GetNukeDelay() {
 }
 
 Nuke(lookingForWave := false, testing := false) {
-    global nukeCoords, alreadyNuked, waitingToNuke
+    global nukeCoords, alreadyNuked
 
     if (alreadyNuked)
         return
@@ -101,14 +81,11 @@ Nuke(lookingForWave := false, testing := false) {
     if (PrepareToNuke() || testing) {
         Sleep(150)
 
-        if (isMenuOpen("End Screen")) {
-            ClearNuke()
-            return MonitorStage()
-        }
+        HandleNukeChecks()
 
         if (lookingForWave) {
             while (!TimerManager.HasExpired("Nuke")) {
-                Sleep(100)
+                HandleNukeChecks()
             }
         }
         AddToLog("Nuking...")
@@ -121,20 +98,9 @@ Nuke(lookingForWave := false, testing := false) {
     }
 }
 
-HandleNuke() {
-    global alreadyNuked
-
-    if (!NukeUnitSlotEnabled.Value)
-        return false
-
-    SetTimer(Nuke, GetNukeDelay())
-    AddToLog("Nuke scheduled in " GetNukeDelay() " ms)")
-}
-
 ClearNuke() {
-    global alreadyNuked, nukePaused
+    global alreadyNuked
     alreadyNuked := false
-    nukePaused := false
     SetTimer(WatchForTargetWave, 0)
     SetTimer(Nuke, 0)
 }
@@ -175,18 +141,27 @@ StartNukeTimer() {
 }
 
 WatchForTargetWave() {
-    global alreadyNuked, waitingToNuke
+    global alreadyNuked
 
     if (alreadyNuked) {
         SetTimer(WatchForTargetWave, 0) ; stop checking
         return
     }
 
-    if (CheckWaveText(NukeWave.Text) && !waitingToNuke) {
+    if (CheckWaveText(NukeWave.Text)) {
         AddToLog("Wave " NukeWave.Text " found. Nuking...")
         TimerManager.Start("Nuke", GetNukeDelay())
         Nuke(true, false)
         alreadyNuked := true
         SetTimer(WatchForTargetWave, 0) ; stop checking after nuke
     }
+}
+
+HandleNukeChecks() {
+    if (isMenuOpen("End Screen")) {
+        ClearNuke()
+        return MonitorStage()
+    }
+    CheckForCardSelection()
+    Sleep(250)
 }

@@ -1,27 +1,30 @@
 #Requires AutoHotkey v2.0
 
-StartCoordinateCapture() {
-    global savedCoords
+StartCoordinateCapture(*) {
+    global savedCoords, waitingForClick, activeHotkeys
 
     ; Make sure savedCoords exists
     if !IsSet(savedCoords) || !(savedCoords is Map)
         savedCoords := Map()
 
-    ; Get current map from dropdown
     mapName := GetPlacementsForMode(ModeDropdown.Text)
-
-    ; Clear only this map's data before capturing
     if mapName != ""
         savedCoords[mapName] := []
 
+    waitingForClick := true
+    activeHotkeys := []  ; clear previous session
+
     ; Activate Roblox window
-    if (WinExist(rblxID)) {
+    if (!WinActivate(rblxID)) {
         WinActivate(rblxID)
     }
 
-    AddWaitingFor("Placements")
-    AddToLog("Press LShift to stop coordinate capture")
-    SetTimer UpdateTooltip, 50  ; Update tooltip position
+    AddToLog("📍 Coordinate capture started. Left-click to record, press LShift to stop.")
+    SetTimer(UpdateTooltip, 50)
+
+    ; --- Register temporary hotkeys dynamically ---
+    activeHotkeys.Push(Hotkey("~LButton", HandleCoordinateClick))
+    activeHotkeys.Push(Hotkey("~LShift", StopCoordinateCapture))
 }
 
 UseCustomPoints() {
@@ -139,14 +142,22 @@ GetPlacementsForMode(mode) {
             return StoryDropdown.Text
         case "Legend Stage":
             return LegendDropDown.Text
+        case "Boss Rush":
+            return BossRushDropdown.Text
         case "Raid":
             return RaidDropdown.Text
         case "Portal":
             return PortalDropdown.Text
         case "Event":
-            return EventDropdown.Text    
+            return EventDropdown.Text
+        case "Dungeon":
+            return DungeonDropdown.Text
+        case "Survival":
+            return SurvivalDropdown.Text
+        case "Siege":
+            return SiegeDropdown.Text
         case "Custom":
-            return CustomPlacementMapDropdown.Text    
+            return CustomPlacementMapDropdown.Text
     }
     return CustomPlacementMapDropdown.Text
 }
@@ -175,7 +186,7 @@ ExportCustomCoords(mapName) {
     }
 
     file.Close()
-    AddToLog("📤 Exported " savedCoords[mapName].Length " coords to → Settings\Export")
+    AddToLog("📤 Exported " savedCoords[mapName].Length " coords to → Settings\Export\" mapName " Coords.txt")
 }
 
 ImportCustomCoords() {

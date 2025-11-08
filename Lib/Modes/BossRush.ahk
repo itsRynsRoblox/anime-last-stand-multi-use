@@ -14,7 +14,7 @@ StartBossRush() {
 
 WalkToBossRush(angle) {
     switch angle {
-        case 1:
+        case 2:
             SendInput("{d down}")
             Sleep(1200)
             SendInput("{d up}")
@@ -23,7 +23,7 @@ WalkToBossRush(angle) {
             Sleep(800)
             SendInput("{s up}")
             KeyWait "s"  ; Wait for the key to be fully processed
-        case 2:
+        case 1:
             SendInput("{s down}")
             Sleep(1350)
             SendInput("{s up}")

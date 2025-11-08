@@ -287,9 +287,9 @@ sendDCWebhook() {
 
 }
 
-sendTestWebhook() {
+sendTestWebhook(isVictory := true) {
     global Wins := 1
-    SendWebhookWithTime(true, 1)
+    SendWebhookWithTime(isVictory, 1)
 }
 
 GetTextForMode(mode) {

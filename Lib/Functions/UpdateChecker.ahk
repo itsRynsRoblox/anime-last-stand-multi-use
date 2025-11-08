@@ -123,7 +123,6 @@ CheckForUpdates() {
             ; --- Clean up temporary extraction folder ---
             try {
                 DirDelete(extractDir, true)  ; true = recursive delete
-                AddToLog("🧹 Temporary extraction folder removed.")
             }
 
 

@@ -11,7 +11,7 @@ StartRaidMode() {
     RaidMovement()
 
     ; Start stage
-    while !(ok := FindText(&X, &Y, 351, 435, 454, 455, 0, 0, RaidSelectButton)) {
+    while !(ok := FindText(&X, &Y, 304, 432, 399, 458, 0.10, 0.10, RaidSelectButton)) {
         RaidMovement()
     }
 

@@ -201,7 +201,7 @@ MonitorStage() {
 }
 
 CheckForPortalSelection() {
-    if (ok := FindText(&X, &Y, 356, 436, 447, 455, 0, 0, ChoosePortal) or (ok := FindText(&X, &Y, 356, 436, 447, 455, 0.10, 0.10, ChoosePortalHighlighted))) {
+    if (ok := FindText(&X, &Y, 356, 436, 447, 455, 0.10, 0.10, ChoosePortal) or (ok := FindText(&X, &Y, 356, 436, 447, 455, 0.10, 0.10, ChoosePortalHighlighted))) {
         
         if (AutoAbilityBox.Value) {
             CloseMenu("Ability Manager")
@@ -216,7 +216,7 @@ CheckForPortalSelection() {
         ; Wait before checking for another portal
         Sleep(1500)
 
-        if (ok := FindText(&X, &Y, 356, 436, 447, 455, 0, 0, ChoosePortal) or (ok := FindText(&X, &Y, 356, 436, 447, 455, 0.10, 0.10, ChoosePortalHighlighted))) {
+        if (ok := FindText(&X, &Y, 356, 436, 447, 455, 0.10, 0.10, ChoosePortal) or (ok := FindText(&X, &Y, 356, 436, 447, 455, 0.10, 0.10, ChoosePortalHighlighted))) {
             FixClick(399, 299)
             Sleep(500)
             FixClick(402, 414)
@@ -345,23 +345,29 @@ CloseChat() {
 BasicSetup(usedButton := false) {
     global firstStartup
 
-    if (!WinActivate(rblxID)) {
+    if (!WinActive(rblxID)) {
         WinActivate(rblxID)
     }
 
-    ; Skip setup entirely if Seamless is enabled
-    if (SeamlessToggle.Value) {
-        if (!firstStartup) {
-            AddToLog("Seamless mode enabled. Skipping setup.")
+    if (ShouldUseRecording.Value) {
+        if (!ShouldUseSetup.Value) {
             return
+        }
+    }
+
+    if (!firstStartup) {
+        if (!DoesntHaveSeamless(ModeDropdown.Text)) {
+            return
+        } else {
+            if (SeamlessToggle.Value) {
+                return
+            }
         }
     }
 
     ; Close various UI elements
 
     CloseChat()
-    Sleep 250
-    FixClick(487, 71)
     Sleep 250
 
     if (ModeDropdown.Text = "Custom" && SeamlessToggle.Value && !usedButton || ModeDropdown.Text == "Portal" && SeamlessToggle.Value) {
@@ -375,9 +381,15 @@ BasicSetup(usedButton := false) {
     if (ZoomTeleport.Value) {
         TeleportToSpawn()
     }
+
+    CloseLeaderboard(false)
+    Sleep 250
     
     if (!StartWalk(usedButton)) {
-        if (ModeDropdown.Text = "Event" && !usedButton) {
+        if (ModeDropdown.Text = "Event") {
+            if (SeamlessToggle.Value && !firstStartup) {
+                return
+            }
             HandleEventMovement()
         }
     }
@@ -385,6 +397,16 @@ BasicSetup(usedButton := false) {
     if (SeamlessToggle.Value && !usedButton) {
         firstStartup := false
     }
+}
+
+DoesntHaveSeamless(ModeName) {
+    static modesWithoutSeamless := ["Boss Rush"]
+
+    for mode in modesWithoutSeamless {
+        if (mode = ModeName)
+            return true
+    }
+    return false
 }
 
 DetectMap() {
@@ -427,43 +449,24 @@ RestartStage() {
     ; Wait for game to actually start
     StartedGame()
 
-    ; Begin unit placement and management
-    StartPlacingUnits(PlacementPatternDropdown.Text == "Custom" || PlacementPatternDropdown.Text = "Map Specific")
-    
-    ; Monitor stage progress
-    MonitorStage()
-}
-
-RestartCustomStage() {
-    if (!SeamlessToggle.Value) {
-        currentMap := DetectMap()
-    
-        ; Wait for loading
-        CheckLoaded()
-    
-        ; Do initial setup and map-specific movement during vote timer
-        BasicSetup()
-        if (currentMap != "no map found") {
-            HandleMapMovement(currentMap)
-        }
+    if (ShouldUseRecording.Value) {
+        PlayRecordedActions()
+    } else {
+        StartNukeTimer()
+        StartPlacingUnits(PlacementPatternDropdown.Text == "Custom" || PlacementPatternDropdown.Text = "Map Specific")
     }
-
-    ; Wait for game to actually start
-    StartedGame()
-
-    ; Begin unit placement and management
-    StartPlacingUnits(PlacementPatternDropdown.Text == "Custom" || PlacementPatternDropdown.Text = "Map Specific")
     
     ; Monitor stage progress
     MonitorStage()
 }
 
 Reconnect(force := false) {
-    if (WinExist(rblxID)) {
-        WinActivate(rblxID)
-    }
-
     if (FindText(&X, &Y, 202, 206, 601, 256, 0.10, 0.10, Disconnect) || force || TeleportFailsafe.Value && TimerManager.HasExpired("Teleport Failsafe")) {
+        if (WinExist(rblxID)) {
+            if (!WinActive(rblxID)) {
+                WinActivate(rblxID)
+            }
+        }
 
         ; Wait until internet is available
         while !isConnectedToInternet() {
@@ -559,7 +562,6 @@ StartedGame() {
     global stageStartTime := A_TickCount
     HandleStartButton()
     AddToLog("Game started")
-    StartNukeTimer()
 }
 
 StartSelectedMode() {
@@ -752,25 +754,42 @@ StartsInLobby(ModeName) {
 }
 
 isMenuOpen(name := "") {
-    if (name = "Unit Manager") {
-        return FindText(&X, &Y, 700, 142, 789, 166, 0.20, 0.20, UnitManager) or FindText(&X, &Y, 679, 595, 782, 616, 0.20, 0.20, UnitManagerDark)
+    static menuData := Map(
+        "Unit Manager", [
+            [700, 142, 789, 166, 0.20, 0.20, "UnitManager"],
+            [679, 595, 782, 616, 0.20, 0.20, "UnitManagerDark"]
+        ],
+        "Ability Manager", [
+            [675, 594, 785, 616, 0.20, 0.20, "AbilityManager"]
+        ],
+        "Story", [
+            [302, 432, 401, 456, 0.20, 0.20, "StorySelectButton"]
+        ],
+        "End Screen", [
+            [225, 217, 356, 246, 0.20, 0.20, "Results"]
+        ],
+        "Boss Rush", [
+            [333, 439, 367, 454, 0.20, 0.20, "BossRushEnter"]
+        ],
+        "Survival", [
+            [284, 443, 328, 462, 0.20, 0.20, "SurvivalSelect"]
+        ],
+        "Card Selection", [
+            [436, 383, 2, 2, 3, "PixelCheck", 0x4A4747]
+        ]
+    )
+
+    if !menuData.Has(name)
+        return false
+
+    for each, data in menuData[name] {
+        if (data[6] = "PixelCheck") {
+            if GetPixel(data[7], data[1], data[2], data[3], data[4], data[5])
+                return true
+        } else {
+            if FindText(&X, &Y, data[1], data[2], data[3], data[4], data[5], data[6], %data[7]%)
+                return true
+        }
     }
-    else if (name = "Ability Manager") {
-        return FindText(&X, &Y, 675, 594, 785, 616, 0.20, 0.20, AbilityManager)
-    }
-    else if (name = "Story") {
-        return FindText(&X, &Y, 302, 432, 401, 456, 0.20, 0.20, StorySelectButton)
-    }
-    else if (name = "End Screen") {
-        return FindText(&X, &Y, 225, 217, 356, 246, 0.20, 0.20, Results)
-    }
-    else if (name = "Boss Rush") {
-        return FindText(&X, &Y, 333, 439, 367, 454, 0.20, 0.20, BossRushEnter)
-    }
-    else if (name = "Survival") {
-        return FindText(&X, &Y, 284, 443, 328, 462, 0.20, 0.20, SurvivalSelect)
-    }
-    else if (name = "Card Selection") {
-        return GetPixel(0x4A4747, 436, 383, 2, 2, 3)
-    }
+    return false
 }

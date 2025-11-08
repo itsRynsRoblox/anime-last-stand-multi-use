@@ -64,11 +64,10 @@ StartPlacingUnits(untilSuccessful := true) {
             placementOrder.Push(item.slot)
         }
     } else {
-        placementOrder := PlacementSelection.Text = "Slot #2 First" ? [2, 1, 3, 4, 5, 6] : [1, 2, 3, 4, 5, 6]
+        placementOrder := [1, 2, 3, 4, 5, 6]
     }
 
     placementStrategies := Map(
-        "Map Specific", UseRecommendedPoints,
         "Custom", UseCustomPoints,
         "Circle", GenerateCirclePoints,
         "Grid", GenerateGridPoints,
@@ -318,9 +317,13 @@ ResetPlacementTracking() {
 
 EnableAutoUpgrade(slotNum) {
     global successfulCoordinates
+    hasMinion := HasMinionInSlot(slotNum)
     slotNum := successfulCoordinates[successfulCoordinates.Length].placementIndex
     OpenMenu("Unit Manager")
+    Sleep(150)
     SetAutoUpgradeForSingleUnit(slotNum)
-    AddToLog("Enabled auto-upgrade for unit " slotNum)
+    if (hasMinion) {
+        SetAutoUpgradeForSingleUnit(slotNum + 1)
+    }
     CloseMenu("Unit Manager")
 }

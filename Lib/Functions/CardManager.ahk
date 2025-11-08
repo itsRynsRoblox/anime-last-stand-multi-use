@@ -58,6 +58,8 @@ SelectCardsByMode() {
 SelectCards(eventName) {
     global cachedCardPriorities
 
+    eventName := StrReplace(eventName, " ", "")
+
     if (!cachedCardPriorities.Has(eventName)) {
         cardPriorityFile := A_ScriptDir "\Settings\" eventName "CardPriority.txt"
         priorities := Map()
@@ -97,29 +99,54 @@ SelectCards(eventName) {
 
     cardPriorities := cachedCardPriorities[eventName]
 
-    ; Default card slots 571, 219, 701, 246
-    cardSlots:= [
-        { clickX: 169, clickY: 305, ocrX1: 100, ocrY1: 214, ocrX2: 238, ocrY2: 257 },
-        { clickX: 328, clickY: 288, ocrX1: 256, ocrY1: 214, ocrX2: 394, ocrY2: 256 },
-        { clickX: 486, clickY: 291, ocrX1: 410, ocrY1: 224, ocrX2: 550, ocrY2: 271 },
-        { clickX: 642, clickY: 295, ocrX1: 571, ocrY1: 224, ocrX2: 701, ocrY2: 256 }
+    baseX := 169
+    baseY := 305
+    scale := 1.0
+
+
+    cardSlots := [
+        { clickOffsetX: 0,   clickOffsetY: -15,   ocrOffsetX1: -69, ocrOffsetY1: -91, ocrWidth: 140, ocrHeight: 50 },
+        { clickOffsetX: 159, clickOffsetY: -15, ocrOffsetX1: 87,  ocrOffsetY1: -91, ocrWidth: 140, ocrHeight: 50 },
+        { clickOffsetX: 317, clickOffsetY: -15, ocrOffsetX1: 241, ocrOffsetY1: -91, ocrWidth: 140, ocrHeight: 50 },
+        { clickOffsetX: 473, clickOffsetY: -15, ocrOffsetX1: 402, ocrOffsetY1: -91, ocrWidth: 140, ocrHeight: 50 }
     ]
+
+    for index, slot in cardSlots {
+        slot.clickX := baseX + slot.clickOffsetX * scale
+        slot.clickY := baseY + slot.clickOffsetY * scale
+        slot.ocrX1 := baseX + slot.ocrOffsetX1 * scale
+        slot.ocrY1 := baseY + slot.ocrOffsetY1 * scale
+        slot.ocrX2 := slot.ocrX1 + slot.ocrWidth * scale
+        slot.ocrY2 := slot.ocrY1 + slot.ocrHeight * scale
+    }
 
     foundCards := Map()
     for index, slot in cardSlots {
         MouseMove(slot.clickX, slot.clickY)
         Wiggle()
-        ;FixClick(slot.clickX, slot.clickY)
-        Sleep(500)
 
-        ; OCR
-        orcResult := ReadText(slot.ocrX1, slot.ocrY1, slot.ocrX2, slot.ocrY2, 10.0, false)
-        ocrCleaned := RegExReplace(orcResult, "\\s+|!", "")
-        ocrCleaned := RegExReplace(ocrCleaned, "[^a-zA-Z]", "")
-        ocrCleaned := RegExReplace(ocrCleaned, "i)(IV|III|II|I)$", "")
+        ; --- Start adaptive OCR wait ---
+        maxAttempts := 3    ; total max time to wait for a card (ms)
+        interval := 50    ; check every 50 ms
+        attempts := 0
+        orcResult := ""
+        ocrCleaned := ""
 
-        ;ocrCleaned := DetectText(slot.ocrX1, slot.ocrY1, slot.ocrX2, slot.ocrY2) ; Alternative OCR method that works better with no image preprocessing might use elsewhere
+        while (attempts < maxAttempts) {
+            orcResult := ReadText(slot.ocrX1, slot.ocrY1, slot.ocrX2, slot.ocrY2, 10.0, false)
+            ocrCleaned := RegExReplace(orcResult, "\\s+|!", "")
+            ocrCleaned := RegExReplace(ocrCleaned, "[^a-zA-Z]", "")
+            ocrCleaned := RegExReplace(ocrCleaned, "i)(IV|III|II|I)$", "")
 
+            if (ocrCleaned != "") {
+                break
+            }
+
+            Sleep(interval)
+            attempts += 1
+            AddToLog("Waiting for card... attempt " attempts)
+        }
+        
         if (ocrCleaned != "") {
             for cardName, priority in cardPriorities {
                 matchScore := 1.0 - (Levenshtein(ocrCleaned, cardName) / Max(StrLen(ocrCleaned), StrLen(cardName)))
@@ -133,7 +160,6 @@ SelectCards(eventName) {
                 }
             }
         }
-        Sleep(50)
     }
 
     if (foundCards.Count > 0) {
@@ -716,4 +742,85 @@ HasCards(ModeName) {
             return true
     }
     return false
+}
+
+GetCardSlotsByWave(wave) {
+    wave := Integer(wave)
+    baseX := 169
+    baseY := 305
+    scale := 1.0
+
+    if (wave <= 10) {
+        ; Early waves — 4 cards
+        cardSlots := [
+            { clickOffsetX: 0,   clickOffsetY: -15,   ocrOffsetX1: -69, ocrOffsetY1: -91, ocrWidth: 140, ocrHeight: 50 },
+            { clickOffsetX: 159, clickOffsetY: -15, ocrOffsetX1: 87,  ocrOffsetY1: -91, ocrWidth: 140, ocrHeight: 50 },
+            { clickOffsetX: 317, clickOffsetY: -15, ocrOffsetX1: 241, ocrOffsetY1: -91, ocrWidth: 140, ocrHeight: 50 },
+            { clickOffsetX: 473, clickOffsetY: -15, ocrOffsetX1: 402, ocrOffsetY1: -91, ocrWidth: 140, ocrHeight: 50 }
+        ]
+    }
+    else if (wave <= 40) {
+        ; Mid waves — 3 cards (shifted slightly toward center)
+        baseX := 200
+        cardSlots := [
+            { clickOffsetX: 0,   clickOffsetY: -15,   ocrOffsetX1: -69, ocrOffsetY1: -91, ocrWidth: 140, ocrHeight: 50 },
+            { clickOffsetX: 159, clickOffsetY: -15, ocrOffsetX1: 100,  ocrOffsetY1: -91, ocrWidth: 140, ocrHeight: 50 },
+            { clickOffsetX: 317, clickOffsetY: -15, ocrOffsetX1: 300, ocrOffsetY1: -91, ocrWidth: 140, ocrHeight: 50 }
+        ]
+    }
+    else if (wave <= 50) {
+        ; Late waves — only 2 cards (further centered)
+        baseX := 240
+        cardSlots := [
+            { clickOffsetX: 0,   clickOffsetY: 0,   ocrOffsetX1: -70, ocrOffsetY1: -91, ocrWidth: 138, ocrHeight: 50 },
+            { clickOffsetX: 265, clickOffsetY: -10, ocrOffsetX1: 200, ocrOffsetY1: -91, ocrWidth: 138, ocrHeight: 50 }
+        ]
+    }
+
+    ; Calculate actual positions
+    for index, slot in cardSlots {
+        slot.clickX := baseX + slot.clickOffsetX * scale
+        slot.clickY := baseY + slot.clickOffsetY * scale
+        slot.ocrX1 := baseX + slot.ocrOffsetX1 * scale
+        slot.ocrY1 := baseY + slot.ocrOffsetY1 * scale
+        slot.ocrX2 := slot.ocrX1 + slot.ocrWidth * scale
+        slot.ocrY2 := slot.ocrY1 + slot.ocrHeight * scale
+    }
+    return cardSlots
+}
+
+ShowRegions(cardSlots, showClicks := true) {
+    static overlays := []  ; persists between calls
+
+    ; destroy previous overlays
+    if IsObject(overlays) {
+        for g in overlays
+            try g.Destroy()
+    }
+    overlays := []
+
+    for index, slot in cardSlots {
+        w := slot.ocrX2 - slot.ocrX1
+        h := slot.ocrY2 - slot.ocrY1
+
+        ; OCR box (red)
+        ocrGui := Gui("+AlwaysOnTop -Caption +ToolWindow +E0x20") ; create new Gui
+        ocrGui.BackColor := "Red"
+        ocrGui.Show("x" slot.ocrX1 " y" slot.ocrY1 " w" w " h" h)
+        overlays.Push(ocrGui)
+
+        if showClicks {
+            cx := slot.clickX - 6  ; center marker (12x12)
+            cy := slot.clickY - 6
+
+            ; Click marker (blue)
+            clickGui := Gui("+AlwaysOnTop -Caption +ToolWindow +E0x20") ; <-- correct: Gui(), not ocrGui(...)
+            clickGui.BackColor := "Blue"
+            clickGui.Show("x" cx " y" cy " w12 h12")
+            overlays.Push(clickGui)
+        }
+    }
+
+    ; store overlays so HideRegions can access them
+    ShowRegions._overlays := overlays
 }

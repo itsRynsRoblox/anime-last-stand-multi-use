@@ -20,16 +20,24 @@ GetMapForMode(mode) {
             return StoryDropdown.Text
         case "Legend Stage":
             return LegendDropDown.Text
+        case "Boss Rush":
+            return BossRushDropdown.Text
         case "Raid":
             return RaidDropdown.Text
         case "Portal":
             return PortalDropdown.Text
         case "Event":
             return EventDropdown.Text
+        case "Dungeon":
+            return DungeonDropdown.Text
+        case "Survival":
+            return SurvivalDropdown.Text
+        case "Siege":
+            return SiegeDropdown.Text
         case "Custom":
             return WalkMapDropdown.Text
     }
-    return ""
+    return WalkMapDropdown.Text
 }
 
 ; === Start of new walk functions ===
@@ -48,6 +56,7 @@ StartRecordingWalk(*) {
     firstKeyPressed := false
     AddToLog("Starting map movement recording for: " mapName)
     AddToLog("Press LShift to stop recording")
+
     for key in movementKeys {
         downHK := Hotkey("~*" key, RecordKeyDown.Bind(key))
         upHK := Hotkey("~*" key " up", RecordKeyUp.Bind(key))
@@ -55,7 +64,9 @@ StartRecordingWalk(*) {
         activeHotkeys.Push(upHK)
     }
 
-    if (!WinActivate(rblxID)) {
+    activeHotkeys.Push(Hotkey("~LShift", StopRecordingWalk))
+
+    if (!WinActive(rblxID)) {
         WinActivate(rblxID)
     }
 }
@@ -115,19 +126,19 @@ StartWalk(testing := false) {
 
     if !allWalks.Has(currentMap) || allWalks[currentMap].Length = 0 {
         if (debugMessages) {
-            AddToLog("No recording for map: " currentMap)
+            AddToLog("No recording for profile: " currentMap)
         }
         return false
     }
 
-    if (!WinActivate(rblxID)) {
+    if (!WinActive(rblxID)) {
         WinActivate(rblxID)
     }
 
     data := allWalks[currentMap]
 
     for entry in data {
-        AddToLog("[Walking] Sending Key: " entry.key ", Duration: " entry.duration "ms , Delay: " entry.delay "ms")
+        AddToLog("[Walking] Sending Key: " entry.key ", Duration: " entry.duration "ms, Delay: " entry.delay "ms")
         Sleep(entry.delay)
         Send("{" entry.key " down}")
         Sleep(entry.duration)

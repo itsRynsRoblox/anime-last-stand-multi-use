@@ -20,6 +20,7 @@ global scriptInitialized := false
 #Include %A_ScriptDir%\Lib\OCR-main\Lib\OCR.ahk
 #Include Lib\RapidOcr\ImagePut.ahk
 #Include %A_ScriptDir%/lib/Tools/RapidOcr.ahk
+#Include %A_ScriptDir%/lib/Tools/jsongo.v2.ahk
 
 ; === Game Modes ===
 #Include %A_ScriptDir%/lib/Modes/BossRush.ahk
@@ -47,6 +48,8 @@ global scriptInitialized := false
 #Include %A_ScriptDir%/lib/Functions/CardManager.ahk
 #Include %A_ScriptDir%/lib/Functions/TimerManager.ahk
 #Include %A_ScriptDir%/lib/Functions/CustomPlacements.ahk
+#Include %A_ScriptDir%/lib/Functions/ProfileManager.ahk
+#Include %A_ScriptDir%/lib/Functions/CustomRecording.ahk
 
 ; === Update Checker ===
 #Include %A_ScriptDir%/lib/Functions/UpdateChecker.ahk

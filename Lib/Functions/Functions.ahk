@@ -107,63 +107,60 @@ OnPlacementChange(*) {
 }
 
 OnConfirmClick(*) {
-    if (ModeDropdown.Text = "") {
+    mode := ModeDropdown.Text
+    if (mode = "") {
         AddToLog("Please select a gamemode before confirming")
         return
     }
 
-    ; For Story mode, check if both Story and Act are selected
-    if (ModeDropdown.Text = "Story") {
-        if (StoryDropdown.Text = "" || StoryActDropdown.Text = "") {
-            AddToLog("Please select both Story and Act before confirming")
-            return
-        }
-        AddToLog("Selected " StoryDropdown.Text)
-    }
-    ; For Legend mode, check if both Legend and Act are selected
-    else if (ModeDropdown.Text = "Legend") {
-        if (LegendDropDown.Text = "") {
-            AddToLog("Please select both Legend Stage and Act before confirming")
-            return
-        }
-        AddToLog("Selected " LegendDropDown.Text)
-    }
-    ; For Custom mode, check if coords are empty
-    else if (ModeDropdown.Text = "Custom") {
-        AddToLog("Selected Custom")
-    }
-    ; For Raid mode, check if both Raid and RaidAct are selected
-    else if (ModeDropdown.Text = "Raid") {
-        if (RaidDropdown.Text = "") {
-            AddToLog("Please select both Raid and Act before confirming")
-            return
-        }
-        AddToLog("Selected " RaidDropdown.Text)
-    } else {
-        AddToLog("Selected " ModeDropdown.Text " mode")
+    ; Validation per mode
+    missing := ""
+    switch mode {
+        case "Story":
+            if (StoryDropdown.Text = "" || StoryActDropdown.Text = "")
+                missing := "both Story and Act"
+            else
+                AddToLog("Selected " StoryDropdown.Text)
+
+        case "Legend":
+            if (LegendDropDown.Text = "")
+                missing := "both Legend Stage and Act"
+            else
+                AddToLog("Selected " LegendDropDown.Text)
+
+        case "Raid":
+            if (RaidDropdown.Text = "")
+                missing := "both Raid and Act"
+            else
+                AddToLog("Selected " RaidDropdown.Text)
+
+        case "Custom":
+            AddToLog("Selected Custom")
+
+        default:
+            AddToLog("Selected " mode " mode")
     }
 
-    ; Hide all controls if validation passes
-    ModeDropdown.Visible := false
-    StoryDropdown.Visible := false
-    StoryActDropdown.Visible := false
-    LegendDropDown.Visible := false
-    RaidDropdown.Visible := false
-    RaidActDropdown.Visible := false
-    DungeonDropdown.Visible := false
-    PortalDropdown.Visible := false
-    PortalRoleDropdown.Visible := false
-    BossRushDropdown.Visible := false
-    SiegeDropdown.Visible := false
-    SurvivalDropdown.Visible := false
-    EventDropdown.Visible := false
-    ConfirmButton.Visible := false
-    modeSelectionGroup.Visible := false
-    Hotkeytext.Visible := true
-    Hotkeytext2.Visible := true
-    Hotkeytext3.Visible := true
+    if (missing) {
+        AddToLog("Please select " missing " before confirming")
+        return
+    }
+
+    ; Hide all dropdowns and confirm button
+    for ctrl in [ModeDropdown, StoryDropdown, StoryActDropdown, LegendDropDown,
+        RaidDropdown, RaidActDropdown, DungeonDropdown, PortalDropdown,
+        PortalRoleDropdown, BossRushDropdown, SiegeDropdown,
+        SurvivalDropdown, EventDropdown, ConfirmButton, modeSelectionGroup] {
+        ctrl.Visible := false
+    }
+
+    ; Show hotkey texts
+    for ctrl in [Hotkeytext, Hotkeytext2, Hotkeytext3]
+        ctrl.Visible := true
+
     global confirmClicked := true
 }
+
 
 FixClick(x, y, LR := "Left", shouldWiggle := false) {
     MouseMove(x, y)
@@ -233,7 +230,7 @@ OpenGithub() {
 }
 
 OpenDiscord() {
-    Run("https://discord.gg/ycYNunvEzX")
+    Run("https://discord.gg/rynsrealm")
 }
 
 StringJoin(array, delimiter := ", ") {
@@ -350,6 +347,7 @@ RotateCameraAngle() {
 
 CloseLobbyPopups() {
     CloseLeaderboard(true)
+    Sleep(500)
     FixClick(632, 150) ; Update UI
     Sleep(500)
     FixClick(400,340)
@@ -415,30 +413,6 @@ ClickUnit(slot, forNuke := false) {
     }
 }
 
-ToggleMenu(name := "") {
-    if (!name)
-        return
-
-    key := ""
-    if (name = "Unit Manager")
-        key := "F"
-    else if (name = "Ability Manager")
-        key := "Z"
-
-    if (!key)
-        return
-
-    if (isMenuOpen(name)) {
-        AddToLog("Closing " name)
-        Send(key)
-        Sleep(300)
-    } else {
-        Send(key)
-        AddToLog("Opening " name)
-        Sleep(300)
-    }
-}
-
 CloseMenu(name := "") {
     if (!name)
         return
@@ -461,50 +435,50 @@ CloseMenu(name := "") {
 }
 
 OpenMenu(name := "") {
-    if (!name)
-        return
+    static menuKeys := Map(
+        "Unit Manager", "F",
+        "Ability Manager", "Z"
+    )
 
-    key := ""
-    if (name = "Unit Manager")
-        key := "F"
-    else if (name = "Ability Manager")
-        key := "Z"
+    if !name || !menuKeys.Has(name)
+        return  ; Invalid or unknown menu
 
-    if (!key)
-        return  ; Unknown menu name
+    key := menuKeys[name]
 
-    if (!isMenuOpen(name)) {
-        AddToLog("Opening " name)
+    if isMenuOpen(name)
+        return true  ; Already open
+
+    AddToLog("Opening " name)
+
+    maxAttempts := 3
+    delay := 700  ; ms between checks
+
+    loop maxAttempts {
         Send(key)
-        Sleep(1000)
+        if WaitForMenuOpen(name, delay) {
+            AddToLog("✅ " name " opened after " A_Index " attempt(s).")
+            return true
+        }
+        Sleep(150)  ; small pause before retrying
     }
+
+    AddToLog("⚠️ Failed to open " name " after " maxAttempts " attempts.")
+    return false
+}
+
+WaitForMenuOpen(name, timeout := 700) {
+    start := A_TickCount
+    while (A_TickCount - start < timeout) {
+        if isMenuOpen(name)
+            return true
+        Sleep(50)
+    }
+    return false
 }
 
 CleanString(str) {
     ; Remove emojis and any adjacent spaces (handles gaps)
     return RegExReplace(str, "\s*[^\x00-\x7F]+\s*", "")
-}
-
-SortArrayOfObjects(arr, key, ascending := true) {
-    len := arr.Length
-    if (len < 2)
-        return arr
-
-    Loop len {
-        i := 1
-        while (i < len) {
-            a := arr[i][key]
-            b := arr[i + 1][key]
-
-            if (ascending ? (a > b) : (a < b)) {
-                temp := arr[i]
-                arr[i] := arr[i + 1]
-                arr[i + 1] := temp
-            }
-            i++
-        }
-    }
-    return arr
 }
 
 OnPriorityChange(type, priorityNumber, newPriorityNumber) {
