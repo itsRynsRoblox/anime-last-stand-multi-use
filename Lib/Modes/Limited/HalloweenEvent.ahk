@@ -64,7 +64,9 @@ CheckShouldRestart() {
     global stageStartTime
     if (EventDropdown.Text = "Halloween P2" && HalloweenRestart.Value) {
         if (CheckWaveText(HalloweenRestartTimer.Value)) {
-
+            if (ShouldUseRecording.Value) {
+                StopPlayback()
+            }
             stageEndTime := A_TickCount
             stageLength := FormatStageTime(stageEndTime - stageStartTime)
 

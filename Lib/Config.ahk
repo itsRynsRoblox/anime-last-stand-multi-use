@@ -135,7 +135,8 @@ LoadUnitSettingsByMode(fromFile := false) {
     global nukeCoords
 
     mode := ModeDropdown.Text
-    if !mode
+
+    if !mode || !ModeConfigurations.Value
         mode := "Default"
 
     safeMode := RegExReplace(mode, '[\\/:*?"<>|]', "_")
@@ -144,7 +145,7 @@ LoadUnitSettingsByMode(fromFile := false) {
         MainUI.Opt("-AlwaysOnTop")
         Sleep(100)
 
-        file := FileSelect("Select a configuration file to import", "", A_ScriptDir "\Settings", "JSON Files (*.json)")
+        file := FileSelect("", A_ScriptDir "\Settings", "Select a configuration file to import", "JSON Files (*.json)")
 
         MainUI.Opt("+AlwaysOnTop")
 
@@ -239,7 +240,7 @@ LoadUnitSettingsByMode(fromFile := false) {
 
     EnableUpgrading.Value := GetValue(data, ["Upgrading", "Enabled"], 0)
     UnitManagerUpgradeSystem.Value := GetValue(data, ["Upgrading", "Use_Unit_Manager"], 0)
-    PriorityUpgrade.Value := GetValue(data, ["Upgrading", "Use_Unit_Priority"], 0)
+    PriorityUpgrade.Value := GetValue(data, ["Upgrading", "Use_Unit_Priority"], 1)
 
     ShouldUseRecording.Value := GetValue(data, ["Custom_Recordings", "Use"], 0)
     ShouldUseSetup.Value := GetValue(data, ["Custom_Recordings", "Setup"], 0)
@@ -294,6 +295,7 @@ LoadUniversalSettings() {
 
     NextLevelBox.Value := GetValue(data, ["Universal", "NextLevel"], 0)
     ReturnLobbyBox.Value := GetValue(data, ["Universal", "ReturnToLobby"], 0)
+    SeamlessToggle.Value := GetValue(data, ["Universal", "Seamless"], 0)
     ModeConfigurations.Value := GetValue(data, ["Universal", "UsingModeConfigurations"], 0)
 
     WebhookEnabled.Value := GetValue(data, ["Webhook", "Enabled"], 0)
@@ -313,7 +315,8 @@ SaveUniversalSettings() {
         Universal: {
             NextLevel: NextLevelBox.Value,
             ReturnToLobby: ReturnLobbyBox.Value,
-            UsingModeConfigurations: ModeConfigurations.Value
+            UsingModeConfigurations: ModeConfigurations.Value,
+            Seamless: SeamlessToggle.Value
         },
         Webhook: {
             Enabled: WebhookEnabled.Value,
@@ -379,7 +382,7 @@ ImportCoordinatesPreset() {
     MainUI.Opt("-AlwaysOnTop")
     Sleep(100)
 
-    file := FileSelect("Select a placement file to import", "", A_ScriptDir "\Settings", "Text Documents (*.txt)")
+    file := FileSelect("", A_ScriptDir "\Settings", "Select a placement file to import", "Text Files (*.txt)")
 
     if !file
         return

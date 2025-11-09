@@ -62,13 +62,13 @@
         "Slot_2_Upgrade_Limit_Enabled": 0,
         "Slot_2_Upgrade_Priority": "2",
         "Slot_3_Ability_Enabled": 0,
-        "Slot_3_Enabled": 0,
+        "Slot_3_Enabled": 1,
         "Slot_3_Placements": 1,
-        "Slot_3_Priority": 3,
+        "Slot_3_Priority": 2,
         "Slot_3_Upgrade_Enabled": 0,
         "Slot_3_Upgrade_Limit": "",
         "Slot_3_Upgrade_Limit_Enabled": 0,
-        "Slot_3_Upgrade_Priority": "3",
+        "Slot_3_Upgrade_Priority": "2",
         "Slot_4_Ability_Enabled": 0,
         "Slot_4_Enabled": 0,
         "Slot_4_Placements": 1,
@@ -88,11 +88,11 @@
         "Slot_6_Ability_Enabled": 0,
         "Slot_6_Enabled": 1,
         "Slot_6_Placements": 1,
-        "Slot_6_Priority": 6,
+        "Slot_6_Priority": 1,
         "Slot_6_Upgrade_Enabled": 0,
         "Slot_6_Upgrade_Limit": "",
         "Slot_6_Upgrade_Limit_Enabled": 0,
-        "Slot_6_Upgrade_Priority": "6"
+        "Slot_6_Upgrade_Priority": "1"
     },
     "Update_Checker": {
         "Enabled": 1

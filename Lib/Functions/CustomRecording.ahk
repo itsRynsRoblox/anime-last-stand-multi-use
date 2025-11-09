@@ -424,6 +424,8 @@ HandlePlaybackChecks() {
         StopPlayback()
         return MonitorStage()
     }
+
+    CheckShouldRestart()
 }
 
 ClearRecordings(*) {

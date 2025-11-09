@@ -239,7 +239,12 @@ StartPlacingUnits(untilSuccessful := true) {
     }
 
     AddToLog("All units placed to requested amounts")
-    UpgradeUnits()
+    if (EnableUpgrading.Value) {
+        UpgradeUnits()
+    } else {
+        AddToLog("Upgrading is disabled, proceeding to monitoring stage...")
+    }
+
 }
 
 PlaceUnit(x, y, slot := 1) {
